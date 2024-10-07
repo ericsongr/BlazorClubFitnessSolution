@@ -54,8 +54,6 @@ var clubFitnessServices = Assembly.Load("ClubFitnessServices");
 
 //// Register all repositories
 builder.Services.AddAllRepositoriesFromAssemblies(clubFitnessInfrastructure);
-builder.Services.AddScoped(typeof(Repository<Account>), typeof(AccountRepository));
-
 
 // Register all services
 builder.Services.AddAllServicesFromAssemblies(clubFitnessServices);

@@ -27,5 +27,7 @@ namespace ClubFitnessDomain
         public DateTime? PaymentIssueSuspensionDate { get; set; }
         public Guid AdvancedEmailEditorUid { get; set; }
         public string? CompanyLegalName { get; set; }
+
+        public virtual ICollection<AccountSupplier> AccountSuppliers { get; set; }
     }
 }

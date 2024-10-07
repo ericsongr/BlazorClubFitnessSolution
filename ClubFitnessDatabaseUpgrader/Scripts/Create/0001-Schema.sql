@@ -56,7 +56,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[AccountSupplier](
-	[AccountSupplierId] [bigint] IDENTITY(1,1) NOT NULL,
+	[AccountSupplierId] [int] IDENTITY(1,1) NOT NULL,
 	[AccountId] [int] NULL,
 	[SupplierNumber] [int] NOT NULL,
 	[SupplierName] [nvarchar](50) NOT NULL,

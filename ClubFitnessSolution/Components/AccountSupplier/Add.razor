@@ -1,0 +1,164 @@
+﻿@page "/add-account-supplier"
+@using Microsoft.AspNetCore.Components
+@using ClubFitnessDomain
+@using ClubFitnessServices.Interfaces
+@using Radzen
+
+@inject NavigationManager Navigation
+@inject NotificationService NotificationService
+@inject IAccountSupplierService AccountSupplierService
+@inject IAccountService AccountService
+
+@rendermode InteractiveServer
+
+<RadzenBreadCrumb>
+    <RadzenBreadCrumbItem Path="/" Text="Home" />
+    <RadzenBreadCrumbItem Path="/account-supplier" Text="Supplier List" />
+    <RadzenBreadCrumbItem Text="Add Supplier" />
+</RadzenBreadCrumb>
+
+<EditForm Model="@AccountSupplier" class="container m-5">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="alert alert-danger" />
+
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <label for="account">Account:</label>
+            <RadzenDropDown @bind-Value="AccountSupplier.AccountId" Data="@accounts"
+                            TextProperty="AccountName" ValueProperty="AccountId" AllowClear="true"
+                            Placeholder="Select Account" class="form-control" />
+        </div>
+        <div class="col-sm-6">
+            <label for="supplierNumber">Supplier Number:</label>
+            <InputNumber id="supplierNumber" @bind-Value="AccountSupplier.SupplierNumber" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <label for="supplierName">Supplier Name:</label>
+            <InputText id="supplierName" @bind-Value="AccountSupplier.SupplierName" class="form-control" />
+        </div>
+        <div class="col-sm-6">
+            <label for="supplierReference">Supplier Reference:</label>
+            <InputText id="supplierReference" @bind-Value="AccountSupplier.SupplierReference" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <label for="contactFirstName">First Name:</label>
+            <InputText id="contactFirstName" @bind-Value="AccountSupplier.ContactFirstName" class="form-control" />
+        </div>
+        <div class="col-sm-6">
+            <label for="contactLastName">Last Name:</label>
+            <InputText id="contactLastName" @bind-Value="AccountSupplier.ContactLastName" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <label for="contactEmail">Email:</label>
+            <InputText id="contactEmail" @bind-Value="AccountSupplier.ContactEmail" class="form-control" />
+        </div>
+        <div class="col-sm-6">
+            <label for="contactPhone">Phone:</label>
+            <InputText id="contactPhone" @bind-Value="AccountSupplier.ContactPhone" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <label for="contactMobile">Mobile:</label>
+            <InputText id="contactMobile" @bind-Value="AccountSupplier.ContactMobile" class="form-control" />
+        </div>
+        <div class="col-sm-6">
+            <label for="contactFax">Contact Fax:</label>
+            <InputText id="contactFax" @bind-Value="AccountSupplier.ContactFax" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <label for="businessNumber">Business Number:</label>
+            <InputText id="businessNumber" @bind-Value="AccountSupplier.BusinessNumber" class="form-control" />
+        </div>
+        <div class="col-sm-6">
+            <label for="accountNumber">Account Number:</label>
+            <InputText id="accountNumber" @bind-Value="AccountSupplier.AccountNumber" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <label for="webAccountURL">Web Account URL:</label>
+            <InputText id="webAccountURL" @bind-Value="AccountSupplier.WebAccountURL" class="form-control" />
+        </div>
+        <div class="col-sm-6">
+            <label for="leadTimeDays">Lead Time Days:</label>
+            <InputNumber id="leadTimeDays" @bind-Value="AccountSupplier.LeadTimeDays" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <label for="shippingReference">Shipping Reference:</label>
+            <InputText id="shippingReference" @bind-Value="AccountSupplier.ShippingReference" class="form-control" />
+        </div>
+        <div class="col-sm-6">
+            <label for="displayImagePath">Display Image Path:</label>
+            <InputText id="displayImagePath" @bind-Value="AccountSupplier.DisplayImagePath" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-sm-6">
+            <label for="isActive">Active:</label>
+            <RadzenSwitch @bind-Value="AccountSupplier.IsActive" />
+        </div>
+    </div>
+
+    <div class="form-group row mb-5">
+        <div class="col-sm-10">
+            <RadzenButton ButtonType="ButtonType.Submit" Click="Save" class="btn btn-success">Save</RadzenButton>
+            <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2">Back</RadzenButton>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    public AccountSupplier AccountSupplier { get; set; } = new AccountSupplier();
+    private IEnumerable<Account> accounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await AccountService.GetAllAsync();  // Fetch all accounts for dropdown
+    }
+
+    private async Task Save()
+    {
+        try
+        {
+            await AccountSupplierService.AddAsync(AccountSupplier);
+
+            NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Success",
+                    Detail = "Account Supplier has been created.",
+                    Duration = 4000
+                });
+
+            Navigation.NavigateTo("/account-supplier");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex);
+        }
+    }
+
+    private void Back()
+    {
+        Navigation.NavigateTo("/account-supplier");
+    }
+}
