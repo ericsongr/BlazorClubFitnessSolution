@@ -19,161 +19,130 @@
     <DataAnnotationsValidator />
     <ValidationSummary class="alert alert-danger" />
 
-    <div class="form-group row mb-2">
-        <label for="accountName" class="col-sm-2 col-form-label">Account Name:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="accountName" class="form-label">Account Name:</label>
             <InputText id="accountName" @bind-Value="Account.AccountName" class="form-control" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="timezone" class="col-sm-2 col-form-label">Timezone:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="timezone" class="form-label">Timezone:</label>
             <InputText id="timezone" @bind-Value="Account.Timezone" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="isActive" class="col-sm-2 col-form-label">Is Active:</label>
-        <div class="col-sm-10">
-            <InputCheckbox id="isActive" @bind-Value="Account.IsActive" class="form-check-input" />
+    <div class="row mb-2">
+        <div class="col-md-6 mt-4">
+            <label for="isActive" class="form-label">Active:</label>
+            <RadzenSwitch @bind-Value="Account.IsActive" Style="margin-left: 10px;" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="street" class="col-sm-2 col-form-label">Street:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="street" class="form-label">Street:</label>
             <InputText id="street" @bind-Value="Account.Street" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="subUrb" class="col-sm-2 col-form-label">SubUrb:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="subUrb" class="form-label">SubUrb:</label>
             <InputText id="subUrb" @bind-Value="Account.SubUrb" class="form-control" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="state" class="col-sm-2 col-form-label">State:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="state" class="form-label">State:</label>
             <InputText id="state" @bind-Value="Account.State" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="postalCode" class="col-sm-2 col-form-label">Postal Code:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="postalCode" class="form-label">Postal Code:</label>
             <InputText id="postalCode" @bind-Value="Account.PostalCode" class="form-control" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="email" class="col-sm-2 col-form-label">Email:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="email" class="form-label">Email:</label>
             <InputText id="email" @bind-Value="Account.Email" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="phoneNumber" class="col-sm-2 col-form-label">Phone Number:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="phoneNumber" class="form-label">Phone Number:</label>
             <InputText id="phoneNumber" @bind-Value="Account.PhoneNumber" class="form-control" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="websiteUrl" class="col-sm-2 col-form-label">Website URL:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="websiteUrl" class="form-label">Website URL:</label>
             <InputText id="websiteUrl" @bind-Value="Account.WebsiteUrl" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="facebookUrl" class="col-sm-2 col-form-label">Facebook URL:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="facebookUrl" class="form-label">Facebook URL:</label>
             <InputText id="facebookUrl" @bind-Value="Account.FacebookUrl" class="form-control" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="addressLine1" class="col-sm-2 col-form-label">Address Line 1:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="addressLine1" class="form-label">Address Line 1:</label>
             <InputText id="addressLine1" @bind-Value="Account.AddressLine1" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="city" class="col-sm-2 col-form-label">City:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="city" class="form-label">City:</label>
             <InputText id="city" @bind-Value="Account.City" class="form-control" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="dialingCode" class="col-sm-2 col-form-label">Dialing Code:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="dialingCode" class="form-label">Dialing Code:</label>
             <InputText id="dialingCode" @bind-Value="Account.DialingCode" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="businessOwnerName" class="col-sm-2 col-form-label">Business Owner Name:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="businessOwnerName" class="form-label">Business Owner Name:</label>
             <InputText id="businessOwnerName" @bind-Value="Account.BusinessOwnerName" class="form-control" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="businessOwnerPhoneNumber" class="col-sm-2 col-form-label">Business Owner Phone Number:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="businessOwnerPhoneNumber" class="form-label">Business Owner Phone Number:</label>
             <InputText id="businessOwnerPhoneNumber" @bind-Value="Account.BusinessOwnerPhoneNumber" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="businessOwnerEmail" class="col-sm-2 col-form-label">Business Owner Email:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="businessOwnerEmail" class="form-label">Business Owner Email:</label>
             <InputText id="businessOwnerEmail" @bind-Value="Account.BusinessOwnerEmail" class="form-control" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="geoCoordinates" class="col-sm-2 col-form-label">Geo Coordinates:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="geoCoordinates" class="form-label">Geo Coordinates:</label>
             <InputText id="geoCoordinates" @bind-Value="Account.GeoCoordinates" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="clubfitFeeFailedPaymentCount" class="col-sm-2 col-form-label">Clubfit Fee Failed Payment Count:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="clubfitFeeFailedPaymentCount" class="form-label">Clubfit Fee Failed Payment Count:</label>
             <InputNumber id="clubfitFeeFailedPaymentCount" @bind-Value="Account.ClubfitFeeFailedPaymentCount" class="form-control" />
         </div>
-    </div>
-
-    <div class="form-group row mb-2">
-        <label for="paymentIssueSuspensionDate" class="col-sm-2 col-form-label">Payment Issue Suspension Date:</label>
-        <div class="col-sm-10">
+        <div class="col-md-6">
+            <label for="paymentIssueSuspensionDate" class="form-label">Payment Issue Suspension Date:</label>
             <InputDate id="paymentIssueSuspensionDate" @bind-Value="Account.PaymentIssueSuspensionDate" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-2">
-        <label for="companyLegalName" class="col-sm-2 col-form-label">Company Legal Name:</label>
-        <div class="col-sm-10">
+    <div class="row mb-2">
+        <div class="col-md-6">
+            <label for="companyLegalName" class="form-label">Company Legal Name:</label>
             <InputText id="companyLegalName" @bind-Value="Account.CompanyLegalName" class="form-control" />
         </div>
     </div>
 
-    <div class="form-group row mb-5">
-        <div class="col-sm-10 offset-sm-2">
+    <div class="form-group row mt-5">
+        <div class="col-sm-10">
             <RadzenButton ButtonType="ButtonType.Button" Click="AddNewAccount" class="btn btn-primary">Create</RadzenButton>
             <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2">Back</RadzenButton>
         </div>
     </div>
 </EditForm>
-
 
 @code {
     public Account Account { get; set; } = new Account();
@@ -181,7 +150,6 @@
     private async Task AddNewAccount()
     {
         await AccountService.AddAsync(Account); // Call the method from IAccountService
-
 
         NotificationService.Notify(new NotificationMessage
             {

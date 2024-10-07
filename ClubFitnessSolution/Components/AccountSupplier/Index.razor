@@ -1,0 +1,103 @@
+﻿@page "/account-supplier"
+@using ClubFitnessServices.Interfaces
+@using ClubFitnessDomain
+
+@inject NavigationManager Navigation
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+@inject IAccountSupplierService AccountSupplierService
+
+@rendermode InteractiveServer
+
+<RadzenBreadCrumb>
+    <RadzenBreadCrumbItem Path="/" Text="Home" />
+    <RadzenBreadCrumbItem Path="/account-supplier" Text="Account Supplier List" />
+</RadzenBreadCrumb>
+
+<div class="p-lg-1 p-md-3 p-sm-2">
+    <h1 class="fw-bold">Supplier List</h1>
+
+    <RadzenButton Click="@(args => Navigation.NavigateTo("/add-account-supplier"))"
+                  Style="margin-top: 20px; margin-bottom: 10px;">Create New Supplier</RadzenButton>
+
+    <div class="card p-1 shadow">
+        @if (accountSuppliers == null)
+        {
+            <h1 class="alert alert-danger">No suppliers found!</h1>
+        }
+        else
+        {
+            <RadzenDataGrid AllowFiltering="true"
+                            AllowColumnResize="true"
+                            AllowAlternatingRows="false"
+                            AllowSorting="true"
+                            PageSize="20"
+                            AllowPaging="true"
+                            PagerHorizontalAlign="HorizontalAlign.Left"
+                            ShowPagingSummary="true"
+                            Data="@accountSuppliers"
+                            TItem="AccountSupplier"
+                            LogicalFilterOperator="LogicalFilterOperator.Or"
+                            SelectionMode="DataGridSelectionMode.Single">
+
+                <Columns>
+                    <RadzenDataGridColumn TItem="AccountSupplier" Property="SupplierName" Filterable="true" Title="Supplier Name" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="AccountSupplier" Property="SupplierNumber" Filterable="true" Title="Supplier Number" />
+                    <RadzenDataGridColumn TItem="AccountSupplier" Property="SupplierReference" Filterable="true" Title="Supplier Reference" />
+                    <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactFirstName" Filterable="true" Title="First Name" />
+                    <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactLastName" Filterable="true" Title="Last Name" />
+                    <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactEmail" Filterable="true" Title="Email" />
+                    <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactPhone" Filterable="true" Title="Phone" />
+                    <RadzenDataGridColumn TItem="AccountSupplier" Title="Actions" Filterable="false">
+                        <Template Context="data">
+                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/edit-account-supplier/{data.AccountSupplierId}"))">Edit</RadzenButton>
+                            <RadzenButton Click="@(args => Delete(data))">Delete</RadzenButton>
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
+        }
+    </div>
+</div>
+
+@code {
+    IEnumerable<AccountSupplier> accountSuppliers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accountSuppliers = await GetAllAccountSuppliersForGrid();
+    }
+
+    private async Task<IEnumerable<AccountSupplier>> GetAllAccountSuppliersForGrid()
+    {
+        return await AccountSupplierService.GetAllAsync();
+    }
+
+    private async void Delete(AccountSupplier accountSupplier)
+    {
+        bool? confirmed = await DialogService.Confirm("Are you sure you want to delete this account supplier?", "Delete Account Supplier");
+
+        if (confirmed == true)
+        {
+            await AccountSupplierService.DeleteAsync(accountSupplier.AccountSupplierId);
+
+            NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Success",
+                    Detail = "Account Supplier has been deleted.",
+                    Duration = 4000
+                });
+
+            await RefreshAccountSuppliers();
+        }
+    }
+
+    private async Task RefreshAccountSuppliers()
+    {
+        accountSuppliers = await GetAllAccountSuppliersForGrid();
+        StateHasChanged(); // notify Blazor UI updates
+    }
+
+}
