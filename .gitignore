@@ -1,0 +1,54 @@
+# .NET specific
+/ClubFitnessSolution/bin
+bin/
+obj/
+*.user
+*.suo
+*.sln.docstates
+*.ide
+
+# Visual Studio specific
+.vs/
+.vscode/
+*.vs
+*.userprefs
+
+# Rider specific
+.idea/
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Oo]ut/
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+packages/
+*.symbols.nupkg
+
+# Publish files
+publish/
+wwwroot/
+
+# Logs
+*.log
+logs/
+log/
+
+# User secrets
+secrets.json
+
+# Visual Studio Code specific
+.history/
+*.code-workspace
+
+# Temporary files
+*.tmp
+*.temp
+
+# Configuration files
+appsettings.Development.json
+appsettings.*.json

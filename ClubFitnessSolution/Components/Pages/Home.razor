@@ -1,0 +1,24 @@
+﻿@page "/"
+
+@rendermode InteractiveServer
+
+<PageTitle>Home</PageTitle>
+
+<h1>Hello, world! @name</h1>
+
+Welcome to your new app.
+
+<RadzenButton Click="AddCar">Add Car</RadzenButton>
+
+@code
+{
+    string name = "gonzaga";
+
+    private void AddCar()
+    {
+        if (name == "gonzaga")
+            name = "ramos";
+        else
+            name = "gonzaga";
+    }
+}
