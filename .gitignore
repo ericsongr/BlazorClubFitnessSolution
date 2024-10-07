@@ -31,7 +31,6 @@ packages/
 
 # Publish files
 publish/
-wwwroot/
 
 # Logs
 *.log
