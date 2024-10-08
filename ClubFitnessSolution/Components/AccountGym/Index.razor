@@ -19,7 +19,8 @@
     
     <RadzenButton 
         Click="@(args => Navigation.NavigateTo("/add-account"))"
-        Style="margin-top: 20px; margin-bottom: 10px;">Create New Account</RadzenButton>
+        Style="margin-top: 20px; margin-bottom: 10px;"
+                  ButtonStyle="ButtonStyle.Success">Create New Account</RadzenButton>
 
     <div class="card p-1 shadow">
         @if (accounts == null)
@@ -51,8 +52,8 @@
                     <RadzenDataGridColumn TItem="Account" Property="City" Filterable="true" Title="City" />
                     <RadzenDataGridColumn TItem="Account" Title="Actions" Filterable="false">
                         <Template Context="data">
-                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/edit-account/{data.AccountId}"))">Edit</RadzenButton>
-                            <RadzenButton Click="@(args => Delete(data))">Delete</RadzenButton>
+                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/edit-account/{data.AccountId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
+                            <RadzenButton Click="@(args => Delete(data))" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
                         </Template>
                     </RadzenDataGridColumn>
                 </Columns>

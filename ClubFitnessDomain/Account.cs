@@ -29,5 +29,6 @@ namespace ClubFitnessDomain
         public string? CompanyLegalName { get; set; }
 
         public virtual ICollection<AccountSupplier> AccountSuppliers { get; set; }
+        public virtual ICollection<AccountProductCategory> AccountProductCategories { get; set; }
     }
 }

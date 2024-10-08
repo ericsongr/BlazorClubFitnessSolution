@@ -1,16 +1,17 @@
 using ClubFitnessDomain;
 using ClubFitnessSolution.Components;
 using ClubFitnessSolution.Components.Account;
-using ClubFitnessDomain;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using ClubFitnessInfrastructure;
-using ClubFitnessInfrastructure.Interfaces;
-using ClubFitnessInfrastructure.Repositories;
 using System.Reflection;
+using ClubFitnessDomain.Validators;
 using ClubFitnessSolution;
+using ClubFitnessSolution.MappingProfiles;
+using FluentValidation;
+using FluentValidation.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -44,6 +45,10 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
+//AutoMappers
+builder.Services.AddAutoMapper(typeof(AdministratorProfile));
+
+
 // Register the generic repository
 //builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
@@ -60,8 +65,9 @@ builder.Services.AddAllServicesFromAssemblies(clubFitnessServices);
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
-
-
+// Register automapper validators
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<AccountProductCategoryDtoValidator>();
 
 var app = builder.Build();
 

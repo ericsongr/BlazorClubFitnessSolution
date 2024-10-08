@@ -17,7 +17,7 @@
     <RadzenBreadCrumbItem Text="Edit Supplier" />
 </RadzenBreadCrumb>
 
-<EditForm Model="@AccountSupplier" class="container m-5">
+<EditForm Model="@AccountSupplier" class="m-5">
     <DataAnnotationsValidator />
     <ValidationSummary class="alert alert-danger" />
 
@@ -120,8 +120,8 @@
 
     <div class="form-group row mb-5">
         <div class="col-sm-10">
-            <RadzenButton ButtonType="ButtonType.Submit" Click="Save" class="btn btn-success">Save</RadzenButton>
-            <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2">Back</RadzenButton>
+            <RadzenButton ButtonType="ButtonType.Submit" Click="Save" class="btn btn-success" ButtonStyle="ButtonStyle.Success">Save</RadzenButton>
+            <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2" ButtonStyle="ButtonStyle.Info">Back</RadzenButton>
         </div>
     </div>
 </EditForm>
