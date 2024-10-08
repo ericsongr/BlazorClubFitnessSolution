@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ClubFitnessCommon\ClubFitnessCommon.csproj" />
     <ProjectReference Include="..\ClubFitnessDomain\ClubFitnessDomain.csproj" />
     <ProjectReference Include="..\ClubFitnessInfrastructure\ClubFitnessInfrastructure.csproj" />
   </ItemGroup>

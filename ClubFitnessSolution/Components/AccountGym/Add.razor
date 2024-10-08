@@ -15,7 +15,7 @@
     <RadzenBreadCrumbItem Text="Create New Account" />
 </RadzenBreadCrumb>
 
-<EditForm Model="@Account" class="container m-5">
+<EditForm Model="@Account" class="m-5">
     <DataAnnotationsValidator />
     <ValidationSummary class="alert alert-danger" />
 
@@ -138,8 +138,8 @@
 
     <div class="form-group row mt-5">
         <div class="col-sm-10">
-            <RadzenButton ButtonType="ButtonType.Button" Click="AddNewAccount" class="btn btn-primary">Create</RadzenButton>
-            <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2">Back</RadzenButton>
+            <RadzenButton ButtonType="ButtonType.Button" Click="AddNewAccount" class="btn btn-primary"ButtonStyle="ButtonStyle.Success">Create</RadzenButton>
+            <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2" ButtonStyle="ButtonStyle.Info">Back</RadzenButton>
         </div>
     </div>
 </EditForm>

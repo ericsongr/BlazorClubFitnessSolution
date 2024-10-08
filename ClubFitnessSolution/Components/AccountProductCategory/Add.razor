@@ -1,0 +1,106 @@
+﻿@page "/account-product-category/add"
+
+@using ClubFitnessDomain
+@using ClubFitnessDomain.Dtos
+@using ClubFitnessServices.Interfaces
+@using Microsoft.AspNetCore.Components
+@using Blazored.FluentValidation
+
+@inject IAccountProductCategoryService AccountProductCategoryService
+@inject IAccountService AccountService
+@inject NotificationService NotificationService
+@inject NavigationManager Navigation
+
+@rendermode InteractiveServer
+
+<RadzenBreadCrumb>
+    <RadzenBreadCrumbItem Path="/" Text="Home" />
+    <RadzenBreadCrumbItem Path="/account-product-category" Text="Product Category List" />
+    <RadzenBreadCrumbItem Text="Create New Product Category" />
+</RadzenBreadCrumb>
+
+<EditForm Model="@AccountProductCategory" OnValidSubmit="AddProductCategory" class="m-5">
+    <FluentValidationValidator/>
+    @* 
+    <FluentValidationValidator @ref="_fluentValidationValidator" />
+    <ValidationSummary /> *@
+
+    <div class="mb-3">
+        <label for="accountId">Account:</label>
+        <RadzenDropDown @bind-Value="AccountProductCategory.AccountId" Data="@accounts"
+                        TextProperty="AccountName" ValueProperty="AccountId" AllowClear="true"
+                        Placeholder="Select Account" class="form-control" />
+        <ValidationMessage For="@(() => AccountProductCategory.AccountId)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="productCategoryName">Product Category Name:</label>
+        <InputText id="productCategoryName" @bind-Value="AccountProductCategory.ProductCategoryName" class="form-control" />
+        <ValidationMessage For="@(() => AccountProductCategory.ProductCategoryName)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="shortDescription">Short Description:</label>
+        <InputText id="shortDescription" @bind-Value="AccountProductCategory.ShortDescription" class="form-control" />
+        <ValidationMessage For="@(() => AccountProductCategory.ShortDescription)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="isActive">Is Active:</label>
+        <RadzenSwitch @bind-Value="AccountProductCategory.IsActive" />
+    </div>
+
+    <div class="mb-3">
+        <label for="isPosCategory">Is POS Category:</label>
+        <RadzenSwitch @bind-Value="AccountProductCategory.IsPosCategory" />
+    </div>
+
+    <div class="mb-3">
+        <label for="displayImagePath">Display Image Path:</label>
+        <InputFile OnChange="@UploadImage" />
+    </div>
+
+    <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary"
+                  ButtonStyle="ButtonStyle.Success">Add Product Category</RadzenButton>
+    <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2"
+                  ButtonStyle="ButtonStyle.Info">Back</RadzenButton>
+</EditForm>
+
+@code {
+    private AccountProductCategoryDto AccountProductCategory = new AccountProductCategoryDto();
+    private IEnumerable<Account> accounts;
+    // private FluentValidationValidator? _fluentValidationValidator;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await AccountService.GetAllAsync();
+    }
+
+    private async Task AddProductCategory()
+    {
+        try
+        {
+            // if (await _fluentValidationValidator!.ValidateAsync())
+            // {
+                await AccountProductCategoryService.AddAsync(AccountProductCategory);
+                NotificationService.Notify(NotificationSeverity.Success, "Success", "Product category added successfully.");
+                Navigation.NavigateTo("/account-product-category");
+            // }
+           
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void UploadImage(InputFileChangeEventArgs e)
+    {
+        // Implement logic to upload image
+    }
+    
+    private void Back()
+    {
+        Navigation.NavigateTo("/account-product-category");
+    }
+}

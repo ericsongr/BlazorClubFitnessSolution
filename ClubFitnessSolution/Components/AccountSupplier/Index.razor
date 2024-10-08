@@ -11,14 +11,15 @@
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
-    <RadzenBreadCrumbItem Path="/account-supplier" Text="Account Supplier List" />
+    <RadzenBreadCrumbItem Path="/account-supplier" Text="Supplier List" />
 </RadzenBreadCrumb>
 
 <div class="p-lg-1 p-md-3 p-sm-2">
     <h1 class="fw-bold">Supplier List</h1>
 
     <RadzenButton Click="@(args => Navigation.NavigateTo("/add-account-supplier"))"
-                  Style="margin-top: 20px; margin-bottom: 10px;">Create New Supplier</RadzenButton>
+                  Style="margin-top: 20px; margin-bottom: 10px;"
+                  ButtonStyle="ButtonStyle.Success">Create New Supplier</RadzenButton>
 
     <div class="card p-1 shadow">
         @if (accountSuppliers == null)
@@ -50,8 +51,8 @@
                     <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactPhone" Filterable="true" Title="Phone" />
                     <RadzenDataGridColumn TItem="AccountSupplier" Title="Actions" Filterable="false">
                         <Template Context="data">
-                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/edit-account-supplier/{data.AccountSupplierId}"))">Edit</RadzenButton>
-                            <RadzenButton Click="@(args => Delete(data))">Delete</RadzenButton>
+                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/edit-account-supplier/{data.AccountSupplierId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
+                            <RadzenButton Click="@(args => Delete(data))" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
                         </Template>
                     </RadzenDataGridColumn>
                 </Columns>

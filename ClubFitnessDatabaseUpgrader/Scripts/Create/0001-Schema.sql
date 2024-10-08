@@ -117,7 +117,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[AccountProductCategory](
-	[AccountProductCategoryId] [bigint] IDENTITY(1,1) NOT NULL,
+	[AccountProductCategoryId] [int] IDENTITY(1,1) NOT NULL,
 	[AccountId] [int] NULL,
 	[ProductCategoryName] [nvarchar](40) NOT NULL,
 	[ShortDescription] [nvarchar](255) NULL,
@@ -165,9 +165,9 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[AccountProductSubCategory](
-	[AccountProductSubCategoryId] [bigint] IDENTITY(1,1) NOT NULL,
+	[AccountProductSubCategoryId] [int] IDENTITY(1,1) NOT NULL,
 	[AccountId] [int] NULL,
-	[AccountProductCategoryId] [bigint] NOT NULL,
+	[AccountProductCategoryId] [int] NOT NULL,
 	[ProductSubCategoryName] [nvarchar](40) NOT NULL,
 	[ShortDescription] [nvarchar](255) NULL,
 	[CreatedUtcDateTime] [datetime] NOT NULL,

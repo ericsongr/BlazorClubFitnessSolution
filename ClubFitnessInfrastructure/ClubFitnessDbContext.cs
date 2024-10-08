@@ -12,7 +12,8 @@ namespace ClubFitnessInfrastructure
         }
 
         public DbSet<Account> Accounts { get; set; }
-        public DbSet<AccountSupplier> AccountSupplier { get; set; } // Added AccountSupplier DbSet
+        public DbSet<AccountSupplier> AccountSupplier { get; set; } 
+        public DbSet<AccountProductCategory> AccountProductCategory { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
