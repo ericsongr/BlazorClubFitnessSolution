@@ -30,5 +30,7 @@ namespace ClubFitnessDomain
 
         // Navigation property
         public virtual Account Account { get; set; }
+
+        public virtual ICollection<AccountProduct> AccountProducts { get; set; }
     }
 }

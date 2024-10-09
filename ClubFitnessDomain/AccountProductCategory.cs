@@ -16,5 +16,7 @@
         public bool IsPosCategory { get; set; } = true;
 
         public virtual Account Account { get; set; }
+
+        public virtual ICollection<AccountProduct> AccountProducts { get; set; }
     }
 }

@@ -1,0 +1,123 @@
+﻿@page "/account-product/add"
+
+@using ClubFitnessServices.Interfaces
+@using ClubFitnessDomain.Dtos
+@using Microsoft.AspNetCore.Components
+@using Blazored.FluentValidation
+@using ClubFitnessDomain
+@using Radzen
+
+@inject IAccountProductService AccountProductService
+@inject IAccountService AccountService
+@inject IAccountSupplierService AccountSupplierService
+@inject IAccountProductCategoryService AccountProductCategoryService
+@inject IAccountProductSubCategoryService AccountProductSubCategoryService
+@inject NotificationService NotificationService
+@inject NavigationManager Navigation
+
+@rendermode InteractiveServer
+
+
+<RadzenBreadCrumb>
+    <RadzenBreadCrumbItem Path="/" Text="Home" />
+    <RadzenBreadCrumbItem Path="/account-product" Text="Product List" />
+    <RadzenBreadCrumbItem Text="Create New Account Product" />
+</RadzenBreadCrumb>
+
+<EditForm Model="@AccountProduct" OnValidSubmit="AddAccountProduct">
+    <FluentValidationValidator />
+
+    <div class="mb-3">
+        <label for="accountId">Account:</label>
+        <RadzenDropDown @bind-Value="AccountProduct.AccountId" Data="@accounts"
+                        TextProperty="AccountName" ValueProperty="AccountId" AllowClear="true"
+                        Placeholder="Select Account" class="form-control" />
+        <ValidationMessage For="@(() => AccountProduct.AccountId)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="accountSupplierId">Supplier:</label>
+        <RadzenDropDown @bind-Value="AccountProduct.AccountSupplierId" Data="@suppliers"
+                        TextProperty="SupplierName" ValueProperty="AccountSupplierId" AllowClear="true"
+                        Placeholder="Select Supplier" class="form-control" />
+        <ValidationMessage For="@(() => AccountProduct.AccountSupplierId)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="accountProductCategoryId">Product Category:</label>
+        <RadzenDropDown @bind-Value="AccountProduct.AccountProductCategoryId" Data="@productCategories"
+                        TextProperty="ProductCategoryName" ValueProperty="AccountProductCategoryId" AllowClear="true"
+                        Placeholder="Select Product Category" class="form-control" />
+        <ValidationMessage For="@(() => AccountProduct.AccountProductCategoryId)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="accountProductSubCategoryId">Product Sub-Category:</label>
+        <RadzenDropDown @bind-Value="AccountProduct.AccountProductSubCategoryId" Data="@productSubCategories"
+                        TextProperty="ProductSubCategoryName" ValueProperty="AccountProductSubCategoryId" AllowClear="true"
+                        Placeholder="Select Product Sub-Category" class="form-control" />
+        <ValidationMessage For="@(() => AccountProduct.AccountProductSubCategoryId)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="productName">Product Name:</label>
+        <InputText id="productName" @bind-Value="AccountProduct.ProductName" class="form-control" />
+        <ValidationMessage For="@(() => AccountProduct.ProductName)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="onHandQuantity">On Hand Quantity:</label>
+        <InputNumber id="onHandQuantity" @bind-Value="AccountProduct.OnHandQuantity" type="number" class="form-control" />
+        <ValidationMessage For="@(() => AccountProduct.OnHandQuantity)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="departmentType">Department Type:</label>
+        <InputNumber id="departmentType" @bind-Value="AccountProduct.DepartmentType" class="form-control" />
+        <ValidationMessage For="@(() => AccountProduct.DepartmentType)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="isActive">Is Active:</label>
+        <RadzenSwitch @bind-Value="AccountProduct.IsActive" />
+    </div>
+
+    <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary" ButtonStyle="ButtonStyle.Success">Add Product</RadzenButton>
+    <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2"
+                  ButtonStyle="ButtonStyle.Info">Back</RadzenButton>
+</EditForm>
+
+@code {
+    private AccountProduct AccountProduct = new AccountProduct();
+    private IEnumerable<Account> accounts;
+    private IEnumerable<AccountSupplier> suppliers;
+    private IEnumerable<AccountProductCategory> productCategories;
+    private IEnumerable<AccountProductSubCategoryDto> productSubCategories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await AccountService.GetAllAsync();
+        suppliers = await AccountSupplierService.GetAllAsync();
+        productCategories = await AccountProductCategoryService.GetAllAsync();
+        productSubCategories = await AccountProductSubCategoryService.GetAllAsync();
+    }
+
+    private async Task AddAccountProduct()
+    {
+        try
+        {
+            await AccountProductService.AddAsync(AccountProduct);
+            NotificationService.Notify(NotificationSeverity.Success, "Success", "Product added successfully.");
+            Navigation.NavigateTo("/account-product");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void Back()
+    {
+        Navigation.NavigateTo("/account-product");
+    }
+}

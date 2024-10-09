@@ -1,0 +1,111 @@
+﻿@page "/account-product"
+@using ClubFitnessServices.Interfaces
+@using ClubFitnessDomain
+
+@inject NavigationManager Navigation
+@inject DialogService DialogService
+@inject NotificationService NotificationService
+@inject IAccountProductService AccountProductService
+
+@rendermode InteractiveServer
+
+<RadzenBreadCrumb>
+    <RadzenBreadCrumbItem Path="/" Text="Home" />
+    <RadzenBreadCrumbItem Path="/account-product" Text="Product List" />
+</RadzenBreadCrumb>
+
+<div class="p-lg-1 p-md-3 p-sm-2">
+    <h1 class="fw-bold">Product List</h1>
+
+    <RadzenButton Click="@(args => Navigation.NavigateTo("/account-product/add"))"
+                  Style="margin-top: 20px; margin-bottom: 10px;"
+                  ButtonStyle="ButtonStyle.Success">Create New Product</RadzenButton>
+
+    <div class="card p-1 shadow">
+        @if (accountProducts == null)
+        {
+            <h1 class="alert alert-danger">No products found!</h1>
+        }
+        else
+        {
+            <RadzenDataGrid AllowFiltering="true"
+                            AllowColumnResize="true"
+                            AllowAlternatingRows="false"
+                            AllowSorting="true"
+                            PageSize="20"
+                            AllowPaging="true"
+                            PagerHorizontalAlign="HorizontalAlign.Left"
+                            ShowPagingSummary="true"
+                            Data="@accountProducts"
+                            TItem="AccountProduct"
+                            LogicalFilterOperator="LogicalFilterOperator.Or"
+                            SelectionMode="DataGridSelectionMode.Single">
+
+                <Columns>
+                    <RadzenDataGridColumn TItem="AccountProduct" Property="ProductName" Filterable="true" Title="Product Name" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="AccountProduct" Property="DepartmentType" Filterable="true" Title="Department Type" />
+                    <RadzenDataGridColumn TItem="AccountProduct" Property="OnHandQuantity" Filterable="true" Title="On Hand Quantity" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="AccountProduct" Title="Is Active" Filterable="false">
+                        <Template Context="data">
+                            @if (data.IsActive)
+                            {
+                                <span>Yes</span>
+                            }
+                            else
+                            {
+                                <span>No</span>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AccountProduct" Title="Actions" Filterable="false">
+                        <Template Context="data">
+                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/account-product/edit/{data.AccountProductId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
+                            <RadzenButton Click="@(args => Delete(data))" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
+                        </Template>
+                    </RadzenDataGridColumn>
+                </Columns>
+            </RadzenDataGrid>
+
+        }
+    </div>
+</div>
+
+@code {
+    IEnumerable<ClubFitnessDomain.AccountProduct> accountProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accountProducts = await GetAllAccountProductsForGrid();
+    }
+
+    private async Task<IEnumerable<ClubFitnessDomain.AccountProduct>> GetAllAccountProductsForGrid()
+    {
+        return await AccountProductService.GetAllAsync();
+    }
+
+    private async void Delete(AccountProduct accountProduct)
+    {
+        bool? confirmed = await DialogService.Confirm("Are you sure you want to delete this product?", "Delete Product");
+
+        if (confirmed == true)
+        {
+            await AccountProductService.DeleteAsync(accountProduct.AccountProductId);
+
+            NotificationService.Notify(new NotificationMessage
+                {
+                    Severity = NotificationSeverity.Success,
+                    Summary = "Success",
+                    Detail = "Product has been deleted.",
+                    Duration = 4000
+                });
+
+            await RefreshProducts();
+        }
+    }
+
+    private async Task RefreshProducts()
+    {
+        accountProducts = await GetAllAccountProductsForGrid();
+        StateHasChanged(); // notify Blazor UI updates
+    }
+}

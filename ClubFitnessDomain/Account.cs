@@ -30,5 +30,6 @@ namespace ClubFitnessDomain
 
         public virtual ICollection<AccountSupplier> AccountSuppliers { get; set; }
         public virtual ICollection<AccountProductCategory> AccountProductCategories { get; set; }
+        public virtual ICollection<AccountProduct> AccountProducts { get; set; }
     }
 }
