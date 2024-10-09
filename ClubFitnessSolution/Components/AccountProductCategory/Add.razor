@@ -19,7 +19,7 @@
     <RadzenBreadCrumbItem Text="Create New Product Category" />
 </RadzenBreadCrumb>
 
-<EditForm Model="@AccountProductCategory" OnValidSubmit="AddProductCategory" class="m-5">
+<EditForm Model="@AccountProductCategory" OnValidSubmit="AddProductCategory" class="mt-5">
     <FluentValidationValidator/>
     @* 
     <FluentValidationValidator @ref="_fluentValidationValidator" />
@@ -82,7 +82,7 @@
         {
             // if (await _fluentValidationValidator!.ValidateAsync())
             // {
-                await AccountProductCategoryService.AddAsync(AccountProductCategory);
+            await AccountProductCategoryService.AddAsync(AccountProductCategory);
                 NotificationService.Notify(NotificationSeverity.Success, "Success", "Product category added successfully.");
                 Navigation.NavigateTo("/account-product-category");
             // }

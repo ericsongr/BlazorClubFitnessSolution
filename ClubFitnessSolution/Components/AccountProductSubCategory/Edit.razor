@@ -1,0 +1,88 @@
+﻿@page "/account-product-subcategory/edit/{id:int}"
+
+@using ClubFitnessDomain.Dtos
+@using ClubFitnessServices.Interfaces
+@using ClubFitnessDomain
+@using Blazored.FluentValidation
+
+@inject IAccountProductSubCategoryService AccountProductSubCategoryService
+@inject IAccountService AccountService
+@inject IAccountProductCategoryService AccountProductCategoryService
+@inject NotificationService NotificationService
+@inject NavigationManager Navigation
+
+@rendermode InteractiveServer
+
+<EditForm Model="@AccountProductSubCategory" OnValidSubmit="UpdateAccountProductSubCategory">
+    <FluentValidationValidator />
+
+    <div class="mb-3">
+        <label for="accountId">Account:</label>
+        <RadzenDropDown @bind-Value="AccountProductSubCategory.AccountId" Data="@accounts"
+                        TextProperty="AccountName" ValueProperty="AccountId" AllowClear="true"
+                        Placeholder="Select Account" class="form-control" />
+        <ValidationMessage For="@(() => AccountProductSubCategory.AccountId)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="accountProductCategoryId">Product Category:</label>
+        <RadzenDropDown @bind-Value="AccountProductSubCategory.AccountProductCategoryId" Data="@productCategories"
+                        TextProperty="ProductCategoryName" ValueProperty="AccountProductCategoryId" AllowClear="true"
+                        Placeholder="Select Product Category" class="form-control" />
+        <ValidationMessage For="@(() => AccountProductSubCategory.AccountProductCategoryId)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="productSubCategoryName">Product Sub-Category Name:</label>
+        <InputText id="productSubCategoryName" @bind-Value="AccountProductSubCategory.ProductSubCategoryName" class="form-control" />
+        <ValidationMessage For="@(() => AccountProductSubCategory.ProductSubCategoryName)" />
+    </div>
+
+    <div class="mb-3">
+        <label for="shortDescription">Short Description:</label>
+        <InputText id="shortDescription" @bind-Value="AccountProductSubCategory.ShortDescription" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label for="isActive">Is Active:</label>
+        <RadzenSwitch @bind-Value="AccountProductSubCategory.IsActive" />
+    </div>
+
+    <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary" ButtonStyle="ButtonStyle.Success">Update Product Sub-Category</RadzenButton>
+    <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2"
+                  ButtonStyle="ButtonStyle.Info">Back</RadzenButton>
+</EditForm>
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private AccountProductSubCategoryDto AccountProductSubCategory = new AccountProductSubCategoryDto();
+    private IEnumerable<Account> accounts;
+    private IEnumerable<AccountProductCategory> productCategories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await AccountService.GetAllAsync();
+        productCategories = await AccountProductCategoryService.GetAllAsync();
+        AccountProductSubCategory = await AccountProductSubCategoryService.GetByIdAsync(id);
+    }
+
+    private async Task UpdateAccountProductSubCategory()
+    {
+        try
+        {
+            await AccountProductSubCategoryService.UpdateAsync(AccountProductSubCategory);
+            NotificationService.Notify(NotificationSeverity.Success, "Success", "Product Sub-Category updated successfully.");
+            Navigation.NavigateTo("/account-product-subcategory");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void Back()
+    {
+        Navigation.NavigateTo("/account-product-subcategory");
+    }
+}
