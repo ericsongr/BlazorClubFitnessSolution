@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ClubFitnessDomain;
 using ClubFitnessDomain.Dtos;
+using AccountProductSubCategory = ClubFitnessDomain.AccountProductSubCategory;
 
 namespace ClubFitnessSolution.MappingProfiles
 {
@@ -9,8 +10,9 @@ namespace ClubFitnessSolution.MappingProfiles
         public AdministratorProfile()
         {
             CreateMap<Account, AccountDto>();
-            CreateMap<AccountProductCategoryDto, AccountProductCategory>();
-            CreateMap<AccountProductCategory, AccountProductCategoryDto>();
+            CreateMap<AccountProductCategoryDto, AccountProductCategory>().ReverseMap();
+            CreateMap<AccountProductSubCategory, AccountProductSubCategoryDto>().ReverseMap();
+            //CreateMap<AccountProductCategory, AccountProductCategoryDto>();
         }
     }
 }

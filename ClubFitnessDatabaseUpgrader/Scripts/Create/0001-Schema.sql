@@ -166,7 +166,7 @@ GO
 
 CREATE TABLE [dbo].[AccountProductSubCategory](
 	[AccountProductSubCategoryId] [int] IDENTITY(1,1) NOT NULL,
-	[AccountId] [int] NULL,
+	[AccountId] [int] NOT NULL,
 	[AccountProductCategoryId] [int] NOT NULL,
 	[ProductSubCategoryName] [nvarchar](40) NOT NULL,
 	[ShortDescription] [nvarchar](255) NULL,
