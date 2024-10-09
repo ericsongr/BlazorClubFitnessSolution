@@ -9,10 +9,10 @@ namespace ClubFitnessSolution.MappingProfiles
     {
         public AdministratorProfile()
         {
-            CreateMap<Account, AccountDto>();
+            CreateMap<Account, AccountDto>().ReverseMap();
             CreateMap<AccountProductCategoryDto, AccountProductCategory>().ReverseMap();
             CreateMap<AccountProductSubCategory, AccountProductSubCategoryDto>().ReverseMap();
-            //CreateMap<AccountProductCategory, AccountProductCategoryDto>();
+            //CreateMap<ClubFitnessDomain.AccountProductDto, AccountProductDto>().ReverseMap();
         }
     }
 }

@@ -21,5 +21,7 @@
         // Navigation Properties
         public virtual AccountProductCategory AccountProductCategory { get; set; }
         public virtual Account? Account { get; set; }
+
+        public virtual ICollection<AccountProduct> AccountProducts { get; set; }
     }
 }
