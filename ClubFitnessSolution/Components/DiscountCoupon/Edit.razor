@@ -1,0 +1,115 @@
+﻿@page "/discount-coupon/edit/{id:int}"
+
+@using ClubFitnessDomain
+@using ClubFitnessServices.Interfaces
+@using Microsoft.AspNetCore.Components
+@using Blazored.FluentValidation
+@using Radzen
+
+@inject IDiscountCouponService DiscountCouponService
+@inject IAccountService AccountService
+@inject NotificationService NotificationService
+@inject NavigationManager Navigation
+
+@rendermode InteractiveServer
+
+<RadzenBreadCrumb>
+    <RadzenBreadCrumbItem Path="/" Text="Home" />
+    <RadzenBreadCrumbItem Path="/discount-coupon" Text="Discount Coupon List" />
+    <RadzenBreadCrumbItem Text="Edit Discount Coupon" />
+</RadzenBreadCrumb>
+
+<EditForm Model="@DiscountCoupon" OnValidSubmit="UpdateDiscountCoupon">
+    <FluentValidationValidator />
+
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <label for="couponCode">Coupon Code:</label>
+            <InputText id="couponCode" @bind-Value="DiscountCoupon.CouponCode" class="form-control" />
+            <ValidationMessage For="@(() => DiscountCoupon.CouponCode)" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="name">Coupon Name:</label>
+            <InputText id="name" @bind-Value="DiscountCoupon.Name" class="form-control" />
+            <ValidationMessage For="@(() => DiscountCoupon.Name)" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="discount">Discount:</label>
+            <InputNumber id="discount" @bind-Value="DiscountCoupon.Discount" class="form-control" />
+            <ValidationMessage For="@(() => DiscountCoupon.Discount)" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="discountType">Discount Type:</label>
+            <InputNumber id="discountType" @bind-Value="DiscountCoupon.DiscountType" class="form-control" />
+            <ValidationMessage For="@(() => DiscountCoupon.DiscountType)" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="minimumAmount">Minimum Amount:</label>
+            <InputNumber id="minimumAmount" @bind-Value="DiscountCoupon.MinimumAmount" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3 mt-4">
+            <label for="isActive">Is Active:</label>
+            <RadzenSwitch @bind-Value="DiscountCoupon.IsActive" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label for="expiryDate">Expiry Date:</label>
+            <InputDate id="expiryDate" @bind-Value="DiscountCoupon.ExpiryDate" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="accountId">Account:</label>
+            <RadzenDropDown @bind-Value="DiscountCoupon.AccountId" Data="@accounts"
+                            TextProperty="AccountName" ValueProperty="AccountId" AllowClear="true"
+                            Placeholder="Select Account" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="chargeType">Charge Type:</label>
+            <InputText id="chargeType" @bind-Value="DiscountCoupon.ChargeType" class="form-control" />
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="discountFor">Discount For:</label>
+            <InputNumber id="discountFor" @bind-Value="DiscountCoupon.DiscountFor" class="form-control" />
+            <ValidationMessage For="@(() => DiscountCoupon.DiscountFor)" />
+        </div>
+        <div class="col-md-4 mb-3 mt-4">
+            <label for="isCombineFees">Is Combine Fees:</label>
+            <RadzenSwitch @bind-Value="DiscountCoupon.IsCombineFees" />
+        </div>
+    </div>
+
+
+    <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary" ButtonStyle="ButtonStyle.Success">Save</RadzenButton>
+    <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2" ButtonStyle="ButtonStyle.Info">Back</RadzenButton>
+</EditForm>
+
+@code {
+    [Parameter] public int id { get; set; }
+    private DiscountCoupon DiscountCoupon = new DiscountCoupon();
+    private IEnumerable<Account> accounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await AccountService.GetAllAsync();
+        DiscountCoupon = await DiscountCouponService.GetByIdAsync(id);
+    }
+
+    private async Task UpdateDiscountCoupon()
+    {
+        try
+        {
+            await DiscountCouponService.UpdateAsync(DiscountCoupon);
+            NotificationService.Notify(NotificationSeverity.Success, "Success", "Discount Coupon updated successfully.");
+            Navigation.NavigateTo("/discount-coupon");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void Back()
+    {
+        Navigation.NavigateTo("/discount-coupon");
+    }
+}
