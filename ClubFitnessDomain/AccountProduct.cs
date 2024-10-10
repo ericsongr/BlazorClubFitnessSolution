@@ -60,31 +60,24 @@ namespace ClubFitnessDomain
 
         public decimal? SellIncTaxPrice { get; set; }
 
-        public bool? SellOnlineEnabled { get; set; }
+        public bool SellOnlineEnabled { get; set; }
 
-        [Required]
         public bool IsDeleted { get; set; }
 
-        [Required]
         public int DepartmentType { get; set; }
 
-        [Required]
         public bool IsActive { get; set; }
 
-        [Required]
         public bool IsCasualEntry { get; set; }
 
-        [Required]
         public bool IsPosItem { get; set; }
 
-        [Required]
         public bool IsStockTakeRequired { get; set; }
 
         public DateTime? DeletedDateUtc { get; set; }
 
         public string? DeletedBy { get; set; }
 
-        [Required]
         public bool GstRequired { get; set; }
 
         public DateTime? ExpiryDate { get; set; }
