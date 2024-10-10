@@ -311,7 +311,7 @@ SET QUOTED_IDENTIFIER ON
 GO
 
 CREATE TABLE [dbo].[DiscountCoupons](
-	[Id] [bigint] IDENTITY(1,1) NOT NULL,
+	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[Name] [nvarchar](100) NULL,
 	[CouponCode] [nvarchar](100) NULL,
 	[Discount] [decimal](18, 2) NOT NULL,
@@ -325,7 +325,7 @@ CREATE TABLE [dbo].[DiscountCoupons](
 	[ExpiryDate] [datetime] NULL,
 	[AccountId] [int] NOT NULL,
 	[ChargeType] [varchar](50) NULL,
-	[IsDeleted] [bit] NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
 	[DiscountFor] [smallint] NOT NULL,
 	[IsCombineFees] [bit] NOT NULL,
 	[AllocatedValueJson] [varchar](max) NULL,

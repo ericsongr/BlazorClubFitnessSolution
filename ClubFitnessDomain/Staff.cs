@@ -31,5 +31,8 @@
 
         // Navigation properties
         public virtual Account PreferredClubAccount { get; set; }
+
+        public ICollection<DiscountCoupon> StaffDiscountCoupons { get; set; }
+        public ICollection<DiscountCoupon> StaffUpdatedDiscountCoupons { get; set; }
     }
 }

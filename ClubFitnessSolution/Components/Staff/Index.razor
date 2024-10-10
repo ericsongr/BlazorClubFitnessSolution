@@ -44,7 +44,18 @@
                 <Columns>
                     <RadzenDataGridColumn TItem="Staff" Property="FirstName" Filterable="true" Title="First Name" />
                     <RadzenDataGridColumn TItem="Staff" Property="LastName" Filterable="true" Title="Last Name" />
-                    <RadzenDataGridColumn TItem="Staff" Property="IsActive" Filterable="true" Title="Is Active" />
+                    <RadzenDataGridColumn TItem="Staff" Title="Is Active" Filterable="false">
+                        <Template Context="data">
+                            @if (data.IsActive)
+                            {
+                                <span>Yes</span>
+                            }
+                            else
+                            {
+                                <span>No</span>
+                            }
+                        </Template>
+                    </RadzenDataGridColumn>
                     <RadzenDataGridColumn TItem="Staff" Title="Actions" Filterable="false">
                         <Template Context="data">
                             <RadzenButton Click="@(args => Navigation.NavigateTo($"/staff/edit/{data.StaffId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
