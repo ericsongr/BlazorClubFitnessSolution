@@ -391,7 +391,7 @@ CREATE TABLE [dbo].[AccountProduct](
 	[ProductName] [varchar](200) NULL,
 	[SellExTaxPrice] [money] NULL,
 	[SellIncTaxPrice] [money] NULL,
-	[SellOnlineEnabled] [bit] NULL,
+	[SellOnlineEnabled] [bit] NOT NULL,
 	[IsDeleted] [bit] NOT NULL,
 	[DepartmentType] [int] NOT NULL,
 	[IsActive] [bit] NOT NULL,

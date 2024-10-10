@@ -1,10 +1,11 @@
 ﻿@page "/account-product/add"
 
 @using ClubFitnessServices.Interfaces
+@using ClubFitnessDomain
 @using ClubFitnessDomain.Dtos
 @using Microsoft.AspNetCore.Components
 @using Blazored.FluentValidation
-@using ClubFitnessDomain
+@using Radzen
 
 @inject IAccountProductService AccountProductService
 @inject IAccountService AccountService
@@ -16,69 +17,205 @@
 
 @rendermode InteractiveServer
 
-
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
     <RadzenBreadCrumbItem Path="/account-product" Text="Product List" />
-    <RadzenBreadCrumbItem Text="Create New Account Product" />
+    <RadzenBreadCrumbItem Text="Create New Product" />
 </RadzenBreadCrumb>
 
 <EditForm Model="@AccountProduct" OnValidSubmit="AddAccountProduct">
     <FluentValidationValidator />
 
-    <div class="mb-3">
-        <label for="accountId">Account:</label>
-        <RadzenDropDown @bind-Value="AccountProduct.AccountId" Data="@accounts"
-                        TextProperty="AccountName" ValueProperty="AccountId" AllowClear="true"
-                        Placeholder="Select Account" class="form-control" />
-        <ValidationMessage For="@(() => AccountProduct.AccountId)" />
-    </div>
+    <div class="row">
+        <div class="col-md-4 my-2">
+            <label for="accountId">Account:</label>
+            <RadzenDropDown @bind-Value="AccountProduct.AccountId" Data="@accounts"
+                            TextProperty="AccountName" ValueProperty="AccountId" AllowClear="true"
+                            Placeholder="Select Account" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.AccountId)" />
+        </div>
 
-    <div class="mb-3">
-        <label for="accountSupplierId">Supplier:</label>
-        <RadzenDropDown @bind-Value="AccountProduct.AccountSupplierId" Data="@suppliers"
-                        TextProperty="SupplierName" ValueProperty="AccountSupplierId" AllowClear="true"
-                        Placeholder="Select Supplier" class="form-control" />
-        <ValidationMessage For="@(() => AccountProduct.AccountSupplierId)" />
-    </div>
+        <div class="col-md-4 my-2">
+            <label for="accountSupplierId">Supplier:</label>
+            <RadzenDropDown @bind-Value="AccountProduct.AccountSupplierId" Data="@suppliers"
+                            TextProperty="SupplierName" ValueProperty="AccountSupplierId" AllowClear="true"
+                            Placeholder="Select Supplier" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.AccountSupplierId)" />
+        </div>
 
-    <div class="mb-3">
-        <label for="accountProductCategoryId">Product Category:</label>
-        <RadzenDropDown @bind-Value="AccountProduct.AccountProductCategoryId" Data="@productCategories"
-                        TextProperty="ProductCategoryName" ValueProperty="AccountProductCategoryId" AllowClear="true"
-                        Placeholder="Select Product Category" class="form-control" />
-        <ValidationMessage For="@(() => AccountProduct.AccountProductCategoryId)" />
-    </div>
+        <div class="col-md-4 my-2">
+            <label for="accountProductCategoryId">Product Category:</label>
+            <RadzenDropDown @bind-Value="AccountProduct.AccountProductCategoryId" Data="@productCategories"
+                            TextProperty="ProductCategoryName" ValueProperty="AccountProductCategoryId" AllowClear="true"
+                            Placeholder="Select Product Category" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.AccountProductCategoryId)" />
+        </div>
 
-    <div class="mb-3">
-        <label for="accountProductSubCategoryId">Product Sub-Category:</label>
-        <RadzenDropDown @bind-Value="AccountProduct.AccountProductSubCategoryId" Data="@productSubCategories"
-                        TextProperty="ProductSubCategoryName" ValueProperty="AccountProductSubCategoryId" AllowClear="true"
-                        Placeholder="Select Product Sub-Category" class="form-control" />
-        <ValidationMessage For="@(() => AccountProduct.AccountProductSubCategoryId)" />
-    </div>
+        <div class="col-md-4 my-2">
+            <label for="accountProductSubCategoryId">Product Sub-Category:</label>
+            <RadzenDropDown @bind-Value="AccountProduct.AccountProductSubCategoryId" Data="@productSubCategories"
+                            TextProperty="ProductSubCategoryName" ValueProperty="AccountProductSubCategoryId" AllowClear="true"
+                            Placeholder="Select Product Sub-Category" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.AccountProductSubCategoryId)" />
+        </div>
 
-    <div class="mb-3">
-        <label for="productName">Product Name:</label>
-        <InputText id="productName" @bind-Value="AccountProduct.ProductName" class="form-control" />
-        <ValidationMessage For="@(() => AccountProduct.ProductName)" />
-    </div>
+        <div class="col-md-4 my-2">
+            <label for="productName">Product Name:</label>
+            <InputText id="productName" @bind-Value="AccountProduct.ProductName" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.ProductName)" />
+        </div>
 
-    <div class="mb-3">
-        <label for="onHandQuantity">On Hand Quantity:</label>
-        <InputNumber id="onHandQuantity" @bind-Value="AccountProduct.OnHandQuantity" type="number" class="form-control" />
-        <ValidationMessage For="@(() => AccountProduct.OnHandQuantity)" />
-    </div>
+        <div class="col-md-4 my-2">
+            <label for="sellExTaxPrice">Sell Ex Tax Price:</label>
+            <InputNumber id="sellExTaxPrice" @bind-Value="AccountProduct.SellExTaxPrice" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.SellExTaxPrice)" />
+        </div>
 
-    <div class="mb-3">
-        <label for="departmentType">Department Type:</label>
-        <InputNumber id="departmentType" @bind-Value="AccountProduct.DepartmentType" class="form-control" />
-        <ValidationMessage For="@(() => AccountProduct.DepartmentType)" />
-    </div>
+        <div class="col-md-4 my-2">
+            <label for="sellIncTaxPrice">Sell Inc Tax Price:</label>
+            <InputNumber id="sellIncTaxPrice" @bind-Value="AccountProduct.SellIncTaxPrice" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.SellIncTaxPrice)" />
+        </div>
 
-    <div class="mb-3">
-        <label for="isActive">Is Active:</label>
-        <RadzenSwitch @bind-Value="AccountProduct.IsActive" />
+        <div class="col-md-4 my-2 mt-3 pt-3">
+            <label for="sellOnlineEnabled">Sell Online Enabled:</label>
+            <RadzenSwitch @bind-Value="AccountProduct.SellOnlineEnabled" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="departmentType">Department Type:</label>
+            <InputNumber id="departmentType" @bind-Value="AccountProduct.DepartmentType" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.DepartmentType)" />
+        </div>
+
+        <div class="col-md-4 my-2 mt-3">
+            <label for="isActive">Is Active:</label>
+            <RadzenSwitch @bind-Value="AccountProduct.IsActive" />
+        </div>
+
+        <div class="col-md-4 my-2 mt-3">
+            <label for="isCasualEntry">Casual Entry:</label>
+            <RadzenSwitch @bind-Value="AccountProduct.IsCasualEntry" />
+        </div>
+
+        <div class="col-md-4 my-2 mt-3">
+            <label for="isPosItem">POS Item:</label>
+            <RadzenSwitch @bind-Value="AccountProduct.IsPosItem" />
+        </div>
+
+        <div class="col-md-4 my-2 mt-4">
+            <label for="isStockTakeRequired">Stock Take Required:</label>
+            <RadzenSwitch @bind-Value="AccountProduct.IsStockTakeRequired" />
+        </div>
+
+        <div class="col-md-4 my-2 mt-4">
+            <label for="gstRequired">GST Required:</label>
+            <RadzenSwitch @bind-Value="AccountProduct.GstRequired" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="manufacturerProductNumber">Manufacturer Product Number:</label>
+            <InputText id="manufacturerProductNumber" @bind-Value="AccountProduct.ManufacturerProductNumber" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="minimumLevelQuantity">Minimum Level Quantity:</label>
+            <InputNumber id="minimumLevelQuantity" @bind-Value="AccountProduct.MinimumLevelQuantity" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.MinimumLevelQuantity)" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="warnLevelQuantity">Warn Level Quantity:</label>
+            <InputNumber id="warnLevelQuantity" @bind-Value="AccountProduct.WarnLevelQuantity" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.WarnLevelQuantity)" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="maximumLevelQuantity">Maximum Level Quantity:</label>
+            <InputNumber id="maximumLevelQuantity" @bind-Value="AccountProduct.MaximumLevelQuantity" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.MaximumLevelQuantity)" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="onHandQuantity">On Hand Quantity:</label>
+            <InputNumber id="onHandQuantity" @bind-Value="AccountProduct.OnHandQuantity" class="form-control" />
+            <ValidationMessage For="@(() => AccountProduct.OnHandQuantity)" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="onHandValue">On Hand Value:</label>
+            <InputNumber id="onHandValue" @bind-Value="AccountProduct.OnHandValue" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="onHandAverageValue">On Hand Average Value:</label>
+            <InputNumber id="onHandAverageValue" @bind-Value="AccountProduct.OnHandAverageValue" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="cannotOrderAfterDate">Cannot Order After Date:</label>
+            <InputDate id="cannotOrderAfterDate" @bind-Value="AccountProduct.CannotOrderAfterDate" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="storeUnitOfMeasureCode">Store Unit Of Measure Code:</label>
+            <InputNumber id="storeUnitOfMeasureCode" @bind-Value="AccountProduct.StoreUnitOfMeasureCode" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="defaultPurchaseUnitOfMeasureCode">Default Purchase Unit Of Measure Code:</label>
+            <InputNumber id="defaultPurchaseUnitOfMeasureCode" @bind-Value="AccountProduct.DefaultPurchaseUnitOfMeasureCode" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="defaultPurchaseToStoreConversionQuantity">Default Purchase To Store Conversion Quantity:</label>
+            <InputNumber id="defaultPurchaseToStoreConversionQuantity" @bind-Value="AccountProduct.DefaultPurchaseToStoreConversionQuantity" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="defaultSupplierNumber">Default Supplier Number:</label>
+            <InputNumber id="defaultSupplierNumber" @bind-Value="AccountProduct.DefaultSupplierNumber" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="displayImagePath">Display Image Path:</label>
+            <InputText id="displayImagePath" @bind-Value="AccountProduct.DisplayImagePath" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="productStockLevel">Product Stock Level:</label>
+            <InputNumber id="productStockLevel" @bind-Value="AccountProduct.ProductStockLevel" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="productDiscount">Product Discount:</label>
+            <InputNumber id="productDiscount" @bind-Value="AccountProduct.ProductDiscount" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="productStockLowLevel">Product Stock Low Level:</label>
+            <InputNumber id="productStockLowLevel" @bind-Value="AccountProduct.ProductStockLowLevel" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="expiryDate">Expiry Date:</label>
+            <InputDate id="expiryDate" @bind-Value="AccountProduct.ExpiryDate" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2 mt-4 pt-3">
+            <label for="isCommissionable">Is Commissionable:</label>
+            <RadzenSwitch @bind-Value="AccountProduct.IsCommissionable" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="commissionAmount">Commission Amount:</label>
+            <InputNumber id="commissionAmount" @bind-Value="AccountProduct.CommissionAmount" class="form-control" />
+        </div>
+
+        <div class="col-md-4 my-2">
+            <label for="discountCouponId">Discount Coupon ID:</label>
+            <InputNumber id="discountCouponId" @bind-Value="AccountProduct.DiscountCouponId" class="form-control" />
+        </div>
     </div>
 
     <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary" ButtonStyle="ButtonStyle.Success">Add Product</RadzenButton>
