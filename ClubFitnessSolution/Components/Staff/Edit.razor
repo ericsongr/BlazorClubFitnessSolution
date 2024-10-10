@@ -1,0 +1,184 @@
+﻿@page "/staff/edit/{id:int}"
+
+@using ClubFitnessDomain
+@using ClubFitnessServices.Interfaces
+@using Microsoft.AspNetCore.Components
+@using Blazored.FluentValidation
+@using Radzen
+
+@inject IStaffService StaffService
+@inject IAccountService AccountService
+@inject NotificationService NotificationService
+@inject NavigationManager Navigation
+
+@rendermode InteractiveServer
+
+<RadzenBreadCrumb>
+    <RadzenBreadCrumbItem Path="/" Text="Home" />
+    <RadzenBreadCrumbItem Path="/staff" Text="Staff List" />
+    <RadzenBreadCrumbItem Text="Edit Staff" />
+</RadzenBreadCrumb>
+
+<EditForm Model="@Staff" OnValidSubmit="UpdateStaff">
+    <FluentValidationValidator />
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="account">Account:</label>
+            <RadzenDropDown @bind-Value="Staff.PreferredClub" Data="@accounts"
+                            TextProperty="AccountName" ValueProperty="AccountId" AllowClear="true"
+                            Placeholder="Select Account" class="form-control" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="firstName">First Name:</label>
+            <InputText id="firstName" @bind-Value="Staff.FirstName" class="form-control" />
+            <ValidationMessage For="@(() => Staff.FirstName)" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label for="lastName">Last Name:</label>
+            <InputText id="lastName" @bind-Value="Staff.LastName" class="form-control" />
+            <ValidationMessage For="@(() => Staff.LastName)" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label for="email">Email:</label>
+            <InputText id="email" @bind-Value="Staff.Email" class="form-control" />
+            <ValidationMessage For="@(() => Staff.Email)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3 mt-4">
+            <label for="isActive">Is Active:</label>
+            <RadzenSwitch @bind-Value="Staff.IsActive" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label for="barcode">Barcode:</label>
+            <InputText id="barcode" @bind-Value="Staff.Barcode" class="form-control" />
+            <ValidationMessage For="@(() => Staff.Barcode)" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label for="mobilePhone">Mobile Phone:</label>
+            <InputText id="mobilePhone" @bind-Value="Staff.MobilePhone" class="form-control" />
+            <ValidationMessage For="@(() => Staff.MobilePhone)" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="homePhone">Home Phone:</label>
+            <InputText id="homePhone" @bind-Value="Staff.HomePhone" class="form-control" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label for="photoLocation">Photo Location:</label>
+            <InputText id="photoLocation" @bind-Value="Staff.PhotoLocation" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="role">Role:</label>
+            <InputText id="role" @bind-Value="Staff.Role" class="form-control" />
+        </div>
+
+        <div class="col-md-4 mb-3 mt-4">
+            <label for="isRegister">Is Register:</label>
+            <RadzenSwitch @bind-Value="Staff.IsRegister" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="posAccessPin">POS Access Pin:</label>
+            <InputText id="posAccessPin" @bind-Value="Staff.PosAccessPin" class="form-control" />
+        </div>
+
+        <div class="col-md-4 mb-3 mt-4">
+            <label for="canModify">Can Modify:</label>
+            <RadzenSwitch @bind-Value="Staff.CanModify" />
+        </div>
+
+        <div class="col-md-4 mb-3 mt-4">
+            <label for="isSubscribeReminder">Is Subscribe Reminder:</label>
+            <RadzenSwitch @bind-Value="Staff.IsSubscribeReminder" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="hourlyRate">Hourly Rate:</label>
+            <InputNumber id="hourlyRate" @bind-Value="Staff.HourlyRate" class="form-control" />
+        </div>
+
+        <div class="col-md-4 mb-3 mt-4">
+            <label for="restrictAccessByIp">Restrict Access By IP:</label>
+            <RadzenSwitch @bind-Value="Staff.RestrictAccessByIp" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label for="restrictedIp">Restricted IP:</label>
+            <InputText id="restrictedIp" @bind-Value="Staff.RestrictedIp" class="form-control" />
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-3 mt-4">
+            <label for="enableMfa">Enable MFA:</label>
+            <RadzenSwitch @bind-Value="Staff.EnableMfa" />
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <label for="mfaProvider">MFA Provider:</label>
+            <InputNumber id="mfaProvider" @bind-Value="Staff.MfaProvider" class="form-control" />
+        </div>
+
+        <div class="col-md-4 mb-3 mt-4">
+            <label for="isSaleStaff">Is Sale Staff:</label>
+            <RadzenSwitch @bind-Value="Staff.IsSaleStaff" />
+        </div>
+    </div>
+
+    <div class="form-group">
+        <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary" ButtonStyle="ButtonStyle.Success">Save</RadzenButton>
+        <RadzenButton ButtonType="ButtonType.Button" Click="Back" class="btn btn-secondary ml-2" ButtonStyle="ButtonStyle.Info">Back</RadzenButton>
+    </div>
+</EditForm>
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private Staff Staff = new Staff();
+    private IEnumerable<Account> accounts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        accounts = await AccountService.GetAllAsync();
+        Staff = await StaffService.GetByIdAsync(id);
+    }
+
+    private async Task UpdateStaff()
+    {
+        try
+        {
+            Staff.LastModifiedUTCDateTime = DateTime.UtcNow;
+            await StaffService.UpdateAsync(Staff);
+            NotificationService.Notify(NotificationSeverity.Success, "Success", "Staff updated successfully.");
+            Navigation.NavigateTo("/staff");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void Back()
+    {
+        Navigation.NavigateTo("/staff");
+    }
+}

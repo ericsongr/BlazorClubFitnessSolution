@@ -16,6 +16,7 @@ namespace ClubFitnessInfrastructure
         public DbSet<AccountProductCategory> AccountProductCategory { get; set; } 
         public DbSet<AccountProductSubCategory> AccountProductSubCategory { get; set; } 
         public DbSet<AccountProduct> AccountProduct { get; set; } 
+        public DbSet<Staff> Staff { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
