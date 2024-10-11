@@ -12,6 +12,7 @@
 @inject IAccountSupplierService AccountSupplierService
 @inject IAccountProductCategoryService AccountProductCategoryService
 @inject IAccountProductSubCategoryService AccountProductSubCategoryService
+@inject IDiscountCouponService DiscountCouponService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
 
@@ -213,8 +214,10 @@
         </div>
 
         <div class="col-md-4 my-2">
-            <label for="discountCouponId">Discount Coupon ID:</label>
-            <InputNumber id="discountCouponId" @bind-Value="AccountProduct.DiscountCouponId" class="form-control" />
+            <label for="discountCouponId">Discount Coupon:</label>
+            <RadzenDropDown @bind-Value="AccountProduct.DiscountCouponId" Data="@discountCoupons"
+                            TextProperty="Name" ValueProperty="Id" AllowClear="true"
+                            Placeholder="Select discount coupon" class="form-control" />
         </div>
     </div>
 
@@ -230,6 +233,7 @@
     private IEnumerable<AccountSupplier> suppliers;
     private IEnumerable<AccountProductCategory> productCategories;
     private IEnumerable<AccountProductSubCategoryDto> productSubCategories;
+    private IEnumerable<DiscountCoupon> discountCoupons;
 
     protected override async Task OnInitializedAsync()
     {
@@ -237,6 +241,7 @@
         suppliers = await AccountSupplierService.GetAllAsync();
         productCategories = await AccountProductCategoryService.GetAllAsync();
         productSubCategories = await AccountProductSubCategoryService.GetAllAsync();
+        discountCoupons = await DiscountCouponService.GetAllAsync();
         
         // Load the existing account product by ID
         AccountProduct = await AccountProductService.GetByIdAsync(Id);
