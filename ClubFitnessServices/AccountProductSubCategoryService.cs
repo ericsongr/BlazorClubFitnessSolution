@@ -49,9 +49,9 @@ namespace ClubFitnessServices
             await _repository.UpdateAsync(subCategory);
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteAsync(int id, int deletedBy)
         {
-            await _repository.DeleteAsync(id);
+            await _repository.DeleteAsync(id, deletedBy);
         }
     }
 }

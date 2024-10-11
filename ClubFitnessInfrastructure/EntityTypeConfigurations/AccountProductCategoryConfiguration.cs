@@ -20,6 +20,8 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
             builder.HasOne(x => x.Account)
                 .WithMany(x => x.AccountProductCategories)
                 .HasForeignKey(x => x.AccountId);
+
+            builder.HasQueryFilter(o => !o.IsDeleted);
         }
     }
 }

@@ -43,6 +43,9 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
 
             // Configure other properties
             builder.Property(a => a.PaymentIssueSuspensionDate).HasColumnType("datetime");
+
+            builder.HasQueryFilter(o => !o.IsDeleted);
+
         }
     }
 }

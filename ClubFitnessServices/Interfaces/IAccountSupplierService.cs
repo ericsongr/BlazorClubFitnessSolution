@@ -11,6 +11,6 @@ namespace ClubFitnessServices.Interfaces
         Task<AccountSupplier> GetWithAccountByIdAsync(int id);
         Task AddAsync(AccountSupplier accountSupplier);
         Task UpdateAsync(AccountSupplier accountSupplier);
-        Task DeleteAsync(int accountSupplierId);
+        Task DeleteAsync(int accountSupplierId, int deletedBy);
     }
 }

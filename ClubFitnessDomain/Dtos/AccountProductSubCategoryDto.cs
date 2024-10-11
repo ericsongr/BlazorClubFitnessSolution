@@ -11,7 +11,7 @@
         public bool IsActive { get; set; }
         public bool IsDeleted { get; set; }
         public string? DisplayImagePath { get; set; }
-        public DateTime? DeletedDateUtc { get; set; }
+        public DateTime? DeletedDateTimeUtc { get; set; }
         public string? DeletedBy { get; set; }
         public string? GlCode { get; set; }
     }

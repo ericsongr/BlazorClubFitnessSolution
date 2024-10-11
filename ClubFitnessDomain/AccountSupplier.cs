@@ -25,8 +25,8 @@ namespace ClubFitnessDomain
         public DateTime UpdatedUtcDateTime { get; set; } = DateTime.UtcNow;
         public string? DisplayImagePath { get; set; }
         public bool IsDeleted { get; set; } = false;
-        public DateTime? DeletedDateUtc { get; set; }
-        public string? DeletedBy { get; set; }
+        public DateTime? DeletedDateTimeUtc { get; set; }
+        public int? DeletedBy { get; set; }
 
         // Navigation property
         public virtual Account Account { get; set; }

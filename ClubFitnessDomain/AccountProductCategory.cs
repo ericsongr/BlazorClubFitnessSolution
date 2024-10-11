@@ -12,8 +12,11 @@
         public string UpdatedUserName { get; set; } = string.Empty;
         public bool IsActive { get; set; } = true;
         public string? DisplayImagePath { get; set; }
-        public bool IsDeleted { get; set; } = false;
         public bool IsPosCategory { get; set; } = true;
+
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedDateTimeUtc { get; set; }
+        public int? DeletedBy { get; set; }
 
         public virtual Account Account { get; set; }
 

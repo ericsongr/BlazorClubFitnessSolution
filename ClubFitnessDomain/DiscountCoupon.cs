@@ -17,6 +17,8 @@
         public int AccountId { get; set; }
         public string? ChargeType { get; set; }
         public bool IsDeleted { get; set; }
+        public DateTime? DeletedDateTimeUtc { get; set; }
+        public int? DeletedBy { get; set; }
         public short DiscountFor { get; set; }
         public bool IsCombineFees { get; set; }
         public string? AllocatedValueJson { get; set; }

@@ -28,6 +28,10 @@ namespace ClubFitnessDomain
         public Guid AdvancedEmailEditorUid { get; set; }
         public string? CompanyLegalName { get; set; }
 
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedDateTimeUtc { get; set; }
+        public int? DeletedBy { get; set; }
+
         public virtual ICollection<AccountSupplier> AccountSuppliers { get; set; }
         public virtual ICollection<AccountProductCategory> AccountProductCategories { get; set; }
         public virtual ICollection<AccountProduct> AccountProducts { get; set; }

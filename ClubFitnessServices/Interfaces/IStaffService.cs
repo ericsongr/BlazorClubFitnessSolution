@@ -19,7 +19,7 @@ namespace ClubFitnessServices.Interfaces
         Task UpdateAsync(Staff staff);
 
         // Method to delete a staff record by ID
-        Task DeleteAsync(int staffId);
+        Task DeleteAsync(int staffId, int deletedBy);
 
         // Method to retrieve staff records with related account details
     }

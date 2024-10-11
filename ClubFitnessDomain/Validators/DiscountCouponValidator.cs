@@ -11,7 +11,7 @@ namespace ClubFitnessDomain.Validators
             RuleFor(x => x.Name).NotEmpty().WithMessage("Coupon name is required.");
             RuleFor(x => x.Discount).GreaterThan(0).WithMessage("Discount must be greater than zero.");
             RuleFor(x => x.DiscountType).NotEmpty().WithMessage("Discount type is required.");
-            RuleFor(x => x.AccountId).NotEmpty().WithMessage("Please select account.");
+            RuleFor(x => x.AccountId).GreaterThan(0).WithMessage("Please select account.");
             RuleFor(x => x.DiscountFor).NotEmpty().WithMessage("Discount for field is required.");
         }
     }

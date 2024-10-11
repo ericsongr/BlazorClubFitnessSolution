@@ -29,6 +29,10 @@
         public int MfaProvider { get; set; }
         public bool IsSaleStaff { get; set; }
 
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedDateTimeUtc { get; set; }
+        public int? DeletedBy { get; set; }
+
         // Navigation properties
         public virtual Account PreferredClubAccount { get; set; }
 

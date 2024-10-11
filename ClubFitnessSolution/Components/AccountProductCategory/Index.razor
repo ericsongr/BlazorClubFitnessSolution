@@ -100,7 +100,7 @@
 
         if (confirmed == true)
         {
-            await AccountProductCategoryService.DeleteAsync(accountProductCategory.AccountProductCategoryId);
+            await AccountProductCategoryService.DeleteAsync(accountProductCategory.AccountProductCategoryId, 99999); //TODO: 99999 to supply from StaffId of Staff table
 
             NotificationService.Notify(new NotificationMessage
                 {

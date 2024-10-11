@@ -83,7 +83,7 @@
 
         if (confirmed == true)
         {
-            await DiscountCouponService.DeleteAsync(discountCoupon.Id);
+            await DiscountCouponService.DeleteAsync(discountCoupon.Id, 99999); //TODO: 99999 to supply from StaffId of Staff table
 
             NotificationService.Notify(new NotificationMessage
                 {
