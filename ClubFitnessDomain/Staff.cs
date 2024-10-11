@@ -1,6 +1,6 @@
 ﻿namespace ClubFitnessDomain
 {
-    public class Staff
+    public class Staff 
     {
         public int StaffId { get; set; }
         public string? FirstName { get; set; }
@@ -38,5 +38,18 @@
 
         public ICollection<DiscountCoupon> StaffDiscountCoupons { get; set; }
         public ICollection<DiscountCoupon> StaffUpdatedDiscountCoupons { get; set; }
+        public ICollection<DiscountCoupon> StaffDeletedDiscountCoupons { get; set; }
+
+        public ICollection<AccountProduct> CreatedByAccountProducts { get; set; }
+        public ICollection<AccountProduct> UpdatedByAccountProducts { get; set; }
+        public ICollection<AccountProduct> DeletedByAccountProducts { get; set; }
+
+        public ICollection<AccountProductCategory> CreatedByAccountProductCategories { get; set; }
+        public ICollection<AccountProductCategory> UpdatedByAccountProductCategories { get; set; }
+        public ICollection<AccountProductCategory> DeletedByAccountProductCategories { get; set; }
+
+        public ICollection<AccountProductSubCategory> CreatedByProductSubCategories { get; set; }
+        public ICollection<AccountProductSubCategory> UpdatedByProductSubCategories { get; set; }
+        public ICollection<AccountProductSubCategory> DeletedByProductSubCategories { get; set; }
     }
 }

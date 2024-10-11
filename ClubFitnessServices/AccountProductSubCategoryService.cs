@@ -35,8 +35,6 @@ namespace ClubFitnessServices
         public async Task AddAsync(AccountProductSubCategoryDto dto)
         {
             var subCategory = _mapper.Map<AccountProductSubCategory>(dto);
-            subCategory.CreatedUserName = "TODO";
-            subCategory.UpdatedUserName = "TODO";
             await _repository.AddAsync(subCategory);
         }
 
@@ -45,7 +43,6 @@ namespace ClubFitnessServices
             var subCategoryBefore = await _repository.GetByIdAsync(dto.AccountProductSubCategoryId);
 
             var subCategory = _mapper.Map(dto, subCategoryBefore);
-            subCategory.UpdatedUserName = "TODO";
             await _repository.UpdateAsync(subCategory);
         }
 

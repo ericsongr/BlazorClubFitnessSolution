@@ -7,12 +7,11 @@
         public int AccountProductCategoryId { get; set; }
         public string ProductSubCategoryName { get; set; }
         public string? ShortDescription { get; set; }
-        public string UserName { get; set; }
         public bool IsActive { get; set; }
-        public bool IsDeleted { get; set; }
         public string? DisplayImagePath { get; set; }
-        public DateTime? DeletedDateTimeUtc { get; set; }
-        public string? DeletedBy { get; set; }
+        public int CreatedBy { get; set; }
+        public DateTime? UpdatedDateTimeUtc { get; set; }
+        public int? UpdatedBy { get; set; }
         public string? GlCode { get; set; }
     }
 }
