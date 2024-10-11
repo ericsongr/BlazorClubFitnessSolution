@@ -33,6 +33,8 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
                 .WithMany(dc => dc.StaffUpdatedDiscountCoupons)
                 .HasForeignKey(dc => dc.UpdatedBy)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasQueryFilter(o => !o.IsDeleted);
         }
     }
 }

@@ -29,6 +29,9 @@ CREATE TABLE [dbo].[Accounts](
 	[PaymentIssueSuspensionDate] [datetime] NULL,
 	[AdvancedEmailEditorUid] [uniqueidentifier] NOT NULL,
 	[CompanyLegalName] [varchar](200) NULL,
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] [INT] NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
  CONSTRAINT [PK_Accounts] PRIMARY KEY CLUSTERED 
 (
 	[AccountId] ASC
@@ -76,8 +79,8 @@ CREATE TABLE [dbo].[AccountSupplier](
 	[CreatedUtcDateTime] [datetime] NOT NULL,
 	[UpdatedUtcDateTime] [datetime] NOT NULL,
 	[DisplayImagePath] [nvarchar](255) NULL,
-	[IsDeleted] [bit] NOT NULL,
-	[DeletedDateUtc] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[DeletedDateTimeUtc] [datetime] NULL,
 	[DeletedBy] [nvarchar](50) NULL,
  CONSTRAINT [PK_AccountSupplier] PRIMARY KEY CLUSTERED 
 (
@@ -93,9 +96,6 @@ ALTER TABLE [dbo].[AccountSupplier] ADD  CONSTRAINT [DF_AccountSupplier_CreatedU
 GO
 
 ALTER TABLE [dbo].[AccountSupplier] ADD  CONSTRAINT [DF_AccountSupplier_UpdatedUtcDateTime]  DEFAULT (getutcdate()) FOR [UpdatedUtcDateTime]
-GO
-
-ALTER TABLE [dbo].[AccountSupplier] ADD  DEFAULT ((0)) FOR [IsDeleted]
 GO
 
 ALTER TABLE [dbo].[AccountSupplier]  WITH CHECK ADD  CONSTRAINT [FK_AccountSupplier_Accounts] FOREIGN KEY([AccountId])
@@ -127,7 +127,9 @@ CREATE TABLE [dbo].[AccountProductCategory](
 	[UpdatedUserName] [nvarchar](50) NOT NULL,
 	[IsActive] [bit] NOT NULL,
 	[DisplayImagePath] [nvarchar](255) NULL,
-	[IsDeleted] [bit] NOT NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] int NULL,
 	[IsPosCategory] [bit] NOT NULL,
  CONSTRAINT [PK_AccountProductCategory] PRIMARY KEY CLUSTERED 
 (
@@ -175,11 +177,11 @@ CREATE TABLE [dbo].[AccountProductSubCategory](
 	[UpdatedUtcDateTime] [datetime] NOT NULL,
 	[UpdatedUserName] [nvarchar](50) NOT NULL,
 	[IsActive] [bit] NOT NULL,
-	[IsDeleted] [bit] NOT NULL,
 	[DisplayImagePath] [nvarchar](255) NULL,
-	[DeletedDateUtc] [datetime] NULL,
-	[DeletedBy] [nvarchar](50) NULL,
 	[GlCode] [varchar](15) NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] int NULL,
  CONSTRAINT [PK_AccountProductSubCategory] PRIMARY KEY CLUSTERED 
 (
 	[AccountProductSubCategoryId] ASC
@@ -253,6 +255,9 @@ CREATE TABLE [dbo].[Staff](
 	[EnableMfa] [bit] NOT NULL,
 	[MfaProvider] [int] NOT NULL,
 	[IsSaleStaff] [bit] NOT NULL,
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] [INT] NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
  CONSTRAINT [PK_Staff] PRIMARY KEY CLUSTERED 
 (
 	[StaffId] ASC
@@ -326,6 +331,8 @@ CREATE TABLE [dbo].[DiscountCoupons](
 	[AccountId] [int] NOT NULL,
 	[ChargeType] [varchar](50) NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] int NULL,
 	[DiscountFor] [smallint] NOT NULL,
 	[IsCombineFees] [bit] NOT NULL,
 	[AllocatedValueJson] [varchar](max) NULL,
@@ -360,6 +367,7 @@ ALTER TABLE [dbo].[DiscountCoupons] CHECK CONSTRAINT [FK_DiscountCoupons_Staff1]
 GO
 
 
+
 SET ANSI_NULLS ON
 GO
 
@@ -392,19 +400,19 @@ CREATE TABLE [dbo].[AccountProduct](
 	[SellExTaxPrice] [money] NULL,
 	[SellIncTaxPrice] [money] NULL,
 	[SellOnlineEnabled] [bit] NOT NULL,
-	[IsDeleted] [bit] NOT NULL,
 	[DepartmentType] [int] NOT NULL,
 	[IsActive] [bit] NOT NULL,
 	[IsCasualEntry] [bit] NOT NULL,
 	[IsPosItem] [bit] NOT NULL,
 	[IsStockTakeRequired] [bit] NOT NULL,
-	[DeletedDateUtc] [datetime] NULL,
-	[DeletedBy] [nvarchar](50) NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] int NULL,
 	[GstRequired] [bit] NOT NULL,
 	[ExpiryDate] [date] NULL,
 	[IsCommissionable] [bit] NOT NULL,
 	[CommissionAmount] [decimal](19, 6) NULL,
-	[DiscountCouponId] [bigint] NULL,
+	[DiscountCouponId] [int] NULL,
  CONSTRAINT [PK_AccountProduct] PRIMARY KEY CLUSTERED 
 (
 	[AccountProductId] ASC
@@ -434,9 +442,6 @@ ALTER TABLE [dbo].[AccountProduct] ADD  CONSTRAINT [DF_AccountProduct_DefaultSup
 GO
 
 ALTER TABLE [dbo].[AccountProduct] ADD  CONSTRAINT [DF_AccountProduct_SellOnlineEnabled]  DEFAULT ((0)) FOR [SellOnlineEnabled]
-GO
-
-ALTER TABLE [dbo].[AccountProduct] ADD  DEFAULT ((0)) FOR [IsDeleted]
 GO
 
 ALTER TABLE [dbo].[AccountProduct] ADD  DEFAULT ((0)) FOR [DepartmentType]
@@ -543,9 +548,5 @@ GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The number of stored units created when a single purchase unit is received. This can differ by supplier.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AccountProduct', @level2type=N'COLUMN',@level2name=N'DefaultPurchaseToStoreConversionQuantity'
 GO
-
-
-
-
 
 

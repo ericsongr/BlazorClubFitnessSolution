@@ -40,9 +40,9 @@ namespace ClubFitnessServices
             await _accountSupplierRepository.UpdateAsync(accountSupplier);
         }
 
-        public async Task DeleteAsync(int accountSupplierId)
+        public async Task DeleteAsync(int accountSupplierId, int deletedBy)
         {
-            await _accountSupplierRepository.DeleteAsync(accountSupplierId);
+            await _accountSupplierRepository.DeleteAsync(accountSupplierId, deletedBy);
         }
     }
 }

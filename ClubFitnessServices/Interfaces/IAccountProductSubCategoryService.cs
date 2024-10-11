@@ -8,6 +8,6 @@ namespace ClubFitnessServices.Interfaces
         Task<AccountProductSubCategoryDto> GetByIdAsync(int id);
         Task AddAsync(AccountProductSubCategoryDto dto);
         Task UpdateAsync(AccountProductSubCategoryDto dto);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(int id, int deletedBy);
     }
 }

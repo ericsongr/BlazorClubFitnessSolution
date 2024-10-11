@@ -25,6 +25,8 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
                 .WithMany(s => s.Staffs)
                 .HasForeignKey(s => s.PreferredClub)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasQueryFilter(o => !o.IsDeleted);
         }
     }
 }

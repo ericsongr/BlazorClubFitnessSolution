@@ -89,7 +89,7 @@
 
         if (confirmed == true)
         {
-            await AccountProductService.DeleteAsync(accountProduct.AccountProductId);
+            await AccountProductService.DeleteAsync(accountProduct.AccountProductId, 99999); //TODO: 99999 to supply from StaffId of Staff table
 
             NotificationService.Notify(new NotificationMessage
                 {

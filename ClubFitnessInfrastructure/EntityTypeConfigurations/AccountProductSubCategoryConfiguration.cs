@@ -20,7 +20,7 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
                 .IsRequired()
                 .HasMaxLength(40);
 
-            // Additional configuration for other properties
+            builder.HasQueryFilter(o => !o.IsDeleted);
         }
     }
 }

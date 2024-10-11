@@ -62,8 +62,6 @@ namespace ClubFitnessDomain
 
         public bool SellOnlineEnabled { get; set; }
 
-        public bool IsDeleted { get; set; }
-
         public int DepartmentType { get; set; }
 
         public bool IsActive { get; set; }
@@ -74,9 +72,9 @@ namespace ClubFitnessDomain
 
         public bool IsStockTakeRequired { get; set; }
 
-        public DateTime? DeletedDateUtc { get; set; }
-
-        public string? DeletedBy { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedDateTimeUtc { get; set; }
+        public int? DeletedBy { get; set; }
 
         public bool GstRequired { get; set; }
 
@@ -87,7 +85,7 @@ namespace ClubFitnessDomain
 
         public decimal? CommissionAmount { get; set; }
 
-        public long? DiscountCouponId { get; set; }
+        public int? DiscountCouponId { get; set; }
 
         // Navigation properties
         public virtual Account Account { get; set; }

@@ -46,6 +46,42 @@ namespace ClubFitnessInfrastructure
             }
         }
 
+        public virtual async Task DeleteAsync(int id, int deletedBy)
+        {
+            var entity = await _context.Set<T>().FindAsync(id);
+            if (entity != null)
+            {
+                // Check if the entity has an IsDeleted property
+                var isDeletedProperty = typeof(T).GetProperty("IsDeleted");
+                var deletedDateTimeProperty = typeof(T).GetProperty("DeletedDateTimeUtc");
+                var deletedByProperty = typeof(T).GetProperty("DeletedBy");
+
+                if (isDeletedProperty != null && isDeletedProperty.PropertyType == typeof(bool))
+                {
+                    // Set IsDeleted to true
+                    isDeletedProperty.SetValue(entity, true);
+
+                    // Check if the entity has a DeletedDateTimeUtc property and set it to the current UTC date
+                    if (deletedDateTimeProperty != null && deletedDateTimeProperty.PropertyType == typeof(DateTime?))
+                    {
+                        deletedDateTimeProperty.SetValue(entity, DateTime.UtcNow);
+                    }
+
+                    // Check if the entity has a DeletedBy property and set its value
+                    if (deletedByProperty != null && deletedByProperty.PropertyType == typeof(int?))
+                    {
+                        deletedByProperty.SetValue(entity, deletedBy);
+                    }
+
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    throw new InvalidOperationException("The entity does not have an 'IsDeleted' property.");
+                }
+            }
+        }
+
         // New Include method
         public virtual async Task<IEnumerable<T>> GetWithIncludesAsync(
             Expression<Func<T, bool>> filter,

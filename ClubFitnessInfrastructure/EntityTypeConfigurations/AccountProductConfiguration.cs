@@ -49,6 +49,8 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
 
             builder.Property(ap => ap.IsCommissionable)
                 .IsRequired();
+
+            builder.HasQueryFilter(o => !o.IsDeleted);
         }
     }
 }

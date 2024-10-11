@@ -82,7 +82,7 @@
 
         if (confirmed == true)
         {
-            await AccountSupplierService.DeleteAsync(accountSupplier.AccountSupplierId);
+            await AccountSupplierService.DeleteAsync(accountSupplier.AccountSupplierId, 99999); //TODO: 99999 to supply from StaffId of Staff table
 
             NotificationService.Notify(new NotificationMessage
                 {

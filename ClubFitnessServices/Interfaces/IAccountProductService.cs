@@ -8,6 +8,6 @@ namespace ClubFitnessServices.Interfaces
         Task<AccountProduct> GetByIdAsync(int id);
         Task AddAsync(AccountProduct dto);
         Task UpdateAsync(AccountProduct dto);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(int id, int deletedBy);
     }
 }

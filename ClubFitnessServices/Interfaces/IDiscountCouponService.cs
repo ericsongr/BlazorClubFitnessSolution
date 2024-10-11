@@ -8,6 +8,6 @@ namespace ClubFitnessServices.Interfaces
         Task<DiscountCoupon> GetByIdAsync(int id);
         Task AddAsync(DiscountCoupon discountCoupon);
         Task UpdateAsync(DiscountCoupon discountCoupon);
-        Task DeleteAsync(int id);
+        Task DeleteAsync(int id, int deletedBy);
     }
 }

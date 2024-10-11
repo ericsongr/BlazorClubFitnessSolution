@@ -12,10 +12,10 @@
         public DateTime UpdatedUtcDateTime { get; set; } = DateTime.UtcNow;
         public string UpdatedUserName { get; set; }
         public bool IsActive { get; set; } = true;
-        public bool IsDeleted { get; set; } = false;
         public string? DisplayImagePath { get; set; }
-        public DateTime? DeletedDateUtc { get; set; }
-        public string? DeletedBy { get; set; }
+        public bool IsDeleted { get; set; }
+        public DateTime? DeletedDateTimeUtc { get; set; }
+        public int? DeletedBy { get; set; }
         public string? GlCode { get; set; }
 
         // Navigation Properties
