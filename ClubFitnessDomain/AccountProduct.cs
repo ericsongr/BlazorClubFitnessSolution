@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ClubFitnessDomain
 {
-    public class AccountProduct
+    public class AccountProduct : IUserAction
     {
         [Key]
         public int AccountProductId { get; set; }
@@ -72,10 +72,16 @@ namespace ClubFitnessDomain
 
         public bool IsStockTakeRequired { get; set; }
 
+
+        public DateTime CreatedDateTimeUtc { get; set; } = DateTime.UtcNow;
+        public int CreatedBy { get; set; }
+        public DateTime? UpdatedDateTimeUtc { get; set; }
+        public int? UpdatedBy { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime? DeletedDateTimeUtc { get; set; }
         public int? DeletedBy { get; set; }
 
+        
         public bool GstRequired { get; set; }
 
         public DateTime? ExpiryDate { get; set; }
@@ -88,6 +94,9 @@ namespace ClubFitnessDomain
         public int? DiscountCouponId { get; set; }
 
         // Navigation properties
+        public virtual Staff StaffCreatedBy { get; set; }
+        public virtual Staff StaffUpdatedBy { get; set; }
+        public virtual Staff StaffDeletedBy { get; set; }
         public virtual Account Account { get; set; }
         public virtual AccountSupplier AccountSupplier { get; set; }
         public virtual AccountProductCategory AccountProductCategory { get; set; }

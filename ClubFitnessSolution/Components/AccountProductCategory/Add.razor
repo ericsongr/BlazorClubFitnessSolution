@@ -21,10 +21,7 @@
 
 <EditForm Model="@AccountProductCategory" OnValidSubmit="AddProductCategory" class="mt-5">
     <FluentValidationValidator/>
-    @* 
-    <FluentValidationValidator @ref="_fluentValidationValidator" />
-    <ValidationSummary /> *@
-
+    
     <div class="mb-3">
         <label for="accountId">Account:</label>
         <RadzenDropDown @bind-Value="AccountProductCategory.AccountId" Data="@accounts"
@@ -69,7 +66,6 @@
 @code {
     private AccountProductCategoryDto AccountProductCategory = new AccountProductCategoryDto();
     private IEnumerable<Account> accounts;
-    // private FluentValidationValidator? _fluentValidationValidator;
 
     protected override async Task OnInitializedAsync()
     {
@@ -80,12 +76,11 @@
     {
         try
         {
-            // if (await _fluentValidationValidator!.ValidateAsync())
-            // {
+            AccountProductCategory.CreatedBy = 90000; // todo fetch the staffid
             await AccountProductCategoryService.AddAsync(AccountProductCategory);
                 NotificationService.Notify(NotificationSeverity.Success, "Success", "Product category added successfully.");
                 Navigation.NavigateTo("/account-product-category");
-            // }
+            
            
         }
         catch (Exception ex)

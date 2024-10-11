@@ -26,6 +26,12 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
                 .IsRequired()
                 .HasDefaultValue(0);
 
+            builder.Property(ap => ap.CreatedBy)
+                .IsRequired();
+
+            builder.Property(ap => ap.CreatedDateTimeUtc)
+                .IsRequired();
+
             builder.Property(ap => ap.IsDeleted)
                 .IsRequired();
 
@@ -51,6 +57,24 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
                 .IsRequired();
 
             builder.HasQueryFilter(o => !o.IsDeleted);
+
+            builder.HasOne(dc => dc.StaffCreatedBy)
+                .WithMany(dc => dc.CreatedByAccountProducts)
+                .HasForeignKey(dc => dc.CreatedBy)
+                .HasConstraintName("FK_AccountProduct_Staff_StaffId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(dc => dc.StaffUpdatedBy)
+                .WithMany(dc => dc.UpdatedByAccountProducts)
+                .HasForeignKey(dc => dc.UpdatedBy)
+                .HasConstraintName("[FK_AccountProduct_UpdatedBy_Staff_StaffId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(dc => dc.StaffDeletedBy)
+                .WithMany(dc => dc.DeletedByAccountProducts)
+                .HasForeignKey(dc => dc.DeletedBy)
+                .HasConstraintName("[FK_AccountProduct_DeletedBy_Staff_StaffId")
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

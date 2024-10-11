@@ -99,6 +99,8 @@
     {
         try
         {
+            DiscountCoupon.UpdatedBy = 90002; // todo fetch the staffid
+            DiscountCoupon.UpdatedDateTimeUtc = DateTime.UtcNow;
             await DiscountCouponService.UpdateAsync(DiscountCoupon);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Discount Coupon updated successfully.");
             Navigation.NavigateTo("/discount-coupon");

@@ -166,7 +166,8 @@
     {
         try
         {
-            Staff.LastModifiedUTCDateTime = DateTime.UtcNow;
+            Staff.UpdatedBy = 90002; // todo fetch the staffid
+            Staff.UpdatedDateTimeUtc = DateTime.UtcNow;
             await StaffService.UpdateAsync(Staff);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Staff updated successfully.");
             Navigation.NavigateTo("/staff");

@@ -76,6 +76,8 @@
     {
         try
         {
+            AccountProductCategory.UpdatedBy = 90002; // todo fetch the staffid
+            AccountProductCategory.UpdatedDateTimeUtc = DateTime.UtcNow;
             await AccountProductCategoryService.UpdateAsync(AccountProductCategory);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Product category updated successfully.");
             Navigation.NavigateTo("/account-product-category");

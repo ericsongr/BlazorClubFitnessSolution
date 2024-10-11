@@ -2,7 +2,7 @@
 
 namespace ClubFitnessDomain
 {
-    public class AccountSupplier
+    public class AccountSupplier : IUserAction
     {
         public int AccountSupplierId { get; set; }
         public int? AccountId { get; set; }
@@ -21,16 +21,28 @@ namespace ClubFitnessDomain
         public bool IsActive { get; set; } = true;
         public int? LeadTimeDays { get; set; }
         public string? ShippingReference { get; set; }
-        public DateTime CreatedUtcDateTime { get; set; } = DateTime.UtcNow;
-        public DateTime UpdatedUtcDateTime { get; set; } = DateTime.UtcNow;
         public string? DisplayImagePath { get; set; }
+        
+        
+        public DateTime CreatedDateTimeUtc { get; set; } = DateTime.UtcNow;
+        public int CreatedBy { get; set; }
+        
+        public DateTime? UpdatedDateTimeUtc { get; set; }
+        public int? UpdatedBy { get; set; }
+        
         public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedDateTimeUtc { get; set; }
         public int? DeletedBy { get; set; }
+
 
         // Navigation property
         public virtual Account Account { get; set; }
 
         public virtual ICollection<AccountProduct> AccountProducts { get; set; }
+
+        // Navigation properties
+        public virtual Staff? CreatedByStaffAccountSupplier { get; set; }
+        public virtual Staff? UpdatedByStaffAccountSupplier { get; set; }
+        public virtual Staff? DeletedByStaffAccountSupplier { get; set; }
     }
 }

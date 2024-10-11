@@ -2,7 +2,7 @@
 
 namespace ClubFitnessDomain
 {
-    public class Account
+    public class Account : IUserAction
     {
         public int AccountId { get; set; }
         public string? AccountName { get; set; }
@@ -28,7 +28,13 @@ namespace ClubFitnessDomain
         public Guid AdvancedEmailEditorUid { get; set; }
         public string? CompanyLegalName { get; set; }
 
-        public bool IsDeleted { get; set; }
+        public DateTime CreatedDateTimeUtc { get; set; } = DateTime.UtcNow;
+        public int CreatedBy { get; set; }
+
+        public DateTime? UpdatedDateTimeUtc { get; set; }
+        public int? UpdatedBy { get; set; }
+
+        public bool IsDeleted { get; set; } = false;
         public DateTime? DeletedDateTimeUtc { get; set; }
         public int? DeletedBy { get; set; }
 
@@ -36,5 +42,10 @@ namespace ClubFitnessDomain
         public virtual ICollection<AccountProductCategory> AccountProductCategories { get; set; }
         public virtual ICollection<AccountProduct> AccountProducts { get; set; }
         public virtual ICollection<Staff> Staffs { get; set; }
+
+        // Navigation properties
+        public virtual Staff? CreatedByStaffAccount { get; set; }
+        public virtual Staff? UpdatedByStaffAccount { get; set; }
+        public virtual Staff? DeletedByStaffAccount { get; set; }
     }
 }

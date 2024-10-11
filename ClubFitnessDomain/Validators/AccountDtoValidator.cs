@@ -3,9 +3,9 @@ using ClubFitnessDomain.Dtos;
 
 namespace ClubFitnessDomain.Validators
 {
-    public class AccountDtoValidator : AbstractValidator<Account>
+    public class AccountValidator : AbstractValidator<Account>
     {
-        public AccountDtoValidator()
+        public AccountValidator()
         {
             RuleFor(account => account.AccountName)
                 .NotEmpty().WithMessage("Account Name is required.");

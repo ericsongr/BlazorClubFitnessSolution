@@ -69,7 +69,7 @@
     {
         try
         {
-            AccountProductSubCategory.UserName = "TODO";
+            AccountProductSubCategory.CreatedBy = 90000; // todo fetch the staffid
             await AccountProductSubCategoryService.AddAsync(AccountProductSubCategory);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Product Sub-Category added successfully.");
             Navigation.NavigateTo("/account-product-subcategory");

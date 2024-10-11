@@ -29,6 +29,10 @@ CREATE TABLE [dbo].[Accounts](
 	[PaymentIssueSuspensionDate] [datetime] NULL,
 	[AdvancedEmailEditorUid] [uniqueidentifier] NOT NULL,
 	[CompanyLegalName] [varchar](200) NULL,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
+	[UpdatedBy] [int] NULL,
+	[UpdatedDateTimeUtc] [datetime] NULL,
 	[DeletedDateTimeUtc] [datetime] NULL,
 	[DeletedBy] [INT] NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT(0),
@@ -49,6 +53,27 @@ ALTER TABLE [dbo].[Accounts] ADD  DEFAULT ((0)) FOR [ClubfitFeeFailedPaymentCoun
 GO
 
 ALTER TABLE [dbo].[Accounts] ADD  DEFAULT (newsequentialid()) FOR [AdvancedEmailEditorUid]
+GO
+
+ALTER TABLE [dbo].[Accounts]  WITH CHECK ADD  CONSTRAINT [FK_Accounts_CreatedBy_Staff_StaffId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[Accounts] CHECK CONSTRAINT [FK_Accounts_CreatedBy_Staff_StaffId]
+GO
+
+ALTER TABLE [dbo].[Accounts]  WITH CHECK ADD  CONSTRAINT [FK_Accounts_UpdatedBy_Staff_StaffId] FOREIGN KEY([UpdatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[Accounts] CHECK CONSTRAINT [FK_Accounts_UpdatedBy_Staff_StaffId]
+GO
+
+ALTER TABLE [dbo].[Accounts]  WITH CHECK ADD  CONSTRAINT [FK_Accounts_DeletedBy_Staff_StaffId] FOREIGN KEY([DeletedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[Accounts] CHECK CONSTRAINT [FK_Accounts_DeletedBy_Staff_StaffId]
 GO
 
 
@@ -105,6 +130,27 @@ GO
 ALTER TABLE [dbo].[AccountSupplier] CHECK CONSTRAINT [FK_AccountSupplier_Accounts]
 GO
 
+ALTER TABLE [dbo].[AccountSupplier]  WITH CHECK ADD  CONSTRAINT [FK_AccountSupplier_CreatedBy_Staff_StaffId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountSupplier] CHECK CONSTRAINT [FK_AccountSupplier_CreatedBy_Staff_StaffId]
+GO
+
+ALTER TABLE [dbo].[AccountSupplier]  WITH CHECK ADD  CONSTRAINT [FK_AccountSupplier_UpdatedBy_Staff_StaffId] FOREIGN KEY([UpdatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountSupplier] CHECK CONSTRAINT [FK_AccountSupplier_UpdatedBy_Staff_StaffId]
+GO
+
+ALTER TABLE [dbo].[AccountSupplier]  WITH CHECK ADD  CONSTRAINT [FK_AccountSupplier_DeletedBy_Staff_StaffId] FOREIGN KEY([DeletedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountSupplier] CHECK CONSTRAINT [FK_AccountSupplier_DeletedBy_Staff_StaffId]
+GO
+
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The expected number of days between placing an order and the order being received at the Account.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AccountSupplier', @level2type=N'COLUMN',@level2name=N'LeadTimeDays'
 GO
 
@@ -121,12 +167,12 @@ CREATE TABLE [dbo].[AccountProductCategory](
 	[AccountId] [int] NULL,
 	[ProductCategoryName] [nvarchar](40) NOT NULL,
 	[ShortDescription] [nvarchar](255) NULL,
-	[CreatedUtcDateTime] [datetime] NOT NULL,
-	[CreatedUserName] [nvarchar](50) NOT NULL,
-	[UpdatedUtcDateTime] [datetime] NOT NULL,
-	[UpdatedUserName] [nvarchar](50) NOT NULL,
 	[IsActive] [bit] NOT NULL,
 	[DisplayImagePath] [nvarchar](255) NULL,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
+	[UpdatedBy] [int] NULL,
+	[UpdatedDateTimeUtc] [datetime] NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT(0),
 	[DeletedDateTimeUtc] [datetime] NULL,
 	[DeletedBy] int NULL,
@@ -160,6 +206,29 @@ GO
 ALTER TABLE [dbo].[AccountProductCategory] CHECK CONSTRAINT [FK_AccountProductCategory_Accounts]
 GO
 
+ALTER TABLE [dbo].[AccountProductCategory]  WITH CHECK ADD  CONSTRAINT [FK_AccountProductCategory_CreatedBy_Staff_StaffId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountProductCategory] CHECK CONSTRAINT [FK_AccountProductCategory_CreatedBy_Staff_StaffId]
+GO
+
+ALTER TABLE [dbo].[AccountProductCategory]  WITH CHECK ADD  CONSTRAINT [FK_AccountProductCategory_UpdatedBy_Staff_StaffId] FOREIGN KEY([UpdatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountProductCategory] CHECK CONSTRAINT [FK_AccountProductCategory_UpdatedBy_Staff_StaffId]
+GO
+
+ALTER TABLE [dbo].[AccountProductCategory]  WITH CHECK ADD  CONSTRAINT [FK_AccountProductCategory_DeletedBy_Staff_StaffId] FOREIGN KEY([DeletedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountProductCategory] CHECK CONSTRAINT [FK_AccountProductCategory_DeletedBy_Staff_StaffId]
+GO
+
+
+
 SET ANSI_NULLS ON
 GO
 
@@ -179,6 +248,10 @@ CREATE TABLE [dbo].[AccountProductSubCategory](
 	[IsActive] [bit] NOT NULL,
 	[DisplayImagePath] [nvarchar](255) NULL,
 	[GlCode] [varchar](15) NULL,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
+	[UpdatedBy] [int] NULL,
+	[UpdatedDateTimeUtc] [datetime] NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT(0),
 	[DeletedDateTimeUtc] [datetime] NULL,
 	[DeletedBy] int NULL,
@@ -214,6 +287,29 @@ GO
 
 ALTER TABLE [dbo].[AccountProductSubCategory] CHECK CONSTRAINT [FK_AccountProductSubCategory_Accounts]
 GO
+
+
+ALTER TABLE [dbo].[AccountProductSubCategory]  WITH CHECK ADD  CONSTRAINT [FK_AccountProductSubCategory_CreatedBy_Staff_StaffId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountProductSubCategory] CHECK CONSTRAINT [FK_AccountProductSubCategory_CreatedBy_Staff_StaffId]
+GO
+
+ALTER TABLE [dbo].[AccountProductSubCategory]  WITH CHECK ADD  CONSTRAINT [FK_AccountProductSubCategory_UpdatedBy_Staff_StaffId] FOREIGN KEY([UpdatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountProductSubCategory] CHECK CONSTRAINT [FK_AccountProductSubCategory_UpdatedBy_Staff_StaffId]
+GO
+
+ALTER TABLE [dbo].[AccountProductSubCategory]  WITH CHECK ADD  CONSTRAINT [FK_AccountProductSubCategory_DeletedBy_Staff_StaffId] FOREIGN KEY([DeletedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountProductSubCategory] CHECK CONSTRAINT [FK_AccountProductSubCategory_DeletedBy_Staff_StaffId]
+GO
+
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Product sub-category internal identifier (primary key)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AccountProductSubCategory', @level2type=N'COLUMN',@level2name=N'AccountProductSubCategoryId'
 GO
@@ -255,6 +351,10 @@ CREATE TABLE [dbo].[Staff](
 	[EnableMfa] [bit] NOT NULL,
 	[MfaProvider] [int] NOT NULL,
 	[IsSaleStaff] [bit] NOT NULL,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
+	[UpdatedBy] [int] NULL,
+	[UpdatedDateTimeUtc] [datetime] NULL,
 	[DeletedDateTimeUtc] [datetime] NULL,
 	[DeletedBy] [INT] NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT(0),
@@ -323,19 +423,19 @@ CREATE TABLE [dbo].[DiscountCoupons](
 	[DiscountType] [smallint] NOT NULL,
 	[MinimumAmount] [decimal](18, 0) NULL,
 	[IsActive] [bit] NOT NULL,
-	[CreatedBy] [int] NOT NULL,
-	[CreatedUtcDateTime] [datetime] NOT NULL,
-	[UpdatedBy] [int] NULL,
-	[UpdatedUtcDateTime] [datetime] NULL,
 	[ExpiryDate] [datetime] NULL,
 	[AccountId] [int] NOT NULL,
 	[ChargeType] [varchar](50) NULL,
-	[IsDeleted] [bit] NOT NULL DEFAULT(0),
-	[DeletedDateTimeUtc] [datetime] NULL,
-	[DeletedBy] int NULL,
 	[DiscountFor] [smallint] NOT NULL,
 	[IsCombineFees] [bit] NOT NULL,
 	[AllocatedValueJson] [varchar](max) NULL,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
+	[UpdatedBy] [int] NULL,
+	[UpdatedDateTimeUtc] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] int NULL,
  CONSTRAINT [PK_DiscountCoupons] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
@@ -366,6 +466,12 @@ GO
 ALTER TABLE [dbo].[DiscountCoupons] CHECK CONSTRAINT [FK_DiscountCoupons_Staff1]
 GO
 
+ALTER TABLE [dbo].[DiscountCoupons]  WITH CHECK ADD  CONSTRAINT [FK_DiscountCoupon_DeletedBy_Staff_StaffId] FOREIGN KEY([DeletedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[DiscountCoupons] CHECK CONSTRAINT [FK_DiscountCoupon_DeletedBy_Staff_StaffId]
+GO
 
 
 SET ANSI_NULLS ON
@@ -405,14 +511,18 @@ CREATE TABLE [dbo].[AccountProduct](
 	[IsCasualEntry] [bit] NOT NULL,
 	[IsPosItem] [bit] NOT NULL,
 	[IsStockTakeRequired] [bit] NOT NULL,
-	[IsDeleted] [bit] NOT NULL DEFAULT(0),
-	[DeletedDateTimeUtc] [datetime] NULL,
-	[DeletedBy] int NULL,
 	[GstRequired] [bit] NOT NULL,
 	[ExpiryDate] [date] NULL,
 	[IsCommissionable] [bit] NOT NULL,
 	[CommissionAmount] [decimal](19, 6) NULL,
 	[DiscountCouponId] [int] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
+	[UpdatedBy] [int] NULL,
+	[UpdatedDateTimeUtc] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] int NULL,
  CONSTRAINT [PK_AccountProduct] PRIMARY KEY CLUSTERED 
 (
 	[AccountProductId] ASC
@@ -502,6 +612,28 @@ REFERENCES [dbo].[DiscountCoupons] ([Id])
 GO
 
 ALTER TABLE [dbo].[AccountProduct] CHECK CONSTRAINT [FK_AccountProduct_DiscountCoupon_DiscountCouponId]
+GO
+
+ALTER TABLE [dbo].[AccountProduct]  WITH CHECK ADD  CONSTRAINT [FK_AccountProduct_Staff_StaffId] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountProduct] CHECK CONSTRAINT [FK_AccountProduct_Staff_StaffId]
+GO
+
+ALTER TABLE [dbo].[AccountProduct]  WITH CHECK ADD  CONSTRAINT [FK_AccountProduct_UpdatedBy_Staff_StaffId] FOREIGN KEY([UpdatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountProduct]  WITH CHECK ADD  CONSTRAINT [FK_AccountProduct_DeletedBy_Staff_StaffId] FOREIGN KEY([DeletedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[AccountProduct] CHECK CONSTRAINT [FK_AccountProduct_DeletedBy_Staff_StaffId]
+GO
+
+
+ALTER TABLE [dbo].[AccountProduct] CHECK CONSTRAINT [FK_AccountProduct_UpdatedBy_Staff_StaffId]
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Account product internal identifier (primary key)' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AccountProduct', @level2type=N'COLUMN',@level2name=N'AccountProductId'

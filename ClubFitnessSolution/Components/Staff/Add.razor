@@ -166,7 +166,7 @@
         try
         {
             Staff.PreferredClub = Staff.PreferredClub == 0 ? null : Staff.PreferredClub;
-            Staff.LastModifiedUTCDateTime = DateTime.UtcNow;
+            Staff.CreatedBy = 90000; // todo fetch the staffid
             await StaffService.AddAsync(Staff);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Staff added successfully.");
             Navigation.NavigateTo("/staff");
