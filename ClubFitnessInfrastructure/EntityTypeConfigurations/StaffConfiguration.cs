@@ -15,8 +15,9 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
             builder.Property(s => s.MobilePhone).IsRequired();
             builder.Property(s => s.Barcode).IsRequired();
             builder.Property(s => s.Email).IsRequired();
-
-            builder.Property(s => s.LastModifiedUTCDateTime).IsRequired().HasDefaultValueSql("getutcdate()");
+            
+            builder.Property(s => s.CreatedBy).IsRequired();
+            builder.Property(s => s.CreatedDateTimeUtc).IsRequired().HasDefaultValueSql("getutcdate()");
             builder.Property(s => s.MobilePhone).IsRequired().HasMaxLength(20);
             builder.Property(s => s.HourlyRate).IsRequired().HasDefaultValue(0);
 

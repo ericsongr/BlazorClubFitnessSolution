@@ -7,7 +7,6 @@
         public string? LastName { get; set; }
         public bool IsActive { get; set; }
         public string? Barcode { get; set; }
-        public DateTime LastModifiedUTCDateTime { get; set; }
         public string? MobilePhone { get; set; }
         public string? HomePhone { get; set; }
         public string? PhotoLocation { get; set; }
@@ -16,7 +15,6 @@
         public int? AccessControlUserId { get; set; }
         public string? Role { get; set; }
         public bool IsRegister { get; set; }
-        public int? CreatedBy { get; set; }
         public string? PosAccessPin { get; set; }
         public bool CanModify { get; set; }
         public bool IsSubscribeReminder { get; set; }
@@ -28,6 +26,12 @@
         public bool EnableMfa { get; set; }
         public int MfaProvider { get; set; }
         public bool IsSaleStaff { get; set; }
+
+        public DateTime CreatedDateTimeUtc { get; set; } = DateTime.UtcNow;
+        public int CreatedBy { get; set; }
+
+        public DateTime? UpdatedDateTimeUtc { get; set; }
+        public int? UpdatedBy { get; set; }
 
         public bool IsDeleted { get; set; }
         public DateTime? DeletedDateTimeUtc { get; set; }
@@ -51,5 +55,14 @@
         public ICollection<AccountProductSubCategory> CreatedByProductSubCategories { get; set; }
         public ICollection<AccountProductSubCategory> UpdatedByProductSubCategories { get; set; }
         public ICollection<AccountProductSubCategory> DeletedByProductSubCategories { get; set; }
+
+        public ICollection<AccountSupplier> CreatedByAccountSuppliers { get; set; }
+        public ICollection<AccountSupplier> UpdatedByAccountSuppliers { get; set; }
+        public ICollection<AccountSupplier> DeletedByAccountSuppliers { get; set; }
+        
+        public ICollection<Account> CreatedByAccounts { get; set; }
+        public ICollection<Account> UpdatedByAccounts { get; set; }
+        public ICollection<Account> DeletedByAccounts { get; set; }
+        
     }
 }

@@ -143,6 +143,7 @@
     {
         try
         {
+            AccountSupplier.CreatedBy = 90000; // todo fetch the staffid
             await AccountSupplierService.AddAsync(AccountSupplier);
 
             NotificationService.Notify(new NotificationMessage

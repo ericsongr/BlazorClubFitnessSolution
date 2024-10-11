@@ -151,6 +151,7 @@
 
     private async Task AddNewAccountOnSubmit()
     {
+        Account.CreatedBy = 90000; // todo fetch the staffid
         await AccountService.AddAsync(Account); // Call the method from IAccountService
 
         NotificationService.Notify(new NotificationMessage

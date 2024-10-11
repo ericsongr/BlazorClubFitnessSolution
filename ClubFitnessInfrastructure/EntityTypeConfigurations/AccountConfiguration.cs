@@ -44,6 +44,24 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
             // Configure other properties
             builder.Property(a => a.PaymentIssueSuspensionDate).HasColumnType("datetime");
 
+            builder.HasOne(dc => dc.CreatedByStaffAccount)
+                .WithMany(dc => dc.CreatedByAccounts)
+                .HasForeignKey(dc => dc.CreatedBy)
+                .HasConstraintName("FK_Accounts_CreatedBy_Staff_StaffId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(dc => dc.UpdatedByStaffAccount)
+                .WithMany(dc => dc.UpdatedByAccounts)
+                .HasForeignKey(dc => dc.UpdatedBy)
+                .HasConstraintName("FK_Accounts_UpdatedBy_Staff_StaffId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(dc => dc.DeletedByStaffAccount)
+                .WithMany(dc => dc.DeletedByAccounts)
+                .HasForeignKey(dc => dc.DeletedBy)
+                .HasConstraintName("FK_Accounts_DeletedBy_Staff_StaffId")
+                .OnDelete(DeleteBehavior.Restrict);
+
             builder.HasQueryFilter(o => !o.IsDeleted);
 
         }

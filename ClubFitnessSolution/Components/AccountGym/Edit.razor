@@ -144,6 +144,8 @@
         {
             try
             {
+                Account.UpdatedBy = 90002; // todo fetch the staffid
+                Account.UpdatedDateTimeUtc = DateTime.UtcNow;
                 await AccountService.UpdateAsync(Account);
 
                 NotificationService.Notify(new NotificationMessage
