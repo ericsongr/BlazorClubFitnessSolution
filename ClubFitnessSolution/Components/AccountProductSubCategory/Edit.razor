@@ -10,6 +10,7 @@
 @inject IAccountProductCategoryService AccountProductCategoryService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
 @rendermode RenderMode.InteractiveServer
 
@@ -71,7 +72,7 @@
     {
         try
         {
-            AccountProductSubCategory.UpdatedBy = 90002; // todo fetch the staffid
+            AccountProductSubCategory.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
             AccountProductSubCategory.UpdatedDateTimeUtc = DateTime.UtcNow;
             await AccountProductSubCategoryService.UpdateAsync(AccountProductSubCategory);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Product Sub-Category updated successfully.");

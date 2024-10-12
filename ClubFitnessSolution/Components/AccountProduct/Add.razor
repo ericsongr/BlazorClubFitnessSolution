@@ -15,6 +15,7 @@
 @inject IDiscountCouponService DiscountCouponService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
 @rendermode RenderMode.InteractiveServer
 
@@ -252,7 +253,7 @@
     {
         try
         {
-            AccountProduct.CreatedBy = 90000; // todo fetch the staffid
+            AccountProduct.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
             await AccountProductService.AddAsync(AccountProduct);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Product added successfully.");
             Navigation.NavigateTo("/account-product");

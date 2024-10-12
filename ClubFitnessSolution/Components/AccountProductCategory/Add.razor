@@ -10,6 +10,7 @@
 @inject IAccountService AccountService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
 @rendermode RenderMode.InteractiveServer
 
@@ -76,7 +77,7 @@
     {
         try
         {
-            AccountProductCategory.CreatedBy = 90000; // todo fetch the staffid
+            AccountProductCategory.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
             await AccountProductCategoryService.AddAsync(AccountProductCategory);
                 NotificationService.Notify(NotificationSeverity.Success, "Success", "Product category added successfully.");
                 Navigation.NavigateTo("/account-product-category");

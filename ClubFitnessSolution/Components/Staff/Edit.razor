@@ -10,6 +10,7 @@
 @inject IAccountService AccountService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
 @rendermode RenderMode.InteractiveServer
 
@@ -166,7 +167,7 @@
     {
         try
         {
-            Staff.UpdatedBy = 90002; // todo fetch the staffid
+            Staff.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
             Staff.UpdatedDateTimeUtc = DateTime.UtcNow;
             await StaffService.UpdateAsync(Staff);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Staff updated successfully.");

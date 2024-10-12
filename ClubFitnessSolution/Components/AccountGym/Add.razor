@@ -6,6 +6,7 @@
 
 @inject NavigationManager Navigation
 @inject NotificationService NotificationService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountService AccountService
 
 @rendermode RenderMode.InteractiveServer
@@ -151,7 +152,7 @@
 
     private async Task AddNewAccountOnSubmit()
     {
-        Account.CreatedBy = 90000; // todo fetch the staffid
+        Account.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
         await AccountService.AddAsync(Account); // Call the method from IAccountService
 
         NotificationService.Notify(new NotificationMessage

@@ -4,12 +4,16 @@
 @using ClubFitnessServices.Interfaces
 @using Microsoft.AspNetCore.Components
 @using Blazored.FluentValidation
-@using Radzen
+@using Microsoft.AspNetCore.Identity
 
 @inject IStaffService StaffService
 @inject IAccountService AccountService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
+
+@inject UserManager<ApplicationUser> UserManager
+@inject IUserStore<ApplicationUser> UserStore
 
 @rendermode RenderMode.InteractiveServer
 
@@ -143,6 +147,26 @@
         <div class="col-md-4 mb-3 mt-4">
             <label for="isSaleStaff">Is Sale Staff:</label>
             <RadzenSwitch @bind-Value="Staff.IsSaleStaff" />
+        </div> 
+        <hr />
+        <div class="col-md-4 mb-3 mt-4">
+            <h2>User Account</h2>
+            
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Staff.Username" class="form-control" autocomplete="username" aria-required="true" placeholder="username" />
+                <label for="Username">Username</label>
+                <ValidationMessage For="() => Staff.Username" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Staff.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label for="password">Password</label>
+                <ValidationMessage For="() => Staff.Password" class="text-danger" />
+            </div>
+            <div class="form-floating mb-3">
+                <InputText type="password" @bind-Value="Staff.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
+                <label for="confirm-password">Confirm Password</label>
+                <ValidationMessage For="() => Staff.ConfirmPassword" class="text-danger" />
+            </div>
         </div>
     </div>
 
@@ -154,6 +178,17 @@
 
 @code {
     private Staff Staff = new Staff();
+    // private Staff Staff = new Staff
+    // {
+    //     PreferredClub = 21,
+    //     FirstName = "Glaiza",
+    //     LastName = "Ramos",
+    //     Barcode = "123456789",
+    //     MobilePhone = "0949939494",
+    //     Username = "glaiza",
+    //     Password = "Pa$$w0rd",
+    //     ConfirmPassword = "Pa$$w0rd",
+    // };
     private IEnumerable<Account> accounts;
 
     protected override async Task OnInitializedAsync()
@@ -166,14 +201,54 @@
         try
         {
             Staff.PreferredClub = Staff.PreferredClub == 0 ? null : Staff.PreferredClub;
-            Staff.CreatedBy = 90000; // todo fetch the staffid
+            Staff.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
+
             await StaffService.AddAsync(Staff);
+
+            //register username and password
+            var user = CreateUser();
+            user.StaffId = Staff.StaffId;
+
+            await UserStore.SetUserNameAsync(user, Staff.Username, CancellationToken.None);
+            var emailStore = GetEmailStore();
+            await emailStore.SetEmailAsync(user, Staff.Email, CancellationToken.None);
+            var result = await UserManager.CreateAsync(user, Staff.Password);
+
+            if (!result.Succeeded)
+            {
+                // identityErrors = result.Errors;
+                return;
+            }
+
+
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Staff added successfully.");
             Navigation.NavigateTo("/staff");
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
+        }
+    }
+
+    private IUserEmailStore<ApplicationUser> GetEmailStore()
+    {
+        if (!UserManager.SupportsUserEmail)
+        {
+            throw new NotSupportedException("The default UI requires a user store with email support.");
+        }
+        return (IUserEmailStore<ApplicationUser>)UserStore;
+    }
+
+    private ApplicationUser CreateUser()
+    {
+        try
+        {
+            return Activator.CreateInstance<ApplicationUser>();
+        }
+        catch
+        {
+            throw new InvalidOperationException($"Can't create an instance of '{nameof(ApplicationUser)}'. " +
+                                                $"Ensure that '{nameof(ApplicationUser)}' is not an abstract class and has a parameterless constructor.");
         }
     }
 

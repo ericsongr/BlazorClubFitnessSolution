@@ -5,6 +5,7 @@
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountProductService AccountProductService
 
 @rendermode RenderMode.InteractiveServer
@@ -89,7 +90,7 @@
 
         if (confirmed == true)
         {
-            await AccountProductService.DeleteAsync(accountProduct.AccountProductId, 90003); //TODO: 99999 to supply from StaffId of Staff table
+            await AccountProductService.DeleteAsync(accountProduct.AccountProductId, UserAuthenticationStateProvider.GetStaffId());
 
             NotificationService.Notify(new NotificationMessage
                 {
