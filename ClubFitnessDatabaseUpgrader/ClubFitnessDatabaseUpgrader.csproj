@@ -10,15 +10,11 @@
   <ItemGroup>
     <None Remove="Scripts\Create\0001-Schema.sql" />
     <None Remove="Scripts\Create\0002-BaseData.sql" />
-    <None Remove="Scripts\Update\v1.0001\0001-pos.sql" />
-    <None Remove="Scripts\Update\v1.0001\0002-added-staffid.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Scripts\Create\0001-Schema.sql" />
     <EmbeddedResource Include="Scripts\Create\0002-BaseData.sql" />
-    <EmbeddedResource Include="Scripts\Update\v1.0001\0002-added-staffid.sql" />
-    <EmbeddedResource Include="Scripts\Update\v1.0001\0001-pos.sql" />
   </ItemGroup>
 
   <ItemGroup>
@@ -40,6 +36,10 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Scripts\Update\v1.0001\" />
   </ItemGroup>
 
 </Project>
