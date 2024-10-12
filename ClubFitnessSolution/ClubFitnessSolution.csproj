@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
     <PackageReference Include="Radzen.Blazor" Version="5.2.9" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.1.5" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,6 +25,10 @@
     <ProjectReference Include="..\ClubFitnessDomain\ClubFitnessDomain.csproj" />
     <ProjectReference Include="..\ClubFitnessInfrastructure\ClubFitnessInfrastructure.csproj" />
     <ProjectReference Include="..\ClubFitnessServices\ClubFitnessServices.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="wwwroot\uploads\" />
   </ItemGroup>
 
 </Project>
