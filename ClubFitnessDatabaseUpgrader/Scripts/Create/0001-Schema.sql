@@ -1,3 +1,164 @@
+CREATE TABLE AspNetRoles (
+    Id NVARCHAR(450) NOT NULL,
+    Name NVARCHAR(256) NULL,
+    NormalizedName NVARCHAR(256) NULL,
+    ConcurrencyStamp NVARCHAR(MAX) NULL,
+    CONSTRAINT PK_AspNetRoles PRIMARY KEY (Id)
+);
+GO
+
+CREATE TABLE AspNetUsers (
+    Id NVARCHAR(450) NOT NULL,
+    UserName NVARCHAR(256) NULL,
+    NormalizedUserName NVARCHAR(256) NULL,
+    Email NVARCHAR(256) NULL,
+    NormalizedEmail NVARCHAR(256) NULL,
+    EmailConfirmed BIT NOT NULL,
+    PasswordHash NVARCHAR(MAX) NULL,
+    SecurityStamp NVARCHAR(MAX) NULL,
+    ConcurrencyStamp NVARCHAR(MAX) NULL,
+    PhoneNumber NVARCHAR(MAX) NULL,
+    PhoneNumberConfirmed BIT NOT NULL,
+    TwoFactorEnabled BIT NOT NULL,
+    LockoutEnd DATETIMEOFFSET NULL,
+    LockoutEnabled BIT NOT NULL,
+    AccessFailedCount INT NOT NULL,
+	StaffId int not null default(90000),
+    CONSTRAINT PK_AspNetUsers PRIMARY KEY (Id)
+);
+GO
+
+CREATE TABLE AspNetRoleClaims (
+    Id INT IDENTITY(1,1) NOT NULL,
+    RoleId NVARCHAR(450) NOT NULL,
+    ClaimType NVARCHAR(MAX) NULL,
+    ClaimValue NVARCHAR(MAX) NULL,
+    CONSTRAINT PK_AspNetRoleClaims PRIMARY KEY (Id),
+    CONSTRAINT FK_AspNetRoleClaims_AspNetRoles_RoleId FOREIGN KEY (RoleId)
+    REFERENCES AspNetRoles (Id) ON DELETE CASCADE
+);
+GO
+
+CREATE TABLE AspNetUserClaims (
+    Id INT IDENTITY(1,1) NOT NULL,
+    UserId NVARCHAR(450) NOT NULL,
+    ClaimType NVARCHAR(MAX) NULL,
+    ClaimValue NVARCHAR(MAX) NULL,
+    CONSTRAINT PK_AspNetUserClaims PRIMARY KEY (Id),
+    CONSTRAINT FK_AspNetUserClaims_AspNetUsers_UserId FOREIGN KEY (UserId)
+    REFERENCES AspNetUsers (Id) ON DELETE CASCADE
+);
+GO
+
+CREATE TABLE AspNetUserLogins (
+    LoginProvider NVARCHAR(450) NOT NULL,
+    ProviderKey NVARCHAR(450) NOT NULL,
+    ProviderDisplayName NVARCHAR(MAX) NULL,
+    UserId NVARCHAR(450) NOT NULL,
+    CONSTRAINT PK_AspNetUserLogins PRIMARY KEY (LoginProvider, ProviderKey),
+    CONSTRAINT FK_AspNetUserLogins_AspNetUsers_UserId FOREIGN KEY (UserId)
+    REFERENCES AspNetUsers (Id) ON DELETE CASCADE
+);
+GO
+
+CREATE TABLE AspNetUserRoles (
+    UserId NVARCHAR(450) NOT NULL,
+    RoleId NVARCHAR(450) NOT NULL,
+    CONSTRAINT PK_AspNetUserRoles PRIMARY KEY (UserId, RoleId),
+    CONSTRAINT FK_AspNetUserRoles_AspNetRoles_RoleId FOREIGN KEY (RoleId)
+    REFERENCES AspNetRoles (Id) ON DELETE CASCADE,
+    CONSTRAINT FK_AspNetUserRoles_AspNetUsers_UserId FOREIGN KEY (UserId)
+    REFERENCES AspNetUsers (Id) ON DELETE CASCADE
+);
+GO
+
+CREATE TABLE AspNetUserTokens (
+    UserId NVARCHAR(450) NOT NULL,
+    LoginProvider NVARCHAR(450) NOT NULL,
+    Name NVARCHAR(450) NOT NULL,
+    Value NVARCHAR(MAX) NULL,
+    CONSTRAINT PK_AspNetUserTokens PRIMARY KEY (UserId, LoginProvider, Name),
+    CONSTRAINT FK_AspNetUserTokens_AspNetUsers_UserId FOREIGN KEY (UserId)
+    REFERENCES AspNetUsers (Id) ON DELETE CASCADE
+);
+GO
+
+-- Indexes for AspNetRoleClaims
+CREATE INDEX IX_AspNetRoleClaims_RoleId ON AspNetRoleClaims (RoleId);
+GO
+
+-- Indexes for AspNetRoles
+CREATE UNIQUE INDEX RoleNameIndex ON AspNetRoles (NormalizedName)
+WHERE NormalizedName IS NOT NULL;
+GO
+
+-- Indexes for AspNetUserClaims
+CREATE INDEX IX_AspNetUserClaims_UserId ON AspNetUserClaims (UserId);
+GO
+
+-- Indexes for AspNetUserLogins
+CREATE INDEX IX_AspNetUserLogins_UserId ON AspNetUserLogins (UserId);
+GO
+
+-- Indexes for AspNetUserRoles
+CREATE INDEX IX_AspNetUserRoles_RoleId ON AspNetUserRoles (RoleId);
+GO
+
+-- Indexes for AspNetUsers
+CREATE INDEX EmailIndex ON AspNetUsers (NormalizedEmail);
+GO
+
+CREATE UNIQUE INDEX UserNameIndex ON AspNetUsers (NormalizedUserName)
+WHERE NormalizedUserName IS NOT NULL;
+GO
+
+/****** Object:  Table [dbo].[Staff]    Script Date: 10/9/2024 11:25:35 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Staff](
+	[StaffId] [int] IDENTITY(90000,1) NOT NULL,
+	[FirstName] [varchar](100) NULL,
+	[LastName] [varchar](100) NULL,
+	[IsActive] [bit] NOT NULL,
+	[Barcode] [varchar](10) NULL,
+	[LastModifiedUTCDateTime] [datetime] NOT NULL,
+	[MobilePhone] [nvarchar](20) NOT NULL,
+	[HomePhone] [nvarchar](20) NULL,
+	[PhotoLocation] [nvarchar](300) NULL,
+	[Email] [nvarchar](255) NULL,
+	[ProviderUserKey] [uniqueidentifier] NULL,
+	[AccessControlUserId] [int] NULL,
+	[Role] [nvarchar](20) NULL,
+	[IsRegister] [bit] NOT NULL,
+	[PosAccessPin] [nvarchar](4) NULL,
+	[CanModify] [bit] NOT NULL,
+	[IsSubscribeReminder] [bit] NOT NULL,
+	[PreferredClub] [int] NULL,
+	[EnablePreferredClubPrompt] [bit] NOT NULL,
+	[HourlyRate] [money] NOT NULL,
+	[RestrictAccessByIp] [bit] NOT NULL,
+	[RestrictedIp] [varchar](50) NULL,
+	[EnableMfa] [bit] NOT NULL,
+	[MfaProvider] [int] NOT NULL,
+	[IsSaleStaff] [bit] NOT NULL,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
+	[UpdatedBy] [int] NULL,
+	[UpdatedDateTimeUtc] [datetime] NULL,
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] [INT] NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[UserName] nvarchar(256) NULL,
+ CONSTRAINT [PK_Staff] PRIMARY KEY CLUSTERED 
+(
+	[StaffId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
 
 SET ANSI_NULLS ON
 GO
@@ -101,12 +262,14 @@ CREATE TABLE [dbo].[AccountSupplier](
 	[IsActive] [bit] NOT NULL,
 	[LeadTimeDays] [int] NULL,
 	[ShippingReference] [nvarchar](64) NULL,
-	[CreatedUtcDateTime] [datetime] NOT NULL,
-	[UpdatedUtcDateTime] [datetime] NOT NULL,
 	[DisplayImagePath] [nvarchar](255) NULL,
-	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[CreatedBy] [int] NOT NULL,
+	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
+	[UpdatedBy] [int] NULL,
+	[UpdatedDateTimeUtc] [datetime] NULL,
 	[DeletedDateTimeUtc] [datetime] NULL,
-	[DeletedBy] [nvarchar](50) NULL,
+	[DeletedBy] [INT] NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
  CONSTRAINT [PK_AccountSupplier] PRIMARY KEY CLUSTERED 
 (
 	[AccountSupplierId] ASC
@@ -115,12 +278,6 @@ CREATE TABLE [dbo].[AccountSupplier](
 GO
 
 ALTER TABLE [dbo].[AccountSupplier] ADD  CONSTRAINT [DF_AccountSupplier_IsActive]  DEFAULT ((1)) FOR [IsActive]
-GO
-
-ALTER TABLE [dbo].[AccountSupplier] ADD  CONSTRAINT [DF_AccountSupplier_CreatedUtcDateTime]  DEFAULT (getutcdate()) FOR [CreatedUtcDateTime]
-GO
-
-ALTER TABLE [dbo].[AccountSupplier] ADD  CONSTRAINT [DF_AccountSupplier_UpdatedUtcDateTime]  DEFAULT (getutcdate()) FOR [UpdatedUtcDateTime]
 GO
 
 ALTER TABLE [dbo].[AccountSupplier]  WITH CHECK ADD  CONSTRAINT [FK_AccountSupplier_Accounts] FOREIGN KEY([AccountId])
@@ -184,16 +341,7 @@ CREATE TABLE [dbo].[AccountProductCategory](
 ) ON [PRIMARY]
 GO
 
-ALTER TABLE [dbo].[AccountProductCategory] ADD  CONSTRAINT [DF_AccountProductCategory_CreatedUtcDateTime]  DEFAULT (getutcdate()) FOR [CreatedUtcDateTime]
-GO
-
-ALTER TABLE [dbo].[AccountProductCategory] ADD  CONSTRAINT [DF_AccountProductCategory_UpdatedUtcDateTime]  DEFAULT (getutcdate()) FOR [UpdatedUtcDateTime]
-GO
-
 ALTER TABLE [dbo].[AccountProductCategory] ADD  CONSTRAINT [DF_AccountProductCategory_IsActive]  DEFAULT ((1)) FOR [IsActive]
-GO
-
-ALTER TABLE [dbo].[AccountProductCategory] ADD  DEFAULT ((0)) FOR [IsDeleted]
 GO
 
 ALTER TABLE [dbo].[AccountProductCategory] ADD  DEFAULT ((1)) FOR [IsPosCategory]
@@ -271,9 +419,6 @@ GO
 ALTER TABLE [dbo].[AccountProductSubCategory] ADD  CONSTRAINT [DF_AccountProductSubCategory_IsActive]  DEFAULT ((1)) FOR [IsActive]
 GO
 
-ALTER TABLE [dbo].[AccountProductSubCategory] ADD  DEFAULT ((0)) FOR [IsDeleted]
-GO
-
 ALTER TABLE [dbo].[AccountProductSubCategory]  WITH CHECK ADD  CONSTRAINT [FK_AccountProductSubCategory_AccountProductCategory] FOREIGN KEY([AccountProductCategoryId])
 REFERENCES [dbo].[AccountProductCategory] ([AccountProductCategoryId])
 GO
@@ -315,55 +460,6 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Product sub-ca
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'Product category to which the sub-category belongs' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AccountProductSubCategory', @level2type=N'COLUMN',@level2name=N'AccountProductCategoryId'
-GO
-
-/****** Object:  Table [dbo].[Staff]    Script Date: 10/9/2024 11:25:35 AM ******/
-SET ANSI_NULLS ON
-GO
-
-SET QUOTED_IDENTIFIER ON
-GO
-
-CREATE TABLE [dbo].[Staff](
-	[StaffId] [int] IDENTITY(90000,1) NOT NULL,
-	[FirstName] [varchar](100) NULL,
-	[LastName] [varchar](100) NULL,
-	[IsActive] [bit] NOT NULL,
-	[Barcode] [varchar](10) NULL,
-	[LastModifiedUTCDateTime] [datetime] NOT NULL,
-	[MobilePhone] [nvarchar](20) NOT NULL,
-	[HomePhone] [nvarchar](20) NULL,
-	[PhotoLocation] [nvarchar](300) NULL,
-	[Email] [nvarchar](255) NULL,
-	[ProviderUserKey] [uniqueidentifier] NULL,
-	[AccessControlUserId] [int] NULL,
-	[Role] [nvarchar](20) NULL,
-	[IsRegister] [bit] NOT NULL,
-	[CreatedBy] [int] NULL,
-	[PosAccessPin] [nvarchar](4) NULL,
-	[CanModify] [bit] NOT NULL,
-	[IsSubscribeReminder] [bit] NOT NULL,
-	[PreferredClub] [int] NULL,
-	[EnablePreferredClubPrompt] [bit] NOT NULL,
-	[HourlyRate] [money] NOT NULL,
-	[RestrictAccessByIp] [bit] NOT NULL,
-	[RestrictedIp] [varchar](50) NULL,
-	[EnableMfa] [bit] NOT NULL,
-	[MfaProvider] [int] NOT NULL,
-	[IsSaleStaff] [bit] NOT NULL,
-	[CreatedBy] [int] NOT NULL,
-	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
-	[UpdatedBy] [int] NULL,
-	[UpdatedDateTimeUtc] [datetime] NULL,
-	[DeletedDateTimeUtc] [datetime] NULL,
-	[DeletedBy] [INT] NULL,
-	[IsDeleted] [bit] NOT NULL DEFAULT(0),
-	[UserName] nvarchar(256) NULL,
- CONSTRAINT [PK_Staff] PRIMARY KEY CLUSTERED 
-(
-	[StaffId] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
 GO
 
 ALTER TABLE [dbo].[Staff] ADD  CONSTRAINT [DF_Staff_LastModifiedUTCDateTime]  DEFAULT (getutcdate()) FOR [LastModifiedUTCDateTime]
