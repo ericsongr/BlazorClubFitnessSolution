@@ -15,8 +15,9 @@
 @inject IDiscountCouponService DiscountCouponService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -251,7 +252,7 @@
     {
         try
         {
-            AccountProduct.UpdatedBy = 90002; // todo fetch the staffid
+            AccountProduct.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
             AccountProduct.UpdatedDateTimeUtc = DateTime.UtcNow;
             await AccountProductService.UpdateAsync(AccountProduct);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Product updated successfully.");

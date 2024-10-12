@@ -8,8 +8,9 @@
 @inject IAccountService AccountService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -76,7 +77,7 @@
     {
         try
         {
-            AccountProductCategory.UpdatedBy = 90002; // todo fetch the staffid
+            AccountProductCategory.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
             AccountProductCategory.UpdatedDateTimeUtc = DateTime.UtcNow;
             await AccountProductCategoryService.UpdateAsync(AccountProductCategory);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Product category updated successfully.");

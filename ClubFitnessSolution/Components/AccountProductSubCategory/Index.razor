@@ -5,9 +5,10 @@
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountProductSubCategoryService AccountProductSubCategoryService
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -88,7 +89,7 @@
 
         if (confirmed == true)
         {
-            await AccountProductSubCategoryService.DeleteAsync(accountProductSubCategories.AccountProductSubCategoryId, 90003); //TODO: 99999 to supply from StaffId of Staff table
+            await AccountProductSubCategoryService.DeleteAsync(accountProductSubCategories.AccountProductSubCategoryId, UserAuthenticationStateProvider.GetStaffId());
 
             NotificationService.Notify(new NotificationMessage
                 {

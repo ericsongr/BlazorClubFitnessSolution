@@ -11,8 +11,9 @@
 @inject IAccountProductCategoryService AccountProductCategoryService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <EditForm Model="@AccountProductSubCategory" OnValidSubmit="AddAccountProductSubCategory">
     <FluentValidationValidator />
@@ -69,7 +70,7 @@
     {
         try
         {
-            AccountProductSubCategory.CreatedBy = 90000; // todo fetch the staffid
+            AccountProductSubCategory.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
             await AccountProductSubCategoryService.AddAsync(AccountProductSubCategory);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Product Sub-Category added successfully.");
             Navigation.NavigateTo("/account-product-subcategory");

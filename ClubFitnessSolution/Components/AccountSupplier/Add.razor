@@ -6,10 +6,11 @@
 
 @inject NavigationManager Navigation
 @inject NotificationService NotificationService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountSupplierService AccountSupplierService
 @inject IAccountService AccountService
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -143,7 +144,7 @@
     {
         try
         {
-            AccountSupplier.CreatedBy = 90000; // todo fetch the staffid
+            AccountSupplier.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
             await AccountSupplierService.AddAsync(AccountSupplier);
 
             NotificationService.Notify(new NotificationMessage

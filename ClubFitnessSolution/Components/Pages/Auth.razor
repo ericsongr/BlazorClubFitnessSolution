@@ -1,6 +1,12 @@
 ﻿@page "/auth"
 
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
+@using ClubFitnessDomain
+@using System.Security.Claims
+
+@inject UserManager<ApplicationUser> UserManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize]
 
@@ -9,5 +15,38 @@
 <h1>You are authenticated</h1>
 
 <AuthorizeView>
-    Hello @context.User.Identity?.Name!
+    <div>
+        Hello @context.User.Identity?.Name!
+    </div>
+    <div>
+        @if (applicationUser == null)
+        {
+            <p>Loading...</p>
+        }
+        else
+        {
+            <p>Welcome, @applicationUser.UserName!</p>
+            <p>Email: @applicationUser.Email</p>
+            <p>Staff ID: @applicationUser.StaffId</p>
+        }
+    </div>
 </AuthorizeView>
+
+@code {
+    private ApplicationUser applicationUser;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity.IsAuthenticated)
+        {
+    // Retrieve the current user's ID
+            var userId = user.FindFirstValue(ClaimTypes.NameIdentifier);
+
+    // Find the ApplicationUser based on the user ID
+            applicationUser = await UserManager.FindByIdAsync(userId);
+        }
+    }
+}

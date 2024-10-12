@@ -2,12 +2,14 @@
 
 @using ClubFitnessServices.Interfaces
 @using ClubFitnessDomain
+@using ClubFitnessSolution.Services
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject IDiscountCouponService DiscountCouponService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -83,7 +85,7 @@
 
         if (confirmed == true)
         {
-            await DiscountCouponService.DeleteAsync(discountCoupon.Id, 90003); //TODO: 99999 to supply from StaffId of Staff table
+            await DiscountCouponService.DeleteAsync(discountCoupon.Id, UserAuthenticationStateProvider.GetStaffId()); //TODO: 99999 to supply from StaffId of Staff table
 
             NotificationService.Notify(new NotificationMessage
                 {

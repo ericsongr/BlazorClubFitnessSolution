@@ -5,9 +5,10 @@
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountSupplierService AccountSupplierService
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -82,7 +83,7 @@
 
         if (confirmed == true)
         {
-            await AccountSupplierService.DeleteAsync(accountSupplier.AccountSupplierId, 90003); //TODO: 99999 to supply from StaffId of Staff table
+            await AccountSupplierService.DeleteAsync(accountSupplier.AccountSupplierId, UserAuthenticationStateProvider.GetStaffId());
 
             NotificationService.Notify(new NotificationMessage
                 {

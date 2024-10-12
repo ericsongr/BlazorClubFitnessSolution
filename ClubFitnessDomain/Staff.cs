@@ -1,4 +1,7 @@
-﻿namespace ClubFitnessDomain
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ClubFitnessDomain
 {
     public class Staff 
     {
@@ -11,6 +14,7 @@
         public string? HomePhone { get; set; }
         public string? PhotoLocation { get; set; }
         public string? Email { get; set; }
+
         public Guid? ProviderUserKey { get; set; }
         public int? AccessControlUserId { get; set; }
         public string? Role { get; set; }
@@ -37,6 +41,20 @@
         public DateTime? DeletedDateTimeUtc { get; set; }
         public int? DeletedBy { get; set; }
 
+
+        [NotMapped]
+        [EmailAddress]
+        public string? Username { get; set; }
+
+        [NotMapped]
+        [DataType(DataType.Password)]
+        public string? Password { get; set; }
+
+        [NotMapped]
+        [DataType(DataType.Password)]
+        public string? ConfirmPassword { get; set; }
+
+        
         // Navigation properties
         public virtual Account PreferredClubAccount { get; set; }
 
@@ -63,6 +81,8 @@
         public ICollection<Account> CreatedByAccounts { get; set; }
         public ICollection<Account> UpdatedByAccounts { get; set; }
         public ICollection<Account> DeletedByAccounts { get; set; }
+
+        public ApplicationUser ApplicationUser { get; set; }
         
     }
 }

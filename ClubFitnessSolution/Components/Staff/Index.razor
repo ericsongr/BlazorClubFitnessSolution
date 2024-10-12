@@ -6,8 +6,9 @@
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject IStaffService StaffService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -88,7 +89,7 @@
 
         if (confirmed == true)
         {
-            await StaffService.DeleteAsync(staff.StaffId, 90003); //TODO: 99999 to supply from StaffId of Staff table
+            await StaffService.DeleteAsync(staff.StaffId, UserAuthenticationStateProvider.GetStaffId()); //TODO: 99999 to supply from StaffId of Staff table
 
             NotificationService.Notify(new NotificationMessage
             {

@@ -4,14 +4,17 @@
 @using ClubFitnessServices.Interfaces
 @using Microsoft.AspNetCore.Components
 @using Blazored.FluentValidation
+@using ClubFitnessSolution.Services
 @using Radzen
 
 @inject IDiscountCouponService DiscountCouponService
 @inject IAccountService AccountService
+
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
+@inject UserAuthenticationStateProvider UserStateProvider
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -99,7 +102,7 @@
     {
         try
         {
-            DiscountCoupon.UpdatedBy = 90002; // todo fetch the staffid
+            DiscountCoupon.UpdatedBy = UserStateProvider.GetStaffId();
             DiscountCoupon.UpdatedDateTimeUtc = DateTime.UtcNow;
             await DiscountCouponService.UpdateAsync(DiscountCoupon);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Discount Coupon updated successfully.");

@@ -6,9 +6,10 @@
 
 @inject NavigationManager Navigation
 @inject NotificationService NotificationService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountService AccountService
 
-@rendermode InteractiveServer
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -144,7 +145,7 @@
         {
             try
             {
-                Account.UpdatedBy = 90002; // todo fetch the staffid
+                Account.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
                 Account.UpdatedDateTimeUtc = DateTime.UtcNow;
                 await AccountService.UpdateAsync(Account);
 

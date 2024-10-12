@@ -57,6 +57,9 @@ builder.Services.AddAutoMapper(typeof(AdministratorProfile));
 var clubFitnessInfrastructure = Assembly.Load("ClubFitnessInfrastructure");
 var clubFitnessServices = Assembly.Load("ClubFitnessServices");
 
+builder.Services.AddScoped<AuthenticationStateProvider, UserAuthenticationStateProvider>();
+builder.Services.AddScoped<UserAuthenticationStateProvider>();
+
 //// Register all repositories
 builder.Services.AddAllRepositoriesFromAssemblies(clubFitnessInfrastructure);
 

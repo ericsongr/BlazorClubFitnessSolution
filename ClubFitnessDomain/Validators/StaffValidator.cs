@@ -50,6 +50,19 @@ namespace ClubFitnessDomain.Validators
             RuleFor(s => s.HourlyRate)
                 .NotNull()
                 .WithMessage("Hourly Rate is required.");
+
+            RuleFor(s => s.Username)
+                .NotEmpty()
+                .WithMessage("Username is required.");
+
+            RuleFor(s => s.Password)
+                .NotEmpty()
+                .WithMessage("Password is required.");
+
+            RuleFor(s => s.ConfirmPassword)
+                .NotEmpty()
+                .WithMessage("ConfirmPassword is required.")
+                .Equal(x => x.Password).WithMessage("Passwords do not match."); ;
         }
     }
 }

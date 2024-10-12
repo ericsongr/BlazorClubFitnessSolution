@@ -4,6 +4,7 @@
 @using ClubFitnessServices.Interfaces
 @using Microsoft.AspNetCore.Components
 @using Blazored.FluentValidation
+@using ClubFitnessSolution.Services
 @using Radzen
 
 @inject IDiscountCouponService DiscountCouponService
@@ -11,7 +12,10 @@
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
 
-@rendermode InteractiveServer
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
+
+
+@rendermode RenderMode.InteractiveServer
 
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
@@ -96,7 +100,7 @@
     {
         try
         {
-            DiscountCoupon.CreatedBy = 90000; // todo fetch the staffid
+            DiscountCoupon.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
             await DiscountCouponService.AddAsync(DiscountCoupon);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Discount Coupon added successfully.");
             Navigation.NavigateTo("/discount-coupon");
