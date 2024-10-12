@@ -63,6 +63,8 @@
         public ICollection<Account> CreatedByAccounts { get; set; }
         public ICollection<Account> UpdatedByAccounts { get; set; }
         public ICollection<Account> DeletedByAccounts { get; set; }
+
+        public ApplicationUser ApplicationUser { get; set; }
         
     }
 }

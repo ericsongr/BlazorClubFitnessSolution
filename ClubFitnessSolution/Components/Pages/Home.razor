@@ -1,6 +1,7 @@
 ﻿@page "/"
 
-@rendermode InteractiveServer
+
+@rendermode RenderMode.InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
@@ -8,17 +9,14 @@
 
 Welcome to your new app.
 
-<RadzenButton Click="AddCar">Add Car</RadzenButton>
 
 @code
 {
-    string name = "gonzaga";
+    string name = string.Empty;
 
-    private void AddCar()
+    protected override async Task OnInitializedAsync()
     {
-        if (name == "gonzaga")
-            name = "ramos";
-        else
-            name = "gonzaga";
     }
+
+    
 }
