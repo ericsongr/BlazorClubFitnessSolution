@@ -358,6 +358,7 @@ CREATE TABLE [dbo].[Staff](
 	[DeletedDateTimeUtc] [datetime] NULL,
 	[DeletedBy] [INT] NULL,
 	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[UserName] nvarchar(256) NULL,
  CONSTRAINT [PK_Staff] PRIMARY KEY CLUSTERED 
 (
 	[StaffId] ASC
