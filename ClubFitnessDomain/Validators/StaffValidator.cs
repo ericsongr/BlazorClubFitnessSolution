@@ -51,7 +51,7 @@ namespace ClubFitnessDomain.Validators
                 .NotNull()
                 .WithMessage("Hourly Rate is required.");
 
-            RuleFor(s => s.Username)
+            RuleFor(s => s.UserName)
                 .NotEmpty()
                 .WithMessage("Username is required.");
 

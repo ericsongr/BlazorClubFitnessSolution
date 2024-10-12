@@ -153,9 +153,9 @@
             <h2>User Account</h2>
             
             <div class="form-floating mb-3">
-                <InputText @bind-Value="Staff.Username" class="form-control" autocomplete="username" aria-required="true" placeholder="username" />
+                <InputText @bind-Value="Staff.UserName" class="form-control" autocomplete="username" aria-required="true" placeholder="username" />
                 <label for="Username">Username</label>
-                <ValidationMessage For="() => Staff.Username" class="text-danger" />
+                <ValidationMessage For="() => Staff.UserName" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
                 <InputText type="password" @bind-Value="Staff.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
@@ -181,11 +181,12 @@
     // private Staff Staff = new Staff
     // {
     //     PreferredClub = 21,
-    //     FirstName = "Glaiza",
+    //     FirstName = "Gidion",
     //     LastName = "Ramos",
     //     Barcode = "123456789",
+    //     Email = "gidion@yahoo.com",
     //     MobilePhone = "0949939494",
-    //     Username = "glaiza",
+    //     UserName = "gidion",
     //     Password = "Pa$$w0rd",
     //     ConfirmPassword = "Pa$$w0rd",
     // };
@@ -209,16 +210,17 @@
             var user = CreateUser();
             user.StaffId = Staff.StaffId;
 
-            await UserStore.SetUserNameAsync(user, Staff.Username, CancellationToken.None);
+            await UserStore.SetUserNameAsync(user, Staff.UserName, CancellationToken.None);
             var emailStore = GetEmailStore();
             await emailStore.SetEmailAsync(user, Staff.Email, CancellationToken.None);
+            user.EmailConfirmed = true;
             var result = await UserManager.CreateAsync(user, Staff.Password);
 
-            if (!result.Succeeded)
-            {
-                // identityErrors = result.Errors;
-                return;
-            }
+            // if (!result.Succeeded)
+            // {
+            //     // identityErrors = result.Errors;
+            //     return;
+            // }
 
 
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Staff added successfully.");

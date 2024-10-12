@@ -41,10 +41,7 @@ namespace ClubFitnessDomain
         public DateTime? DeletedDateTimeUtc { get; set; }
         public int? DeletedBy { get; set; }
 
-
-        [NotMapped]
-        [EmailAddress]
-        public string? Username { get; set; }
+        public string? UserName { get; set; }
 
         [NotMapped]
         [DataType(DataType.Password)]
