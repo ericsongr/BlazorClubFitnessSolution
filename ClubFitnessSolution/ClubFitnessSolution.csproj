@@ -8,11 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Components\_Host.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Blazored.FluentValidation" Version="2.2.0" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
     <PackageReference Include="Microsoft.AspNetCore.Components.QuickGrid.EntityFrameworkAdapter" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.8" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.8" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.5" />
@@ -25,6 +30,7 @@
     <ProjectReference Include="..\ClubFitnessDomain\ClubFitnessDomain.csproj" />
     <ProjectReference Include="..\ClubFitnessInfrastructure\ClubFitnessInfrastructure.csproj" />
     <ProjectReference Include="..\ClubFitnessServices\ClubFitnessServices.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="7.0.7" />
   </ItemGroup>
 
   <ItemGroup>

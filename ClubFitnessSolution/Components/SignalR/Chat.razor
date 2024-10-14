@@ -1,0 +1,116 @@
+﻿@page "/chat"
+@using Microsoft.AspNetCore.SignalR.Client
+@using ClubFitnessSolution.Services
+@using ClubFitnessSolution.Models
+@inject NavigationManager Navigation
+@inject ChatService ChatService
+
+@implements IAsyncDisposable
+@rendermode RenderMode.InteractiveServer
+<h3>Blazor Chat</h3>
+
+<div>
+    <input @bind="userInput" placeholder="Your name" />
+</div>
+<div>
+    <textarea @bind="messageInput" placeholder="Your message" @onkeydown="HandleKeyPress"></textarea>
+</div>
+<div>
+    <button @onclick="SendMessage">Send</button>
+    <button @onclick="SendAlarm">Send Alarm</button>
+    <button @onclick="SendDoubleScan">Send Double Scan</button>
+    <button @onclick="SendMembershipInactive">Send Membership Inactive</button>
+    <button @onclick="SendPaymentIssue">Send Payment Issue</button>
+</div>
+
+<ul>
+    @foreach (var message in ChatService.Messages)
+    {
+        <li><strong>@message.User:</strong> @message.Message</li>
+    }
+</ul>
+
+@code {
+    private string? userInput;
+    private string? messageInput;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ChatService.StartConnection(); // Start the SignalR connection    
+
+        // Subscribe to the OnMessageReceived event
+        ChatService.OnMessageReceived += OnMessageReceived;
+    }
+
+    private async Task SendAlarm()
+    {
+        messageInput = "alarm";
+        await SendMessage();
+    }
+
+    private async Task SendDoubleScan()
+    {
+        messageInput = "double-scan";
+        await SendMessage();
+    }
+
+    private async Task SendMembershipInactive()
+    {
+        messageInput = "membership-inactive";
+        await SendMessage();
+    }
+
+    private async Task SendPaymentIssue()
+    {
+        messageInput = "payment-issue";
+        await SendMessage();
+    }
+
+    private async Task SendMessage()
+    {
+        if (ChatService.IsConnected)
+        {
+            var request = new ChatMessage
+            {
+                User = userInput,
+                Message = messageInput
+            };
+            await ChatService.SendMessage(request);
+            messageInput = string.Empty;
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task HandleKeyPress(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessage();
+        }
+    }
+
+    private void OnMessageReceived()
+    {
+    // Trigger a re-render when a new message is received
+        InvokeAsync(StateHasChanged);
+    }
+
+    // Unsubscribe from the event to avoid memory leaks
+    public void Dispose()
+    {
+        ChatService.OnMessageReceived -= OnMessageReceived;
+    }
+
+
+    // Implement IAsyncDisposable to ensure the service is disposed properly
+    public async ValueTask DisposeAsync()
+    {
+        ChatService.OnMessageReceived -= OnMessageReceived;
+
+        await ChatService.DisposeAsync(); // Dispose the service asynchronously
+    }
+    
+  
+    
+}
