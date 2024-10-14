@@ -1,8 +1,13 @@
-﻿@inherits LayoutComponentBase
+﻿@using ClubFitnessSolution.Services
+@inherits LayoutComponentBase
+
+@inject NavigationManager Navigation
+@inject NotificationService NotificationService
+@inject ChatService ChatService
 
 <RadzenTheme Theme="material" @rendermode="InteractiveServer" />
 @* <RadzenDialog @rendermode="@RenderMode.InteractiveServer"/> *@
-<RadzenComponents @rendermode="@RenderMode.InteractiveServer"/>
+<RadzenComponents @rendermode="@RenderMode.InteractiveServer" />
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -25,3 +30,10 @@
     <a href="" class="reload">Reload</a>
     <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await ChatService.StartConnection(); // Start the SignalR connection
+    }
+}

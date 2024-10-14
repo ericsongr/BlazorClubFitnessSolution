@@ -10,8 +10,11 @@ using System.Reflection;
 using ClubFitnessDomain.Validators;
 using ClubFitnessSolution;
 using ClubFitnessSolution.MappingProfiles;
+using ClubFitnessSolution.Services.Hubs;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using ClubFitnessSolution.Services;
+using Microsoft.JSInterop;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,9 +34,13 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-
+//register for signalr these 3
+//builder.Services.AddRazorPages();
+//builder.Services.AddServerSideBlazor();
+builder.Services.AddSignalR(); 
 builder.Services.AddRadzenComponents();
 builder.Services.AddScoped<DialogService>();
+builder.Services.AddScoped<ChatService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ClubFitnessDbContext>(options =>
@@ -96,5 +103,11 @@ app.MapRazorComponents<App>()
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
+
+//register for signalr - hub
+//app.MapRazorPages();
+//app.MapBlazorHub();
+app.MapHub<ChatHub>("/chathub");
+//app.MapFallbackToPage("/_Host");
 
 app.Run();
