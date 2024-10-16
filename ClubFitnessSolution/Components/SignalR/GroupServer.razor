@@ -1,0 +1,135 @@
+﻿@page "/group-server"
+
+@inject UserGroupService UserGroupService
+
+@using ClubFitnessSolution.Models
+@using System.ComponentModel.DataAnnotations
+@using ClubFitnessSolution.Services
+
+@implements IAsyncDisposable
+
+<h3>Group Server</h3>
+<div class="row">
+    <EditForm Model="@user" OnValidSubmit="SendGroupMessage">
+        <DataAnnotationsValidator />
+        <div class="col-3 mb-3">
+            <RadzenDropDown @bind-Value="user.SelectedRole" Data="@roles"
+                            AllowClear="true"
+                            Placeholder="Select roles" class="form-control" />
+            <ValidationMessage For="@(() => user.SelectedRole)" />
+        </div>
+        <div class="col-3 mb-3">
+            <label for="username">Username:</label>
+            <InputText id="username" @bind-Value="user.Username" class="form-control" />
+            <ValidationMessage For="@(() => user.Username)" />
+        </div>
+        <div class="col-3 mb-3">
+            <label for="message">Message:</label>
+            <InputText id="message" @bind-Value="user.Message" class="form-control" />
+            <ValidationMessage For="@(() => user.Message)" />
+        </div>
+        <br />
+        <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary" ButtonStyle="ButtonStyle.Success">Send Message</RadzenButton>
+    </EditForm>
+</div>
+<div class="row">
+    @if (roles != null)
+    {
+        foreach (var role in roles.Where(o => o != "All"))
+        {
+            <div class="col-3">
+                <h4>@role</h4>
+                <ul>
+                    @foreach (var message in UserGroupService.GroupMessages.FindAll(o => o.SelectedRole == role))
+                    {
+                        <li>
+                            <strong> @message.Username:</strong> @message.Message
+
+                        </li>
+                    }
+                </ul>
+            </div>
+        }    
+    }
+    
+
+</div>
+
+
+
+@rendermode RenderMode.InteractiveServer
+
+@code {
+    GroupNotification groupNotification = new GroupNotification();
+    UserGroup user = new UserGroup { Username = "PowerUser" };
+    IEnumerable<string> roles = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await UserGroupService.StartConnection();
+
+        roles = groupNotification.Roles;
+
+        await AddToAllGroups();
+
+        UserGroupService.OnMessageReceived += OnMessageReceived;
+    }
+
+    private async Task SendGroupMessage()
+    {
+        if (UserGroupService.IsConnected)
+        {
+            if (user.SelectedRole == "All")
+            {
+                foreach (var role in roles)
+                {
+                    user.SelectedRole = role;
+                    await UserGroupService.SendGroupMessage(user);
+                }
+            }
+            else
+            {
+                await UserGroupService.SendGroupMessage(user);
+            }
+
+            user.Message = string.Empty;
+
+            await InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private async Task AddToAllGroups()
+    {
+        foreach (var role in groupNotification.Roles)
+        {
+            await UserGroupService.AddToGroup(new UserGroup
+                {
+                    Username = user.Username,
+                    SelectedRole = role
+                });
+        }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        foreach (var role in groupNotification.Roles)
+        {
+            await UserGroupService.RemoveToGroup(new UserGroup
+                {
+                    Username = user.Username,
+                    SelectedRole = role
+                });
+        }
+
+        UserGroupService.OnMessageReceived -= OnMessageReceived;
+    }
+
+    private void OnMessageReceived()
+    {
+        // Trigger a re-render when a new message is received
+        InvokeAsync(StateHasChanged);
+    }
+
+}
+

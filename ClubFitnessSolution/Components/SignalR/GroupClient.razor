@@ -1,0 +1,126 @@
+﻿
+@page "/group-client"
+
+@inject UserGroupService UserGroupService
+
+@using ClubFitnessSolution.Models
+@using System.ComponentModel.DataAnnotations
+@using ClubFitnessSolution.Services
+
+@implements IAsyncDisposable
+
+@rendermode RenderMode.InteractiveServer
+
+<h3>Group Client</h3>
+<div class="row">
+    <EditForm Model="@user" OnValidSubmit="Connect">
+        <DataAnnotationsValidator />
+        <div class="col-3 mb-3">
+            <RadzenDropDown @bind-Value="user.SelectedRole" Data="@roles"
+                            AllowClear="true"
+                            Placeholder="Select roles" class="form-control"/>
+            <ValidationMessage For="@(() => user.SelectedRole)"/>
+        </div>
+        <div class="col-3 mb-3">
+            <label for="username">Username:</label>
+            <InputText id="username" @bind-Value="user.Username" class="form-control"/>
+            <ValidationMessage For="@(() => user.Username)"/>
+        </div>
+        <div class="col-3 mb-3">
+            <label for="message">Message:</label>
+            <InputText id="message" @bind-Value="user.Message" class="form-control" />
+            <ValidationMessage For="@(() => user.Message)" />
+        </div>
+        <br/>
+        @if (isConnectedToGroup)
+        {
+            <RadzenButton ButtonType="ButtonType.Button" class="btn btn-primary" ButtonStyle="ButtonStyle.Success"
+                          Click="SendMessage">Send Message</RadzenButton>
+            <RadzenButton ButtonType="ButtonType.Button" class="btn btn-primary" ButtonStyle="ButtonStyle.Success"
+                          Click="DisconnectToGroup">Disconnect</RadzenButton>                                                                                                                                 
+        }
+        else
+        {
+            <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary" ButtonStyle="ButtonStyle.Success">Connect</RadzenButton>
+        }
+    </EditForm>
+</div>
+@if (isConnectedToGroup)
+{
+    <div class="row">
+        <ul>
+            @foreach (var message in UserGroupService.GroupMessages.FindAll(o => o.SelectedRole == user.SelectedRole))
+            {
+                <li><strong>@message.Username:</strong> @message.Message</li>
+            }
+        </ul>
+    </div>
+}
+
+
+
+
+
+
+@code {
+    GroupNotification groupNotification = new GroupNotification();
+    UserGroup user = new UserGroup();
+    IEnumerable<string> roles = null;
+    string selectedRole = string.Empty;
+    string username = string.Empty;
+    bool isConnectedToGroup = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await UserGroupService.StartConnection();
+
+        roles = groupNotification.Roles;
+
+        UserGroupService.OnMessageReceived += OnMessageReceived;
+    }
+
+    private async Task Connect()
+    {
+        isConnectedToGroup = true;
+        await UserGroupService.AddToGroup(user);
+    }
+
+    private async Task DisconnectToGroup()
+    {
+        
+        isConnectedToGroup = false;
+
+        await UserGroupService.RemoveToGroup(user);
+
+        user.SelectedRole = string.Empty;
+
+    }
+
+    private async Task SendMessage()
+    {
+        
+        await UserGroupService.SendGroupMessage(user);
+
+        await InvokeAsync(StateHasChanged);
+        
+    }
+
+    private void OnMessageReceived()
+    {
+    // Trigger a re-render when a new message is received
+        InvokeAsync(StateHasChanged);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        await UserGroupService.RemoveToGroup(new UserGroup
+        {
+            Username = user.Username,
+            SelectedRole = user.SelectedRole
+        });
+
+        UserGroupService.OnMessageReceived -= OnMessageReceived;
+    }
+}
+
