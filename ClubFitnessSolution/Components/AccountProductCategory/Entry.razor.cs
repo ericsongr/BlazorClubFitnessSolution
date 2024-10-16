@@ -1,8 +1,10 @@
 ﻿using ClubFitnessDomain.Dtos;
 using ClubFitnessDomain;
+using ClubFitnessSolution.Services.Constants;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using Radzen;
+using ClubFitnessSolution.Services;
 
 namespace ClubFitnessSolution.Components.AccountProductCategory
 {
@@ -11,15 +13,11 @@ namespace ClubFitnessSolution.Components.AccountProductCategory
         [Parameter] public int? Id { get; set; }
 
         public bool IsAdd => Id == null ? true : false;
-        //{
-        //    get { return Id == 0 ? true : false; }
-        //}
 
         private AccountProductCategoryDto AccountProductCategory = new AccountProductCategoryDto();
 
         private IEnumerable<ClubFitnessDomain.Account> accounts;
 
-        // Temporary path for uploaded image
         private string uploadedImagePath;
 
         protected override async Task OnInitializedAsync()
@@ -27,7 +25,12 @@ namespace ClubFitnessSolution.Components.AccountProductCategory
             accounts = await AccountService.GetAllAsync();
 
             if (!IsAdd)
+            {
                 AccountProductCategory = await AccountProductCategoryService.GetByIdAsync(Id ?? 0);
+
+                if (AccountProductCategory.DisplayImagePath != null)
+                    uploadedImagePath = ImageService.GetImage(AccountProductCategory.DisplayImagePath, FolderConstant.Categories);
+            }
         }
 
         private async Task Save()
@@ -65,8 +68,9 @@ namespace ClubFitnessSolution.Components.AccountProductCategory
         {
             try
             {
-                uploadedImagePath  = await ImageService.UploadImageAsync(e.File);
-                AccountProductCategory.DisplayImagePath = uploadedImagePath;
+                AccountProductCategory.DisplayImagePath = await ImageService.UploadImageAsync(e.File, FolderConstant.Categories);
+                uploadedImagePath = ImageService.GetImage(AccountProductCategory.DisplayImagePath, FolderConstant.Categories);
+                
                 NotificationService.Notify(NotificationSeverity.Success, "Success", "Image uploaded successfully.");
             }
             catch (Exception ex)
@@ -75,6 +79,7 @@ namespace ClubFitnessSolution.Components.AccountProductCategory
                 NotificationService.Notify(NotificationSeverity.Error, "Error", "Image upload failed.");
             }
         }
+
 
         private void Back()
         {

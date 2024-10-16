@@ -58,6 +58,15 @@
         <label for="displayImagePath">Display Image:</label>
         <InputFile OnChange="@UploadImage" />
     </div>
+    
+    @if (!string.IsNullOrEmpty(uploadedImagePath))
+    {
+        <div class="mb-3">
+            <label for="uploadedImage">Uploaded Image:</label>
+            <br/>
+            <img src="@uploadedImagePath" alt="Uploaded image" style="max-width: 200px; max-height: 200px;" />
+        </div>
+    }
 
     <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary"
                   ButtonStyle="ButtonStyle.Success">Save</RadzenButton>

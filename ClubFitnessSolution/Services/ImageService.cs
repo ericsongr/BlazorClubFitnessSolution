@@ -7,6 +7,7 @@
     using System.IO;
     using System;
     using System.Threading.Tasks;
+    using ClubFitnessSolution.Services.Constants;
 
     public class ImageService
     {
@@ -17,12 +18,18 @@
             _env = env;
         }
 
-        public async Task<string> UploadImageAsync(IBrowserFile file)
+        public string GetImage(string filename, string folder = FolderConstant.Images)
+        {
+            return $"/uploads/{folder}/{filename}";
+        }
+
+        public async Task<string> UploadImageAsync(IBrowserFile file, string folder = FolderConstant.Images)
         {
             try
             {
+                string path = $"uploads/{folder}";
                 // Define the upload folder path
-                var uploadsFolder = Path.Combine(_env.WebRootPath, "uploads");
+                var uploadsFolder = Path.Combine(_env.WebRootPath, path);
 
                 // Ensure the directory exists
                 if (!Directory.Exists(uploadsFolder))
