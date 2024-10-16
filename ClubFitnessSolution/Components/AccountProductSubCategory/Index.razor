@@ -43,8 +43,14 @@
                             SelectionMode="DataGridSelectionMode.Single">
 
                 <Columns>
-                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="ProductSubCategoryName" Filterable="true" Title="Sub-Category Name" TextAlign="TextAlign.Center" />
-                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="ShortDescription" Filterable="true" Title="Description" />
+                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="DisplayImagePath" Filterable="true" Title="Image" TextAlign="TextAlign.Center">
+                        <Template Context="data">
+                            <img src="@(data.DisplayImagePath == null ? "/uploads/no-image.png" : $"/uploads/SubCategories/{data.DisplayImagePath}")"
+                                 alt="Uploaded image" style="max-width: 100px; max-height: 100px;" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="ProductSubCategoryName" Filterable="true" Title="Sub-Category Name" TextAlign="TextAlign.Center"/>
+                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="ShortDescription" Filterable="true" Title="Description"/>
                     <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Title="Is Active" Filterable="false">
                         <Template Context="data">
                             @if (data.IsActive)

@@ -43,9 +43,15 @@
                             SelectionMode="DataGridSelectionMode.Single">
 
                 <Columns>
-                    <RadzenDataGridColumn TItem="AccountProduct" Property="ProductName" Filterable="true" Title="Product Name" TextAlign="TextAlign.Center" />
-                    <RadzenDataGridColumn TItem="AccountProduct" Property="DepartmentType" Filterable="true" Title="Department Type" />
-                    <RadzenDataGridColumn TItem="AccountProduct" Property="OnHandQuantity" Filterable="true" Title="On Hand Quantity" TextAlign="TextAlign.Center" />
+                    <RadzenDataGridColumn TItem="AccountProduct" Property="DisplayImagePath" Filterable="true" Title="Image" TextAlign="TextAlign.Center">
+                        <Template Context="data">
+                            <img src="@(data.DisplayImagePath == null ? "/uploads/no-image.png" : $"/uploads/Products/{data.DisplayImagePath}")"
+                                 alt="Uploaded image" style="max-width: 100px; max-height: 100px;" />
+                        </Template>
+                    </RadzenDataGridColumn>
+                    <RadzenDataGridColumn TItem="AccountProduct" Property="ProductName" Filterable="true" Title="Product Name" TextAlign="TextAlign.Center"/>
+                    <RadzenDataGridColumn TItem="AccountProduct" Property="DepartmentType" Filterable="true" Title="Department Type"/>
+                    <RadzenDataGridColumn TItem="AccountProduct" Property="OnHandQuantity" Filterable="true" Title="On Hand Quantity" TextAlign="TextAlign.Center"/>
                     <RadzenDataGridColumn TItem="AccountProduct" Title="Is Active" Filterable="false">
                         <Template Context="data">
                             @if (data.IsActive)
