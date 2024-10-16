@@ -41,6 +41,7 @@ builder.Services.AddSignalR();
 builder.Services.AddRadzenComponents();
 builder.Services.AddScoped<DialogService>();
 builder.Services.AddScoped<ChatService>();
+builder.Services.AddScoped<UserGroupService>();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ClubFitnessDbContext>(options =>
