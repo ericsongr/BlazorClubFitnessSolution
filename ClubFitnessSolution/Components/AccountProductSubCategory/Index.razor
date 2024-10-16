@@ -1,12 +1,15 @@
 ﻿@page "/account-product-subcategory"
 @using ClubFitnessServices.Interfaces
 @using ClubFitnessDomain.Dtos
+@using ClubFitnessSolution.Components.Shared
 
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountProductSubCategoryService AccountProductSubCategoryService
+
+@inherits BasePage
 
 @rendermode RenderMode.InteractiveServer
 
@@ -15,71 +18,77 @@
     <RadzenBreadCrumbItem Path="/account-product-subcategory" Text="Product Sub-Category List" />
 </RadzenBreadCrumb>
 
-<div class="p-lg-1 p-md-3 p-sm-2">
-    <h1 class="fw-bold">Product Sub-Category List</h1>
+@if (IsLoading)
+{
+    <LoadingSpinner />    
+}
+else
+{
+    <div class="p-lg-1 p-md-3 p-sm-2">
+        <h1 class="fw-bold">Product Sub-Category List</h1>
 
-    <RadzenButton Click="@(args => Navigation.NavigateTo("/account-product-subcategory/add"))"
-                  Style="margin-top: 20px; margin-bottom: 10px;"
-                  ButtonStyle="ButtonStyle.Success">Create New Product Sub-Category</RadzenButton>
+        <RadzenButton Click="@(args => Navigation.NavigateTo("/account-product-subcategory/add"))"
+                      Style="margin-top: 20px; margin-bottom: 10px;"
+                      ButtonStyle="ButtonStyle.Success">Create New Product Sub-Category</RadzenButton>
 
-    <div class="card p-1 shadow">
-        @if (accountProductSubCategories == null)
-        {
-            <h1 class="alert alert-danger">No product sub-categories found!</h1>
-        }
-        else
-        {
-            <RadzenDataGrid AllowFiltering="true"
-                            AllowColumnResize="true"
-                            AllowAlternatingRows="false"
-                            AllowSorting="true"
-                            PageSize="20"
-                            AllowPaging="true"
-                            PagerHorizontalAlign="HorizontalAlign.Left"
-                            ShowPagingSummary="true"
-                            Data="@accountProductSubCategories"
-                            TItem="AccountProductSubCategoryDto"
-                            LogicalFilterOperator="LogicalFilterOperator.Or"
-                            SelectionMode="DataGridSelectionMode.Single">
+        <div class="card p-1 shadow">
+            @if (accountProductSubCategories == null)
+            {
+                <h1 class="alert alert-danger">No product sub-categories found!</h1>
+            }
+            else
+            {
+                <RadzenDataGrid AllowFiltering="true"
+                                AllowColumnResize="true"
+                                AllowAlternatingRows="false"
+                                AllowSorting="true"
+                                PageSize="20"
+                                AllowPaging="true"
+                                PagerHorizontalAlign="HorizontalAlign.Left"
+                                ShowPagingSummary="true"
+                                Data="@accountProductSubCategories"
+                                TItem="AccountProductSubCategoryDto"
+                                LogicalFilterOperator="LogicalFilterOperator.Or"
+                                SelectionMode="DataGridSelectionMode.Single">
 
-                <Columns>
-                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="DisplayImagePath" Filterable="true" Title="Image" TextAlign="TextAlign.Center">
-                        <Template Context="data">
-                            <img src="@(data.DisplayImagePath == null ? "/uploads/no-image.png" : $"/uploads/SubCategories/{data.DisplayImagePath}")"
-                                 alt="Uploaded image" style="max-width: 100px; max-height: 100px;" />
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="ProductSubCategoryName" Filterable="true" Title="Sub-Category Name" TextAlign="TextAlign.Center"/>
-                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="ShortDescription" Filterable="true" Title="Description"/>
-                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Title="Is Active" Filterable="false">
-                        <Template Context="data">
-                            @if (data.IsActive)
-                            {
-                                <span>Yes</span>
-                            }
-                            else
-                            {
-                                <span>No</span>
-                            }
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Title="Actions" Filterable="false">
-                        <Template Context="data">
-                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/account-product-subcategory/edit/{data.AccountProductSubCategoryId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
-                            <RadzenButton Click="@(args => Delete(data))" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
+                    <Columns>
+                        <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="DisplayImagePath" Filterable="true" Title="Image" TextAlign="TextAlign.Center">
+                            <Template Context="data">
+                                <img src="@(data.DisplayImagePath == null ? "/uploads/no-image.png" : $"/uploads/SubCategories/{data.DisplayImagePath}")"
+                                     alt="Uploaded image" style="max-width: 100px; max-height: 100px;"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="ProductSubCategoryName" Filterable="true" Title="Sub-Category Name" TextAlign="TextAlign.Center"/>
+                        <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Property="ShortDescription" Filterable="true" Title="Description"/>
+                        <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Title="Is Active" Filterable="false">
+                            <Template Context="data">
+                                @if (data.IsActive)
+                                {
+                                    <span>Yes</span>
+                                }
+                                else
+                                {
+                                    <span>No</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="AccountProductSubCategoryDto" Title="Actions" Filterable="false">
+                            <Template Context="data">
+                                <RadzenButton Click="@(args => Navigation.NavigateTo($"/account-product-subcategory/edit/{data.AccountProductSubCategoryId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
+                                <RadzenButton Click="@(args => Delete(data))" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
 
-        }
+            }
+        </div>
     </div>
-</div>
-
+}
 @code {
     IEnumerable<AccountProductSubCategoryDto> accountProductSubCategories;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task LoadDataAsync()
     {
         accountProductSubCategories = await GetAllAccountProductSubCategoriesForGrid();
     }

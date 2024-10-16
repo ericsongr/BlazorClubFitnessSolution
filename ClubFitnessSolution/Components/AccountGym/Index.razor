@@ -1,12 +1,15 @@
 ﻿@page "/account-gym" 
 @using ClubFitnessServices.Interfaces
 @using ClubFitnessDomain
+@using ClubFitnessSolution.Components.Shared
 
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountService AccountService
+
+@inherits BasePage
 
 @rendermode RenderMode.InteractiveServer
 
@@ -15,59 +18,66 @@
     <RadzenBreadCrumbItem Path="/account-gym" Text="Account List" />
 </RadzenBreadCrumb>
 
-<div class="p-lg-1 p-md-3 p-sm-2">
-    <h1 class="fw-bold">Account List</h1>
-    
-    <RadzenButton 
-        Click="@(args => Navigation.NavigateTo("/add-account"))"
-        Style="margin-top: 20px; margin-bottom: 10px;"
-                  ButtonStyle="ButtonStyle.Success">Create New Account</RadzenButton>
+@if (IsLoading)
+{
+    <LoadingSpinner />    
+}
+else
+{
+    <div class="p-lg-1 p-md-3 p-sm-2">
+        <h1 class="fw-bold">Account List</h1>
 
-    <div class="card p-1 shadow">
-        @if (accounts == null)
-        {
-            <h1 class="alert alert-danger">No cars found!</h1>
-        }
-        else
-        {
-            <RadzenDataGrid 
-                AllowFiltering="true" 
-                AllowColumnResize="true" 
-                AllowAlternatingRows="false" 
-                AllowSorting="true" 
-                PageSize="20" 
-                AllowPaging="true" 
-                PagerHorizontalAlign="HorizontalAlign.Left" 
-                ShowPagingSummary="true" 
-                Data="@accounts" 
-                TItem="Account" 
-                LogicalFilterOperator="LogicalFilterOperator.Or" 
-                SelectionMode="DataGridSelectionMode.Single">
-    
-                <Columns>
-                    <RadzenDataGridColumn TItem="Account" Property="AccountName" Filterable="true" Title="Account Name" TextAlign="TextAlign.Center" />
-                    <RadzenDataGridColumn TItem="Account" Property="Email" Filterable="true" Title="Email" />
-                    <RadzenDataGridColumn TItem="Account" Property="PhoneNumber" Filterable="true" Title="Phone Number" />
-                    <RadzenDataGridColumn TItem="Account" Property="WebsiteUrl" Filterable="true" Title="Website URL" />
-                    <RadzenDataGridColumn TItem="Account" Property="BusinessOwnerName" Filterable="true" Title="Business Owner Name" />
-                    <RadzenDataGridColumn TItem="Account" Property="City" Filterable="true" Title="City" />
-                    <RadzenDataGridColumn TItem="Account" Title="Actions" Filterable="false">
-                        <Template Context="data">
-                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/edit-account/{data.AccountId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
-                            <RadzenButton Click="@(args => Delete(data))" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
+        <RadzenButton
+            Click="@(args => Navigation.NavigateTo("/add-account"))"
+            Style="margin-top: 20px; margin-bottom: 10px;"
+            ButtonStyle="ButtonStyle.Success">Create New Account</RadzenButton>
 
-        }
+        <div class="card p-1 shadow">
+            @if (accounts == null)
+            {
+                <h1 class="alert alert-danger">No cars found!</h1>
+            }
+            else
+            {
+                <RadzenDataGrid
+                    AllowFiltering="true"
+                    AllowColumnResize="true"
+                    AllowAlternatingRows="false"
+                    AllowSorting="true"
+                    PageSize="20"
+                    AllowPaging="true"
+                    PagerHorizontalAlign="HorizontalAlign.Left"
+                    ShowPagingSummary="true"
+                    Data="@accounts"
+                    TItem="Account"
+                    LogicalFilterOperator="LogicalFilterOperator.Or"
+                    SelectionMode="DataGridSelectionMode.Single">
+
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Account" Property="AccountName" Filterable="true" Title="Account Name" TextAlign="TextAlign.Center"/>
+                        <RadzenDataGridColumn TItem="Account" Property="Email" Filterable="true" Title="Email"/>
+                        <RadzenDataGridColumn TItem="Account" Property="PhoneNumber" Filterable="true" Title="Phone Number"/>
+                        <RadzenDataGridColumn TItem="Account" Property="WebsiteUrl" Filterable="true" Title="Website URL"/>
+                        <RadzenDataGridColumn TItem="Account" Property="BusinessOwnerName" Filterable="true" Title="Business Owner Name"/>
+                        <RadzenDataGridColumn TItem="Account" Property="City" Filterable="true" Title="City"/>
+                        <RadzenDataGridColumn TItem="Account" Title="Actions" Filterable="false">
+                            <Template Context="data">
+                                <RadzenButton Click="@(args => Navigation.NavigateTo($"/edit-account/{data.AccountId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
+                                <RadzenButton Click="@(args => Delete(data))" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+
+            }
+        </div>
     </div>
-</div>
+}
 
 @code {
     IEnumerable<Account> accounts;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task LoadDataAsync()
     {
         accounts = await GetAllAccountsForGrid();
     }

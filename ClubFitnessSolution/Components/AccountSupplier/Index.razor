@@ -1,12 +1,15 @@
 ﻿@page "/account-supplier"
 @using ClubFitnessServices.Interfaces
 @using ClubFitnessDomain
+@using ClubFitnessSolution.Components.Shared
 
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountSupplierService AccountSupplierService
+
+@inherits BasePage
 
 @rendermode RenderMode.InteractiveServer
 
@@ -15,59 +18,66 @@
     <RadzenBreadCrumbItem Path="/account-supplier" Text="Supplier List" />
 </RadzenBreadCrumb>
 
-<div class="p-lg-1 p-md-3 p-sm-2">
-    <h1 class="fw-bold">Supplier List</h1>
-    
+@if (IsLoading)
+{
+    <LoadingSpinner />    
+}
+else
+{
+    <div class="p-lg-1 p-md-3 p-sm-2">
+        <h1 class="fw-bold">Supplier List</h1>
 
-    <RadzenButton Click="@(args => Navigation.NavigateTo("/add-account-supplier"))"
-                  Style="margin-top: 20px; margin-bottom: 10px;"
-                  ButtonStyle="ButtonStyle.Success">Create New Supplier</RadzenButton>
 
-    <div class="card p-1 shadow">
-        @if (accountSuppliers == null)
-        {
-            <h1 class="alert alert-danger">No suppliers found!</h1>
-        }
-        else
-        {
-            <RadzenDataGrid AllowFiltering="true"
-                            AllowColumnResize="true"
-                            AllowAlternatingRows="false"
-                            AllowSorting="true"
-                            PageSize="20"
-                            AllowPaging="true"
-                            PagerHorizontalAlign="HorizontalAlign.Left"
-                            ShowPagingSummary="true"
-                            Data="@accountSuppliers"
-                            TItem="AccountSupplier"
-                            LogicalFilterOperator="LogicalFilterOperator.Or"
-                            SelectionMode="DataGridSelectionMode.Single">
+        <RadzenButton Click="@(args => Navigation.NavigateTo("/add-account-supplier"))"
+                      Style="margin-top: 20px; margin-bottom: 10px;"
+                      ButtonStyle="ButtonStyle.Success">Create New Supplier</RadzenButton>
 
-                <Columns>
-                    <RadzenDataGridColumn TItem="AccountSupplier" Property="SupplierName" Filterable="true" Title="Supplier Name" TextAlign="TextAlign.Center" />
-                    <RadzenDataGridColumn TItem="AccountSupplier" Property="SupplierNumber" Filterable="true" Title="Supplier Number" />
-                    <RadzenDataGridColumn TItem="AccountSupplier" Property="SupplierReference" Filterable="true" Title="Supplier Reference" />
-                    <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactFirstName" Filterable="true" Title="First Name" />
-                    <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactLastName" Filterable="true" Title="Last Name" />
-                    <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactEmail" Filterable="true" Title="Email" />
-                    <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactPhone" Filterable="true" Title="Phone" />
-                    <RadzenDataGridColumn TItem="AccountSupplier" Title="Actions" Filterable="false">
-                        <Template Context="data">
-                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/edit-account-supplier/{data.AccountSupplierId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
-                            <RadzenButton Click="@(args => Delete(data))" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
+        <div class="card p-1 shadow">
+            @if (accountSuppliers == null)
+            {
+                <h1 class="alert alert-danger">No suppliers found!</h1>
+            }
+            else
+            {
+                <RadzenDataGrid AllowFiltering="true"
+                                AllowColumnResize="true"
+                                AllowAlternatingRows="false"
+                                AllowSorting="true"
+                                PageSize="20"
+                                AllowPaging="true"
+                                PagerHorizontalAlign="HorizontalAlign.Left"
+                                ShowPagingSummary="true"
+                                Data="@accountSuppliers"
+                                TItem="AccountSupplier"
+                                LogicalFilterOperator="LogicalFilterOperator.Or"
+                                SelectionMode="DataGridSelectionMode.Single">
 
-        }
+                    <Columns>
+                        <RadzenDataGridColumn TItem="AccountSupplier" Property="SupplierName" Filterable="true" Title="Supplier Name" TextAlign="TextAlign.Center"/>
+                        <RadzenDataGridColumn TItem="AccountSupplier" Property="SupplierNumber" Filterable="true" Title="Supplier Number"/>
+                        <RadzenDataGridColumn TItem="AccountSupplier" Property="SupplierReference" Filterable="true" Title="Supplier Reference"/>
+                        <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactFirstName" Filterable="true" Title="First Name"/>
+                        <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactLastName" Filterable="true" Title="Last Name"/>
+                        <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactEmail" Filterable="true" Title="Email"/>
+                        <RadzenDataGridColumn TItem="AccountSupplier" Property="ContactPhone" Filterable="true" Title="Phone"/>
+                        <RadzenDataGridColumn TItem="AccountSupplier" Title="Actions" Filterable="false">
+                            <Template Context="data">
+                                <RadzenButton Click="@(args => Navigation.NavigateTo($"/edit-account-supplier/{data.AccountSupplierId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
+                                <RadzenButton Click="@(args => Delete(data))" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+
+            }
+        </div>
     </div>
-</div>
+}
 
 @code {
     IEnumerable<AccountSupplier> accountSuppliers;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task LoadDataAsync()
     {
         accountSuppliers = await GetAllAccountSuppliersForGrid();
     }

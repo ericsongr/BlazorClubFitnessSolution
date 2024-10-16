@@ -1,12 +1,15 @@
 ﻿@page "/account-product"
 @using ClubFitnessServices.Interfaces
 @using ClubFitnessDomain
+@using ClubFitnessSolution.Components.Shared
 
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 @inject IAccountProductService AccountProductService
+
+@inherits BasePage
 
 @rendermode RenderMode.InteractiveServer
 
@@ -15,72 +18,79 @@
     <RadzenBreadCrumbItem Path="/account-product" Text="Product List" />
 </RadzenBreadCrumb>
 
-<div class="p-lg-1 p-md-3 p-sm-2">
-    <h1 class="fw-bold">Product List</h1>
+@if (IsLoading)
+{
+    <LoadingSpinner />    
+}
+else
+{
+    <div class="p-lg-1 p-md-3 p-sm-2">
+        <h1 class="fw-bold">Product List</h1>
 
-    <RadzenButton Click="@(args => Navigation.NavigateTo("/account-product/add"))"
-                  Style="margin-top: 20px; margin-bottom: 10px;"
-                  ButtonStyle="ButtonStyle.Success">Create New Product</RadzenButton>
+        <RadzenButton Click="@(args => Navigation.NavigateTo("/account-product/add"))"
+                      Style="margin-top: 20px; margin-bottom: 10px;"
+                      ButtonStyle="ButtonStyle.Success">Create New Product</RadzenButton>
 
-    <div class="card p-1 shadow">
-        @if (accountProducts == null)
-        {
-            <h1 class="alert alert-danger">No products found!</h1>
-        }
-        else
-        {
-            <RadzenDataGrid AllowFiltering="true"
-                            AllowColumnResize="true"
-                            AllowAlternatingRows="false"
-                            AllowSorting="true"
-                            PageSize="20"
-                            AllowPaging="true"
-                            PagerHorizontalAlign="HorizontalAlign.Left"
-                            ShowPagingSummary="true"
-                            Data="@accountProducts"
-                            TItem="AccountProduct"
-                            LogicalFilterOperator="LogicalFilterOperator.Or"
-                            SelectionMode="DataGridSelectionMode.Single">
+        <div class="card p-1 shadow">
+            @if (accountProducts == null)
+            {
+                <h1 class="alert alert-danger">No products found!</h1>
+            }
+            else
+            {
+                <RadzenDataGrid AllowFiltering="true"
+                                AllowColumnResize="true"
+                                AllowAlternatingRows="false"
+                                AllowSorting="true"
+                                PageSize="20"
+                                AllowPaging="true"
+                                PagerHorizontalAlign="HorizontalAlign.Left"
+                                ShowPagingSummary="true"
+                                Data="@accountProducts"
+                                TItem="AccountProduct"
+                                LogicalFilterOperator="LogicalFilterOperator.Or"
+                                SelectionMode="DataGridSelectionMode.Single">
 
-                <Columns>
-                    <RadzenDataGridColumn TItem="AccountProduct" Property="DisplayImagePath" Filterable="true" Title="Image" TextAlign="TextAlign.Center">
-                        <Template Context="data">
-                            <img src="@(data.DisplayImagePath == null ? "/uploads/no-image.png" : $"/uploads/Products/{data.DisplayImagePath}")"
-                                 alt="Uploaded image" style="max-width: 100px; max-height: 100px;" />
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountProduct" Property="ProductName" Filterable="true" Title="Product Name" TextAlign="TextAlign.Center"/>
-                    <RadzenDataGridColumn TItem="AccountProduct" Property="DepartmentType" Filterable="true" Title="Department Type"/>
-                    <RadzenDataGridColumn TItem="AccountProduct" Property="OnHandQuantity" Filterable="true" Title="On Hand Quantity" TextAlign="TextAlign.Center"/>
-                    <RadzenDataGridColumn TItem="AccountProduct" Title="Is Active" Filterable="false">
-                        <Template Context="data">
-                            @if (data.IsActive)
-                            {
-                                <span>Yes</span>
-                            }
-                            else
-                            {
-                                <span>No</span>
-                            }
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="AccountProduct" Title="Actions" Filterable="false">
-                        <Template Context="data">
-                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/account-product/edit/{data.AccountProductId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
-                            <RadzenButton Click="@(args => Delete(data))" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
+                    <Columns>
+                        <RadzenDataGridColumn TItem="AccountProduct" Property="DisplayImagePath" Filterable="true" Title="Image" TextAlign="TextAlign.Center">
+                            <Template Context="data">
+                                <img src="@(data.DisplayImagePath == null ? "/uploads/no-image.png" : $"/uploads/Products/{data.DisplayImagePath}")"
+                                     alt="Uploaded image" style="max-width: 100px; max-height: 100px;"/>
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="AccountProduct" Property="ProductName" Filterable="true" Title="Product Name" TextAlign="TextAlign.Center"/>
+                        <RadzenDataGridColumn TItem="AccountProduct" Property="DepartmentType" Filterable="true" Title="Department Type"/>
+                        <RadzenDataGridColumn TItem="AccountProduct" Property="OnHandQuantity" Filterable="true" Title="On Hand Quantity" TextAlign="TextAlign.Center"/>
+                        <RadzenDataGridColumn TItem="AccountProduct" Title="Is Active" Filterable="false">
+                            <Template Context="data">
+                                @if (data.IsActive)
+                                {
+                                    <span>Yes</span>
+                                }
+                                else
+                                {
+                                    <span>No</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="AccountProduct" Title="Actions" Filterable="false">
+                            <Template Context="data">
+                                <RadzenButton Click="@(args => Navigation.NavigateTo($"/account-product/edit/{data.AccountProductId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
+                                <RadzenButton Click="@(args => Delete(data))" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
 
-        }
+            }
+        </div>
     </div>
-</div>
+}
 
 @code {
     IEnumerable<ClubFitnessDomain.AccountProduct> accountProducts;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task LoadDataAsync()
     {
         accountProducts = await GetAllAccountProductsForGrid();
     }
