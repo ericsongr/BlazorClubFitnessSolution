@@ -3,11 +3,15 @@
 @using ClubFitnessServices.Interfaces
 @using ClubFitnessDomain
 @using ClubFitnessSolution.Services
+@using ClubFitnessSolution.Components.Shared
+
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject IDiscountCouponService DiscountCouponService
 @inject UserAuthenticationStateProvider UserAuthenticationStateProvider
+
+@inherits BasePage
 
 @rendermode RenderMode.InteractiveServer
 
@@ -16,65 +20,72 @@
     <RadzenBreadCrumbItem Path="/discount-coupon" Text="Discount Coupon List" />
 </RadzenBreadCrumb>
 
-<div class="p-lg-1 p-md-3 p-sm-2">
-    <h1 class="fw-bold">Discount Coupon List</h1>
+@if (IsLoading)
+{
+    <LoadingSpinner />    
+}
+else
+{
+    <div class="p-lg-1 p-md-3 p-sm-2">
+        <h1 class="fw-bold">Discount Coupon List</h1>
 
-    <RadzenButton Click="@(args => Navigation.NavigateTo("/discount-coupon/add"))"
-                  Style="margin-top: 20px; margin-bottom: 10px;"
-                  ButtonStyle="ButtonStyle.Success">Create New Discount Coupon</RadzenButton>
+        <RadzenButton Click="@(args => Navigation.NavigateTo("/discount-coupon/add"))"
+                      Style="margin-top: 20px; margin-bottom: 10px;"
+                      ButtonStyle="ButtonStyle.Success">Create New Discount Coupon</RadzenButton>
 
-    <div class="card p-1 shadow">
-        @if (discountCoupons == null)
-        {
-            <h1 class="alert alert-danger">No discount coupons found!</h1>
-        }
-        else
-        {
-            <RadzenDataGrid AllowFiltering="true"
-                            AllowColumnResize="true"
-                            AllowAlternatingRows="false"
-                            AllowSorting="true"
-                            PageSize="20"
-                            AllowPaging="true"
-                            PagerHorizontalAlign="HorizontalAlign.Left"
-                            ShowPagingSummary="true"
-                            Data="@discountCoupons"
-                            TItem="DiscountCoupon"
-                            LogicalFilterOperator="LogicalFilterOperator.Or"
-                            SelectionMode="DataGridSelectionMode.Single">
+        <div class="card p-1 shadow">
+            @if (discountCoupons == null)
+            {
+                <h1 class="alert alert-danger">No discount coupons found!</h1>
+            }
+            else
+            {
+                <RadzenDataGrid AllowFiltering="true"
+                                AllowColumnResize="true"
+                                AllowAlternatingRows="false"
+                                AllowSorting="true"
+                                PageSize="20"
+                                AllowPaging="true"
+                                PagerHorizontalAlign="HorizontalAlign.Left"
+                                ShowPagingSummary="true"
+                                Data="@discountCoupons"
+                                TItem="DiscountCoupon"
+                                LogicalFilterOperator="LogicalFilterOperator.Or"
+                                SelectionMode="DataGridSelectionMode.Single">
 
-                <Columns>
-                    <RadzenDataGridColumn TItem="DiscountCoupon" Property="CouponCode" Filterable="true" Title="Coupon Code" />
-                    <RadzenDataGridColumn TItem="DiscountCoupon" Property="Name" Filterable="true" Title="Name" />
-                    <RadzenDataGridColumn TItem="DiscountCoupon" Property="DiscountFor" Filterable="true" Title="Discount For" />
-                    <RadzenDataGridColumn TItem="DiscountCoupon" Title="Is Active" Filterable="false">
-                        <Template Context="data">
-                            @if (data.IsActive)
-                            {
-                                <span>Yes</span>
-                            }
-                            else
-                            {
-                                <span>No</span>
-                            }
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="DiscountCoupon" Title="Actions" Filterable="false">
-                        <Template Context="data">
-                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/discount-coupon/edit/{data.Id}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
-                            <RadzenButton Click="@(args => Delete(data))" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
-        }
+                    <Columns>
+                        <RadzenDataGridColumn TItem="DiscountCoupon" Property="CouponCode" Filterable="true" Title="Coupon Code"/>
+                        <RadzenDataGridColumn TItem="DiscountCoupon" Property="Name" Filterable="true" Title="Name"/>
+                        <RadzenDataGridColumn TItem="DiscountCoupon" Property="DiscountFor" Filterable="true" Title="Discount For"/>
+                        <RadzenDataGridColumn TItem="DiscountCoupon" Title="Is Active" Filterable="false">
+                            <Template Context="data">
+                                @if (data.IsActive)
+                                {
+                                    <span>Yes</span>
+                                }
+                                else
+                                {
+                                    <span>No</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="DiscountCoupon" Title="Actions" Filterable="false">
+                            <Template Context="data">
+                                <RadzenButton Click="@(args => Navigation.NavigateTo($"/discount-coupon/edit/{data.Id}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
+                                <RadzenButton Click="@(args => Delete(data))" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        </div>
     </div>
-</div>
+}
 
 @code {
     private IEnumerable<DiscountCoupon> discountCoupons;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task LoadDataAsync()
     {
         discountCoupons = await DiscountCouponService.GetAllAsync();
     }

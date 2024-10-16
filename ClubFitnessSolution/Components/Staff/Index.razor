@@ -1,12 +1,15 @@
 ﻿@page "/staff"
 @using ClubFitnessServices.Interfaces
 @using ClubFitnessDomain
+@using ClubFitnessSolution.Components.Shared
 
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject IStaffService StaffService
 @inject UserAuthenticationStateProvider UserAuthenticationStateProvider
+
+@inherits BasePage
 
 @rendermode RenderMode.InteractiveServer
 
@@ -15,65 +18,71 @@
     <RadzenBreadCrumbItem Path="/staff" Text="Staff List" />
 </RadzenBreadCrumb>
 
-<div class="p-lg-1 p-md-3 p-sm-2">
-    <h1 class="fw-bold">Staff List</h1>
+@if (IsLoading)
+{
+    <LoadingSpinner />    
+}
+else
+{
+    <div class="p-lg-1 p-md-3 p-sm-2">
+        <h1 class="fw-bold">Staff List</h1>
 
-    <RadzenButton Click="@(args => Navigation.NavigateTo("/staff/add"))"
-                  Style="margin-top: 20px; margin-bottom: 10px;"
-                  ButtonStyle="ButtonStyle.Success">Create New Staff</RadzenButton>
+        <RadzenButton Click="@(args => Navigation.NavigateTo("/staff/add"))"
+                      Style="margin-top: 20px; margin-bottom: 10px;"
+                      ButtonStyle="ButtonStyle.Success">Create New Staff</RadzenButton>
 
-    <div class="card p-1 shadow">
-        @if (staffMembers == null)
-        {
-            <h1 class="alert alert-danger">No staff members found!</h1>
-        }
-        else
-        {
-            <RadzenDataGrid AllowFiltering="true"
-                            AllowColumnResize="true"
-                            AllowAlternatingRows="false"
-                            AllowSorting="true"
-                            PageSize="20"
-                            AllowPaging="true"
-                            PagerHorizontalAlign="HorizontalAlign.Left"
-                            ShowPagingSummary="true"
-                            Data="@staffMembers"
-                            TItem="Staff"
-                            LogicalFilterOperator="LogicalFilterOperator.Or"
-                            SelectionMode="DataGridSelectionMode.Single">
+        <div class="card p-1 shadow">
+            @if (staffMembers == null)
+            {
+                <h1 class="alert alert-danger">No staff members found!</h1>
+            }
+            else
+            {
+                <RadzenDataGrid AllowFiltering="true"
+                                AllowColumnResize="true"
+                                AllowAlternatingRows="false"
+                                AllowSorting="true"
+                                PageSize="20"
+                                AllowPaging="true"
+                                PagerHorizontalAlign="HorizontalAlign.Left"
+                                ShowPagingSummary="true"
+                                Data="@staffMembers"
+                                TItem="Staff"
+                                LogicalFilterOperator="LogicalFilterOperator.Or"
+                                SelectionMode="DataGridSelectionMode.Single">
 
-                <Columns>
-                    <RadzenDataGridColumn TItem="Staff" Property="FirstName" Filterable="true" Title="First Name" />
-                    <RadzenDataGridColumn TItem="Staff" Property="LastName" Filterable="true" Title="Last Name" />
-                    <RadzenDataGridColumn TItem="Staff" Title="Is Active" Filterable="false">
-                        <Template Context="data">
-                            @if (data.IsActive)
-                            {
-                                <span>Yes</span>
-                            }
-                            else
-                            {
-                                <span>No</span>
-                            }
-                        </Template>
-                    </RadzenDataGridColumn>
-                    <RadzenDataGridColumn TItem="Staff" Title="Actions" Filterable="false">
-                        <Template Context="data">
-                            <RadzenButton Click="@(args => Navigation.NavigateTo($"/staff/edit/{data.StaffId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
-                            <RadzenButton Click="@(args => Delete(data))" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
-                        </Template>
-                    </RadzenDataGridColumn>
-                </Columns>
-            </RadzenDataGrid>
+                    <Columns>
+                        <RadzenDataGridColumn TItem="Staff" Property="FirstName" Filterable="true" Title="First Name"/>
+                        <RadzenDataGridColumn TItem="Staff" Property="LastName" Filterable="true" Title="Last Name"/>
+                        <RadzenDataGridColumn TItem="Staff" Title="Is Active" Filterable="false">
+                            <Template Context="data">
+                                @if (data.IsActive)
+                                {
+                                    <span>Yes</span>
+                                }
+                                else
+                                {
+                                    <span>No</span>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="Staff" Title="Actions" Filterable="false">
+                            <Template Context="data">
+                                <RadzenButton Click="@(args => Navigation.NavigateTo($"/staff/edit/{data.StaffId}"))" ButtonStyle="ButtonStyle.Success">Edit</RadzenButton>
+                                <RadzenButton Click="@(args => Delete(data))" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Danger">Delete</RadzenButton>
+                            </Template>
+                        </RadzenDataGridColumn>
+                    </Columns>
+                </RadzenDataGrid>
 
-        }
+            }
+        </div>
     </div>
-</div>
-
+}
 @code {
     IEnumerable<Staff> staffMembers;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task LoadDataAsync()
     {
         staffMembers = await GetAllStaffForGrid();
     }

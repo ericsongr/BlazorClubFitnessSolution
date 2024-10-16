@@ -1,12 +1,15 @@
 ﻿@page "/account-product-category"
 @using ClubFitnessServices.Interfaces
 @using ClubFitnessDomain
+@using ClubFitnessSolution.Components.Shared
 
 @inject NavigationManager Navigation
 @inject DialogService DialogService
 @inject NotificationService NotificationService
 @inject IAccountProductCategoryService AccountProductCategoryService
 @inject UserAuthenticationStateProvider UserAuthenticationStateProvider
+
+@inherits BasePage
 
 @rendermode RenderMode.InteractiveServer
 
@@ -15,7 +18,12 @@
     <RadzenBreadCrumbItem Path="/account-product-category" Text="Product Category List" />
 </RadzenBreadCrumb>
 
-<div class="p-lg-1 p-md-3 p-sm-2">
+@if (IsLoading)
+{
+    <LoadingSpinner />    
+}
+else {
+    <div class="p-lg-1 p-md-3 p-sm-2">
     <h1 class="fw-bold">Product Category List</h1>
 
     <RadzenButton Click="@(args => Navigation.NavigateTo("/account-product-category/add"))"
@@ -23,7 +31,7 @@
                   ButtonStyle="ButtonStyle.Success">Create New Product Category</RadzenButton>
 
     <div class="card p-1 shadow">
-        @if (accountProductCategories == null)
+        @if (accountProductCategories == null || !accountProductCategories.Any())
         {
             <h1 class="alert alert-danger">No product categories found!</h1>
         }
@@ -87,11 +95,12 @@
         }
     </div>
 </div>
+}
 
 @code {
     IEnumerable<AccountProductCategory> accountProductCategories;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task LoadDataAsync()
     {
         accountProductCategories = await GetAllAccountProductCategoriesForGrid();
     }
