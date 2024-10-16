@@ -1,10 +1,13 @@
-﻿@page "/account-product/edit/{id:int}"
+﻿@page "/account-product/add"
+@page "/account-product/edit/{id:int?}"
 
 @using ClubFitnessServices.Interfaces
+@using ClubFitnessDomain
 @using ClubFitnessDomain.Dtos
 @using Microsoft.AspNetCore.Components
 @using Blazored.FluentValidation
-@using ClubFitnessDomain
+@using ClubFitnessSolution.Services
+@using ClubFitnessSolution.Services.Constants
 @using Radzen
 
 @inject IAccountProductService AccountProductService
@@ -13,6 +16,7 @@
 @inject IAccountProductCategoryService AccountProductCategoryService
 @inject IAccountProductSubCategoryService AccountProductSubCategoryService
 @inject IDiscountCouponService DiscountCouponService
+@inject ImageService ImageService
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
 @inject UserAuthenticationStateProvider UserAuthenticationStateProvider
@@ -22,10 +26,10 @@
 <RadzenBreadCrumb>
     <RadzenBreadCrumbItem Path="/" Text="Home" />
     <RadzenBreadCrumbItem Path="/account-product" Text="Product List" />
-    <RadzenBreadCrumbItem Text="Update Account Product Details" />
+    <RadzenBreadCrumbItem Text="Create New Product" />
 </RadzenBreadCrumb>
 
-<EditForm Model="@AccountProduct" OnValidSubmit="UpdateAccountProduct">
+<EditForm Model="@AccountProduct" OnValidSubmit="Save">
     <FluentValidationValidator />
 
     <div class="row">
@@ -214,12 +218,30 @@
             <InputNumber id="commissionAmount" @bind-Value="AccountProduct.CommissionAmount" class="form-control" />
         </div>
 
+        @* <div class="col-md-4 my-2">
+            <label for="discountCouponId">Discount Coupon ID:</label>
+            <InputNumber id="discountCouponId" @bind-Value="AccountProduct.DiscountCouponId" class="form-control" />
+        </div> *@
         <div class="col-md-4 my-2">
             <label for="discountCouponId">Discount Coupon:</label>
             <RadzenDropDown @bind-Value="AccountProduct.DiscountCouponId" Data="@discountCoupons"
                             TextProperty="Name" ValueProperty="Id" AllowClear="true"
                             Placeholder="Select discount coupon" class="form-control" />
         </div>
+        
+    <div class="mb-3">
+        <label for="displayImagePath">Display Image:</label>
+        <InputFile OnChange="@UploadImage" />
+    </div>
+
+    @if (!string.IsNullOrEmpty(uploadedImagePath))
+    {
+        <div class="mb-3">
+            <label for="uploadedImage">Uploaded Image:</label>
+            <br/>
+            <img src="@uploadedImagePath" alt="Uploaded image" style="max-width: 200px; max-height: 200px;" />
+        </div>
+    }
     </div>
 
     <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary" ButtonStyle="ButtonStyle.Success">Save</RadzenButton>
@@ -228,13 +250,17 @@
 </EditForm>
 
 @code {
-    [Parameter] public int Id { get; set; }
+    [Parameter] public int? Id { get; set; }
+    public bool IsAdd => Id == null ? true : false;
+
     private AccountProduct AccountProduct = new AccountProduct();
     private IEnumerable<Account> accounts;
     private IEnumerable<AccountSupplier> suppliers;
     private IEnumerable<AccountProductCategory> productCategories;
     private IEnumerable<AccountProductSubCategoryDto> productSubCategories;
     private IEnumerable<DiscountCoupon> discountCoupons;
+
+    private string uploadedImagePath = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -243,24 +269,58 @@
         productCategories = await AccountProductCategoryService.GetAllAsync();
         productSubCategories = await AccountProductSubCategoryService.GetAllAsync();
         discountCoupons = await DiscountCouponService.GetAllAsync();
-        
-        // Load the existing account product by ID
-        AccountProduct = await AccountProductService.GetByIdAsync(Id);
+
+        if (!IsAdd)
+        {
+            AccountProduct = await AccountProductService.GetByIdAsync(Id ?? 0);
+            if (AccountProduct.DisplayImagePath != null)
+                uploadedImagePath = ImageService.GetImage(AccountProduct.DisplayImagePath, FolderConstant.Products);
+        }
     }
 
-    private async Task UpdateAccountProduct()
+    private async Task Save()
     {
         try
         {
-            AccountProduct.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
-            AccountProduct.UpdatedDateTimeUtc = DateTime.UtcNow;
-            await AccountProductService.UpdateAsync(AccountProduct);
-            NotificationService.Notify(NotificationSeverity.Success, "Success", "Product updated successfully.");
+            if (IsAdd)
+            {
+                AccountProduct.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
+                await AccountProductService.AddAsync(AccountProduct);
+                Notify("Product added successfully.");
+            }
+            else
+            {
+                AccountProduct.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
+                AccountProduct.UpdatedDateTimeUtc = DateTime.UtcNow;
+                await AccountProductService.UpdateAsync(AccountProduct);
+                Notify("Product updated successfully.");
+            }
+
             Navigation.NavigateTo("/account-product");
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
+        }
+    }
+
+    private void Notify(string message)
+    {
+        NotificationService.Notify(NotificationSeverity.Success, "Success", message);
+    }
+
+    private async Task UploadImage(InputFileChangeEventArgs e)
+    {
+        try
+        {
+            AccountProduct.DisplayImagePath = await ImageService.UploadImageAsync(e.File, FolderConstant.Products);
+            uploadedImagePath = ImageService.GetImage(AccountProduct.DisplayImagePath, FolderConstant.Products);
+            Notify("Image uploaded successfully.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            NotificationService.Notify(NotificationSeverity.Error, "Error", "Image upload failed.");
         }
     }
 

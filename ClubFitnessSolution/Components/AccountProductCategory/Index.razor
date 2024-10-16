@@ -43,7 +43,7 @@
                             SelectionMode="DataGridSelectionMode.Single">
 
                 <Columns>
-                    <RadzenDataGridColumn TItem="AccountProductCategory" Property="DisplayImagePath" Filterable="true" Title="Category Name" TextAlign="TextAlign.Center">
+                    <RadzenDataGridColumn TItem="AccountProductCategory" Property="DisplayImagePath" Filterable="true" Title="Image" TextAlign="TextAlign.Center">
                         <Template Context="data">
                             <img src="@(data.DisplayImagePath == null ? "/uploads/no-image.png" : $"/uploads/Categories/{data.DisplayImagePath}")"
                                  alt="Uploaded image" style="max-width: 100px; max-height: 100px;" />

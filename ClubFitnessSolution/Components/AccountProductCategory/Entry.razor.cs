@@ -18,7 +18,7 @@ namespace ClubFitnessSolution.Components.AccountProductCategory
 
         private IEnumerable<ClubFitnessDomain.Account> accounts;
 
-        private string uploadedImagePath;
+        private string uploadedImagePath = string.Empty;
 
         protected override async Task OnInitializedAsync()
         { 
