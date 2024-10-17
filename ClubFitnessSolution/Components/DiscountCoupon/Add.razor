@@ -100,7 +100,7 @@
     {
         try
         {
-            DiscountCoupon.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
+            DiscountCoupon.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
             await DiscountCouponService.AddAsync(DiscountCoupon);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Discount Coupon added successfully.");
             Navigation.NavigateTo("/discount-coupon");

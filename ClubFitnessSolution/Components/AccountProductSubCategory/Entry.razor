@@ -100,13 +100,13 @@
         {
             if (IsAdd)
             {
-                AccountProductSubCategory.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
+                AccountProductSubCategory.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
                 await AccountProductSubCategoryService.AddAsync(AccountProductSubCategory);
                 Notify("Product Sub-Category added successfully.");
             }
             else
             {
-                AccountProductSubCategory.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
+                AccountProductSubCategory.UpdatedBy = await UserAuthenticationStateProvider.GetStaffId();
                 AccountProductSubCategory.UpdatedDateTimeUtc = DateTime.UtcNow;
                 await AccountProductSubCategoryService.UpdateAsync(AccountProductSubCategory);
                 Notify("Product Sub-Category updated successfully.");

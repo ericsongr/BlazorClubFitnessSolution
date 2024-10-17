@@ -39,13 +39,13 @@ namespace ClubFitnessSolution.Components.AccountProductCategory
             {
                 if (IsAdd)
                 {
-                    AccountProductCategory.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
+                    AccountProductCategory.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
                     await AccountProductCategoryService.AddAsync(AccountProductCategory);
                     Notify("Product category added successfully.");
                 }
                 else
                 {
-                    AccountProductCategory.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
+                    AccountProductCategory.UpdatedBy = await UserAuthenticationStateProvider.GetStaffId();
                     AccountProductCategory.UpdatedDateTimeUtc = DateTime.UtcNow;
                     await AccountProductCategoryService.UpdateAsync(AccountProductCategory);
                     Notify("Product category updated successfully.");

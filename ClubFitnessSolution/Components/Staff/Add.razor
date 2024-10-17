@@ -202,7 +202,7 @@
         try
         {
             Staff.PreferredClub = Staff.PreferredClub == 0 ? null : Staff.PreferredClub;
-            Staff.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
+            Staff.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
 
             await StaffService.AddAsync(Staff);
 
