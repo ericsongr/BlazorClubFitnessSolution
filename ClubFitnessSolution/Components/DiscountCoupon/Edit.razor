@@ -102,7 +102,7 @@
     {
         try
         {
-            DiscountCoupon.UpdatedBy = UserStateProvider.GetStaffId();
+            DiscountCoupon.UpdatedBy = await UserStateProvider.GetStaffId();
             DiscountCoupon.UpdatedDateTimeUtc = DateTime.UtcNow;
             await DiscountCouponService.UpdateAsync(DiscountCoupon);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Discount Coupon updated successfully.");

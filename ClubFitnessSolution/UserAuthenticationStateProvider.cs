@@ -35,30 +35,22 @@ namespace ClubFitnessSolution
             return new AuthenticationState(new ClaimsPrincipal(new ClaimsIdentity()));
         }
 
-        public ApplicationUser GetCurrentUser()
+        public async Task<ApplicationUser> GetCurrentUserAsync()
         {
+            // Ensure _cachedUser is loaded
             if (_cachedUser == null)
             {
-                GetAuthenticationStateAsync();
-                return _cachedUser;
+                await GetAuthenticationStateAsync();
             }
-            else
-            {
-                return _cachedUser;
-            }
+
+            return _cachedUser;
         }
 
-        public int GetStaffId()
+        public async Task<int> GetStaffId()
         {
-            if (_cachedUser == null)
-            {
-                GetAuthenticationStateAsync();
-                return _cachedUser.StaffId;
-            }
-            else
-            {
-                return _cachedUser.StaffId;
-            }
+            // Ensure _cachedUser is loaded and return StaffId
+            var currentUser = await GetCurrentUserAsync();
+            return currentUser?.StaffId ?? 0; // Return 0 if _cachedUser is null
         }
     }
 

@@ -152,7 +152,7 @@
 
     private async Task AddNewAccountOnSubmit()
     {
-        Account.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
+        Account.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
         await AccountService.AddAsync(Account); // Call the method from IAccountService
 
         NotificationService.Notify(new NotificationMessage

@@ -146,7 +146,7 @@
     {
         try
         {
-            AccountSupplier.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
+            AccountSupplier.UpdatedBy = await UserAuthenticationStateProvider.GetStaffId();
             AccountSupplier.UpdatedDateTimeUtc = DateTime.UtcNow;
             await AccountSupplierService.UpdateAsync(AccountSupplier);
 

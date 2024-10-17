@@ -144,7 +144,7 @@
     {
         try
         {
-            AccountSupplier.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
+            AccountSupplier.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
             await AccountSupplierService.AddAsync(AccountSupplier);
 
             NotificationService.Notify(new NotificationMessage

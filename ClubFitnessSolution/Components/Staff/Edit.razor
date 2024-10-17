@@ -186,7 +186,7 @@
     {
         try
         {
-            Staff.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
+            Staff.UpdatedBy = await UserAuthenticationStateProvider.GetStaffId();
             Staff.UpdatedDateTimeUtc = DateTime.UtcNow;
             await StaffService.UpdateAsync(Staff);
             NotificationService.Notify(NotificationSeverity.Success, "Success", "Staff updated successfully.");

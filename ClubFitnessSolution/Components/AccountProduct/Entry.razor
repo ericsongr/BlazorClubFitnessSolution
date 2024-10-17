@@ -284,13 +284,13 @@
         {
             if (IsAdd)
             {
-                AccountProduct.CreatedBy = UserAuthenticationStateProvider.GetStaffId();
+                AccountProduct.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
                 await AccountProductService.AddAsync(AccountProduct);
                 Notify("Product added successfully.");
             }
             else
             {
-                AccountProduct.UpdatedBy = UserAuthenticationStateProvider.GetStaffId();
+                AccountProduct.UpdatedBy = await UserAuthenticationStateProvider.GetStaffId();
                 AccountProduct.UpdatedDateTimeUtc = DateTime.UtcNow;
                 await AccountProductService.UpdateAsync(AccountProduct);
                 Notify("Product updated successfully.");
