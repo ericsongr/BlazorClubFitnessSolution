@@ -32,6 +32,13 @@ namespace ClubFitnessServices
             return _mapper.Map<AccountProductSubCategoryDto>(subCategory);
         }
 
+        public async Task<IEnumerable<AccountProductSubCategory>> GetSubCategoriesByCategoryId(int categoryId)
+        {
+            return await _repository.GetWithIncludesAsync(
+                subCategory => subCategory.AccountProductCategoryId == categoryId,
+                subCategory => subCategory.AccountProductCategory);
+        }
+
         public async Task AddAsync(AccountProductSubCategoryDto dto)
         {
             var subCategory = _mapper.Map<AccountProductSubCategory>(dto);

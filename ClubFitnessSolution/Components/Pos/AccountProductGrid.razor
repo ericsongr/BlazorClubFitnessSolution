@@ -1,0 +1,21 @@
+﻿@using ClubFitnessDomain
+
+@code {
+    [Parameter]
+    public IEnumerable<AccountProduct> Products { get; set; }
+
+    [Parameter]
+    public EventCallback<AccountProduct> OnProductSelected { get; set; }
+}
+
+<RadzenDataGrid TItem="AccountProduct" Data="@Products" AllowPaging="false" AllowFiltering="false" RowSelect="@(args => OnProductSelected.InvokeAsync(args))">
+    <Columns>
+        <RadzenDataGridColumn TItem="AccountProduct" Property="DisplayImagePath" Title="" Width="60px">
+            <Template Context="product">
+                <img src="@(string.IsNullOrEmpty(product.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/Products/{product.DisplayImagePath}")"
+                     alt="Product Image" class="img-thumbnail" style="width: 100px; height: 50px;" />
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="AccountProduct" Property="ProductName" Title="ITEM DESCRIPTION" />
+    </Columns>
+</RadzenDataGrid>

@@ -1,0 +1,21 @@
+﻿@using ClubFitnessDomain
+
+@code {
+    [Parameter]
+    public IEnumerable<AccountProductSubCategory> SubCategories { get; set; }
+
+    [Parameter]
+    public EventCallback<AccountProductSubCategory> OnSubCategorySelected { get; set; }
+}
+
+<RadzenDataGrid TItem="AccountProductSubCategory" Data="@SubCategories" AllowPaging="false" AllowFiltering="false" RowSelect="@(args => OnSubCategorySelected.InvokeAsync(args))">
+    <Columns>
+        <RadzenDataGridColumn TItem="AccountProductSubCategory" Property="DisplayImagePath" Title="Image" Width="60px">
+            <Template Context="subCategory">
+                <img src="@(string.IsNullOrEmpty(subCategory.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/SubCategories/{subCategory.DisplayImagePath}")"
+                     alt="SubCategory Image" class="img-thumbnail" style="width: 100px; height: 50px;" />
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="AccountProductSubCategory" Property="ProductSubCategoryName" Title="Sub-category" />
+    </Columns>
+</RadzenDataGrid>

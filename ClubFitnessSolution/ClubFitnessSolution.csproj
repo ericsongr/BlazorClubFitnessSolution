@@ -32,4 +32,13 @@
     <ProjectReference Include="..\ClubFitnessServices\ClubFitnessServices.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Components\Pos\AccountProductCategoryGrid.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+    <Content Update="Components\Pos\Index.razor">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+    </Content>
+  </ItemGroup>
+
 </Project>

@@ -1,0 +1,165 @@
+﻿@page "/pos"
+@inject IAccountProductCategoryService AccountProductCategoryService
+@inject IAccountProductSubCategoryService AccountProductSubCategoryService
+@inject IAccountProductService AccountProductService
+@inject NavigationManager Navigation
+
+@using ClubFitnessDomain
+@using ClubFitnessServices.Interfaces
+
+@rendermode RenderMode.InteractiveServer
+
+<div class="container">
+    <div class="row">
+        
+        @if (IsShowAccountProductCategory)
+        {
+            <div class="col-md-4">
+                <AccountProductCategoryGrid Categories="categories" OnCategorySelected="OnCategorySelected" />
+            </div>
+        }
+
+        @if (IsShowAccountProductSubCategory)
+        {
+            <div class="col-md-4">
+                @if (selectedCategory != null)
+                {
+                    <AccountProductSubCategoryGrid SubCategories="subCategories" OnSubCategorySelected="OnSubCategorySelected" />
+                }
+            </div>
+        }
+
+        @if (IsShowAccountProduct)
+        {
+            <div class="col-md-4">
+                @if (selectedSubCategory != null)
+                {
+                    <AccountProductGrid Products="products" OnProductSelected="OnProductSelected" />
+                }
+            </div>
+        }
+        
+        <!-- Transaction Item Grid Partial -->
+        <div class="col-md-8">
+            <AccountPosTransactionGrid TransactionItems="transactionItems" OnIncreaseQuantity="IncreaseQuantity" OnDecreaseQuantity="DecreaseQuantity" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 mt-4">
+            <RadzenButton Text="Back To Home" Click="@(() => BackToHome())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"/>    
+            @if (IsShowAccountProductSubCategory)
+            {
+                <RadzenButton Text="Back To Category" Click="@(() => BackToCategory())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"/>
+            }
+
+            @if (IsShowAccountProduct)
+            {
+                <RadzenButton Text="Back To Sub-Category" Click="@(() => BackToSubCategory())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"/>
+            }
+        </div>
+</div>
+</div>
+@code {
+    private IEnumerable<AccountProductCategory> categories;
+    private IEnumerable<AccountProductSubCategory> subCategories;
+    private IEnumerable<AccountProduct> products;
+
+    private AccountProductCategory selectedCategory;
+    private AccountProductSubCategory selectedSubCategory;
+
+    private List<PosTransactionItem> transactionItems = new();
+
+    bool IsShowAccountProductCategory = true;
+    bool IsShowAccountProductSubCategory = false;
+    bool IsShowAccountProduct = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await AccountProductCategoryService.GetAllAsync();
+    }
+
+    private async Task OnCategorySelected(AccountProductCategory category)
+    {
+        selectedCategory = category;
+        subCategories = await AccountProductSubCategoryService.GetSubCategoriesByCategoryId(category.AccountProductCategoryId);
+        IsShowAccountProductCategory = !subCategories.Any();
+        IsShowAccountProductSubCategory = subCategories.Any();
+
+    }
+
+    private async Task OnSubCategorySelected(AccountProductSubCategory subCategory)
+    {
+        selectedSubCategory = subCategory;
+        products = await AccountProductService.GetProductsBySubCategoryId(subCategory.AccountProductSubCategoryId);
+        IsShowAccountProductSubCategory = !products.Any();
+        IsShowAccountProduct = products.Any();
+    }
+
+    private void OnProductSelected(AccountProduct product)
+    {
+        try
+        {
+            var existingItem = transactionItems.FirstOrDefault(p => p.ProductId == product.AccountProductId);
+
+            if (existingItem != null)
+            {
+                existingItem.ItemQuantity += 1;
+            }
+            else
+            {
+                transactionItems.Add(new PosTransactionItem
+                    {
+                        ProductId = product.AccountProductId,
+                        ItemDescription = product.ProductName ?? "",
+                        ItemPriceIncTax = product.SellIncTaxPrice ?? 0,
+                        ItemQuantity = 1,
+                        ProductImage = product.DisplayImagePath ?? ""// Assuming Product Image is in DisplayImagePath
+                    });
+
+                // Notify UI to update the transaction items list
+                transactionItems = transactionItems.ToList();
+            }
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private void IncreaseQuantity(PosTransactionItem item)
+    {
+        item.ItemQuantity += 1;
+        // Notify UI to update the transaction items list
+        transactionItems = transactionItems.ToList();
+    }
+
+    private void DecreaseQuantity(PosTransactionItem item)
+    {
+        if (item.ItemQuantity > 1)
+        {
+            item.ItemQuantity -= 1;
+            // Notify UI to update the transaction items list
+            transactionItems = transactionItems.ToList();
+        }
+    }
+
+    private void BackToHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void BackToCategory()
+    {
+        IsShowAccountProductCategory = true;
+        IsShowAccountProductSubCategory = false;
+    }
+
+    private void BackToSubCategory()
+    {
+        IsShowAccountProductSubCategory = true;
+        IsShowAccountProduct = false;
+    }
+
+}

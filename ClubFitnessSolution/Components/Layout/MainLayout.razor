@@ -5,13 +5,16 @@
 @inject NotificationService NotificationService
 @inject ChatService ChatService
 
-<RadzenTheme Theme="material" @rendermode="InteractiveServer" />
+@* <RadzenTheme Theme="material" @rendermode="InteractiveServer" /> *@
 @* <RadzenDialog @rendermode="@RenderMode.InteractiveServer"/> *@
 <RadzenComponents @rendermode="@RenderMode.InteractiveServer" />
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+    @if (!IsHideSidebar())
+    {
+        <div class="sidebar">
+            <NavMenu />
+        </div>
+    }
 
     <main>
         <div class="top-row px-4">
@@ -32,6 +35,17 @@
 </div>
 
 @code {
+
+    // Method to check if the sidebar should be hidden
+    private bool IsHideSidebar()
+    {
+    // Get the current URL
+        var currentUrl = Navigation.Uri;
+
+    // Add any URLs where you want to hide the sidebar
+        return currentUrl.Contains("/pos") || currentUrl.Contains("/another-url-to-hide-sidebar");
+    }
+
     protected override async Task OnInitializedAsync()
     {
         await ChatService.StartConnection(); // Start the SignalR connection

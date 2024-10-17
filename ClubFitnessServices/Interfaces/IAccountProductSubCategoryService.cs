@@ -1,4 +1,5 @@
-﻿using ClubFitnessDomain.Dtos;
+﻿using ClubFitnessDomain;
+using ClubFitnessDomain.Dtos;
 
 namespace ClubFitnessServices.Interfaces
 {
@@ -6,6 +7,7 @@ namespace ClubFitnessServices.Interfaces
     {
         Task<IEnumerable<AccountProductSubCategoryDto>> GetAllAsync();
         Task<AccountProductSubCategoryDto> GetByIdAsync(int id);
+        Task<IEnumerable<AccountProductSubCategory>> GetSubCategoriesByCategoryId(int categoryId);
         Task AddAsync(AccountProductSubCategoryDto dto);
         Task UpdateAsync(AccountProductSubCategoryDto dto);
         Task DeleteAsync(int id, int deletedBy);

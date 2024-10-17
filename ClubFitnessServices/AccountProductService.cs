@@ -26,6 +26,12 @@ namespace ClubFitnessServices
             var accountProduct = await _repository.GetByIdAsync(id);
             return _mapper.Map<AccountProduct>(accountProduct);
         }
+        public async Task<IEnumerable<AccountProduct>> GetProductsBySubCategoryId(int subCategoryId)
+        {
+            return await _repository.GetWithIncludesAsync(
+                product => product.AccountProductSubCategoryId == subCategoryId,
+                product => product.AccountProductSubCategory);
+        }
 
         public async Task AddAsync(AccountProduct dto)
         {

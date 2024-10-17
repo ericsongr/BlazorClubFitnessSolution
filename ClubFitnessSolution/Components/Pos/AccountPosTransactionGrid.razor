@@ -1,0 +1,38 @@
+﻿@using ClubFitnessDomain
+
+@code {
+    [Parameter]
+    public List<PosTransactionItem> TransactionItems { get; set; }
+
+    [Parameter]
+    public EventCallback<PosTransactionItem> OnIncreaseQuantity { get; set; }
+
+    [Parameter]
+    public EventCallback<PosTransactionItem> OnDecreaseQuantity { get; set; }
+}
+
+<RadzenDataGrid TItem="PosTransactionItem" Data="@TransactionItems" AllowPaging="false" AllowFiltering="false">
+    <Columns>
+        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ProductImage" Title="" Width="60px">
+            <Template Context="item">
+                <img src="@(string.IsNullOrEmpty(item.ProductImage) ? "/uploads/no-image.png" : $"/uploads/Products/{item.ProductImage}")"
+                     alt="Product Image" class="img-thumbnail" style="width: 100px; height: 50px;" />
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemDescription" Title="Description" />
+        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceIncTax" Title="Price" TextAlign="TextAlign.Right" />
+        <RadzenDataGridColumn TItem="PosTransactionItem" Title="Quantity" TextAlign="TextAlign.Center">
+            <Template Context="item">
+                <RadzenButton Icon="remove" Click="@(() => OnDecreaseQuantity.InvokeAsync(item))" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" />
+                <span class="px-2">@item.ItemQuantity</span>
+                <RadzenButton Icon="add" Click="@(() => OnIncreaseQuantity.InvokeAsync(item))" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+            </Template>
+        </RadzenDataGridColumn>
+        <RadzenDataGridColumn TItem="PosTransactionItem" Title="Total" TextAlign="TextAlign.Center">
+            <Template Context="item">
+                @((item.ItemPriceIncTax * item.ItemQuantity).ToString("C"))
+            </Template>
+        </RadzenDataGridColumn>
+    </Columns>
+</RadzenDataGrid>
+
