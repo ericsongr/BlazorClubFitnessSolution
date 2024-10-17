@@ -82,6 +82,7 @@ namespace ClubFitnessDomain
         public ICollection<PosTransaction> CreatedByPosTransactions { get; set; }
         public ICollection<PosTransaction> UpdatedByPosTransactions { get; set; }
         public ICollection<PosTransaction> DeletedByPosTransactions { get; set; }
+        public ICollection<PosTransactionAudit> StaffPosTransactionAudits { get; set; }
 
         public ApplicationUser ApplicationUser { get; set; }
         
