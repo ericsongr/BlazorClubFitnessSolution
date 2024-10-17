@@ -1,0 +1,22 @@
+﻿namespace ClubFitnessDomain
+{
+    public class PosTransactionItem
+    {
+        public long PosTransactionItemId { get; set; }
+        public long PosTransactionId { get; set; }
+        public int ProductId { get; set; }
+        public int ItemQuantity { get; set; }
+        public decimal ItemTaxAmount { get; set; }
+        public decimal ItemPriceExTax { get; set; }
+        public decimal ItemPriceIncTax { get; set; }
+        public decimal Discount { get; set; }
+        public bool IsRefunded { get; set; }
+        public long? PosTransactionRefItemId { get; set; }
+        public string? ItemDescription { get; set; }
+        public bool IsVoided { get; set; }
+
+        // Navigation properties
+        public virtual PosTransaction PosTransaction { get; set; }
+        public virtual AccountProduct AccountProduct { get; set; }
+    }
+}

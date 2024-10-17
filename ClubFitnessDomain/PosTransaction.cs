@@ -28,6 +28,8 @@
         public DateTime? DeletedDateTimeUtc { get; set; }
         public int? DeletedBy { get; set; }
 
+        public virtual ICollection<PosTransactionItem> PosTransactionItems { get; set; }
+
         // Navigation properties
         public virtual Staff? CreatedByStaff { get; set; }
         public virtual Staff? UpdatedByStaff { get; set; }

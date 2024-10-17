@@ -94,6 +94,9 @@ namespace ClubFitnessDomain
         public int? DiscountCouponId { get; set; }
 
         // Navigation properties
+        
+        public virtual ICollection<PosTransactionItem> PosTransactionItems { get; set; }
+
         public virtual Staff StaffCreatedBy { get; set; }
         public virtual Staff StaffUpdatedBy { get; set; }
         public virtual Staff StaffDeletedBy { get; set; }
