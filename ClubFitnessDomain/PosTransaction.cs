@@ -29,6 +29,7 @@
         public int? DeletedBy { get; set; }
 
         public virtual ICollection<PosTransactionItem> PosTransactionItems { get; set; }
+        public virtual ICollection<PosTransactionPayment> PosTransactionPayments { get; set; }
 
         // Navigation properties
         public virtual Staff? CreatedByStaff { get; set; }
