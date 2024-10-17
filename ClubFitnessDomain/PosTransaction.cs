@@ -30,6 +30,7 @@
 
         public virtual ICollection<PosTransactionItem> PosTransactionItems { get; set; }
         public virtual ICollection<PosTransactionPayment> PosTransactionPayments { get; set; }
+        public virtual ICollection<PosTransactionGenericItem> PosTransactionGenericItems { get; set; }
 
         // Navigation properties
         public virtual Staff? CreatedByStaff { get; set; }
