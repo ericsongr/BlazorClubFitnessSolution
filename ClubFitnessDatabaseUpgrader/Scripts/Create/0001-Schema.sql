@@ -627,6 +627,11 @@ CREATE TABLE [dbo].[AccountProduct](
 ) ON [PRIMARY]
 GO
 
+
+
+
+--END OF TABLE
+--NEXT MUST BE FOREIGN KEY AND CONTRAINTS
 ALTER TABLE [dbo].[AccountProduct] ADD  CONSTRAINT [DF_AccountProduct_OnHandQuantity]  DEFAULT ((0)) FOR [OnHandQuantity]
 GO
 
@@ -776,6 +781,288 @@ EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'As defined by 
 GO
 
 EXEC sys.sp_addextendedproperty @name=N'MS_Description', @value=N'The number of stored units created when a single purchase unit is received. This can differ by supplier.' , @level0type=N'SCHEMA',@level0name=N'dbo', @level1type=N'TABLE',@level1name=N'AccountProduct', @level2type=N'COLUMN',@level2name=N'DefaultPurchaseToStoreConversionQuantity'
+GO
+
+
+
+--PosTransaction
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[PosTransaction](
+	[PosTransactionId] [bigint] IDENTITY(1,1) NOT NULL,
+	[PosTransactionUtcDateTime] [datetime] NOT NULL,
+	[PosTransactionLocalDateTime] [datetime] NOT NULL,
+	[MemberNumber] [varchar](20) NULL,
+	[PosTransactionTotalIncTax] [decimal](18, 2) NOT NULL,
+	[PosTransactionTotalExTax] [decimal](18, 2) NOT NULL,
+	[PosTransactionTotalTax] [decimal](18, 2) NOT NULL,
+	[PrintFlag] [int] NULL,
+	[Till] [nvarchar](max) NULL,
+	[PosTransactionRefId] [bigint] NULL,
+	[TransactionType] [nvarchar](50) NULL,
+	[RefundType] [varchar](10) NULL,
+	[OutstandingBalance] [decimal](18, 2) NOT NULL,
+	[AccountId] [int] NULL,
+	[CreatedBy] [int] NOT NULL,
+	[CreatedDateTimeUtc] [datetime] NOT NULL DEFAULT (getutcdate()),
+	[UpdatedBy] [int] NULL,
+	[UpdatedDateTimeUtc] [datetime] NULL,
+	[IsDeleted] [bit] NOT NULL DEFAULT(0),
+	[DeletedDateTimeUtc] [datetime] NULL,
+	[DeletedBy] int NULL,
+ CONSTRAINT [PK_PosTransaction] PRIMARY KEY CLUSTERED 
+(
+	[PosTransactionId] ASC
+)WITH (PAD_INDEX = ON, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[PosTransaction] ADD  CONSTRAINT [DF__PosTransa__Trans__1B7E091A]  DEFAULT ('Sale') FOR [TransactionType]
+GO
+
+ALTER TABLE [dbo].[PosTransaction] ADD  CONSTRAINT [DF__PosTransa__Outst__0F6D37F0]  DEFAULT ((0)) FOR [OutstandingBalance]
+GO
+
+ALTER TABLE [dbo].[PosTransaction]  WITH CHECK ADD  CONSTRAINT [FK_PosTransaction_Accounts_AccountId] FOREIGN KEY([AccountId])
+REFERENCES [dbo].[Accounts] ([AccountId])
+GO
+
+ALTER TABLE [dbo].[PosTransaction] CHECK CONSTRAINT [FK_PosTransaction_Accounts_AccountId]
+GO
+
+ALTER TABLE [dbo].[PosTransaction]  WITH CHECK ADD  CONSTRAINT [FK_PosTransaction_CreatedBy] FOREIGN KEY([CreatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[PosTransaction] CHECK CONSTRAINT [FK_PosTransaction_CreatedBy]
+GO
+
+ALTER TABLE [dbo].[PosTransaction]  WITH CHECK ADD  CONSTRAINT [FK_PosTransaction_UpdatedBy] FOREIGN KEY([UpdatedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[PosTransaction] CHECK CONSTRAINT [FK_PosTransaction_UpdatedBy]
+GO
+
+ALTER TABLE [dbo].[PosTransaction]  WITH CHECK ADD  CONSTRAINT [FK_PosTransaction_DeletedBy] FOREIGN KEY([DeletedBy])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[PosTransaction] CHECK CONSTRAINT [FK_PosTransaction_DeletedBy]
+GO
+
+--ALTER TABLE [dbo].[PosTransaction]  WITH CHECK ADD  CONSTRAINT [FK_PosTransaction_Members] FOREIGN KEY([MemberNumber])
+--REFERENCES [dbo].[Members] ([member_number])
+--GO
+
+--ALTER TABLE [dbo].[PosTransaction] CHECK CONSTRAINT [FK_PosTransaction_Members]
+--GO
+
+--PosTransactionItem
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[PosTransactionItem](
+	[PosTransactionItemId] [bigint] IDENTITY(1,1) NOT NULL,
+	[PosTransactionId] [bigint] NOT NULL,
+	[ProductId] [int] NOT NULL,
+	[ItemQuantity] [int] NOT NULL,
+	[ItemTaxAmount] [decimal](18, 2) NOT NULL,
+	[ItemPriceExTax] [decimal](18, 2) NOT NULL,
+	[ItemPriceIncTax] [decimal](18, 2) NOT NULL,
+	[Discount] [decimal](18, 2) NOT NULL,
+	[IsRefunded] [bit] NOT NULL,
+	[PosTransactionRefItemId] [bigint] NULL,
+	[ItemDescription] [nvarchar](500) NULL,
+	[IsVoided] [bit] NOT NULL,
+ CONSTRAINT [PK_PosTransactionItem] PRIMARY KEY CLUSTERED 
+(
+	[PosTransactionItemId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem] ADD  DEFAULT ((0)) FOR [Discount]
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem] ADD  DEFAULT ((0)) FOR [IsRefunded]
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem] ADD  DEFAULT ((0)) FOR [IsVoided]
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionItem_AccountProduct] FOREIGN KEY([ProductId])
+REFERENCES [dbo].[AccountProduct] ([AccountProductId])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem] CHECK CONSTRAINT [FK_PosTransactionItem_AccountProduct]
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionItem_PosTransaction] FOREIGN KEY([PosTransactionId])
+REFERENCES [dbo].[PosTransaction] ([PosTransactionId])
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem] CHECK CONSTRAINT [FK_PosTransactionItem_PosTransaction]
+GO
+
+--PosTransactionPayment
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[PosTransactionPayment](
+	[PosTransactionPaymentId] [bigint] IDENTITY(1,1) NOT NULL,
+	[PosTransactionId] [bigint] NOT NULL,
+	[PaymentTypeId] [int] NOT NULL,
+	[Amount] [decimal](18, 2) NOT NULL,
+	[CCNumber] [varchar](25) NULL,
+	[TransactionDateUtc] [datetime] NULL,
+ CONSTRAINT [PK_PosTransactionPayment] PRIMARY KEY CLUSTERED 
+(
+	[PosTransactionPaymentId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[PosTransactionPayment]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionPayment_PosTransaction] FOREIGN KEY([PosTransactionId])
+REFERENCES [dbo].[PosTransaction] ([PosTransactionId])
+GO
+
+ALTER TABLE [dbo].[PosTransactionPayment] CHECK CONSTRAINT [FK_PosTransactionPayment_PosTransaction]
+GO
+
+
+--PosTransactionAudit
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[PosTransactionAudit](
+	[PosTransactionAuditId] [bigint] IDENTITY(1,1) NOT NULL,
+	[PosTransactionId] [bigint] NOT NULL,
+	[PosTransactionUtcDateTime] [datetime] NOT NULL,
+	[PosTransactionLocalDateTime] [datetime] NOT NULL,
+	[MemberNumber] [varchar](20) NULL,
+	[PosTransactionTotalIncTax] [decimal](18, 2) NOT NULL,
+	[PosTransactionTotalExTax] [decimal](18, 2) NOT NULL,
+	[PosTransactionTotalTax] [decimal](18, 2) NOT NULL,
+	[StaffMemberId] [int] NOT NULL,
+	[PrintFlag] [int] NULL,
+	[ProductId] [int] NOT NULL,
+	[ItemQuantity] [int] NOT NULL,
+	[ItemTaxAmount] [decimal](18, 2) NOT NULL,
+	[ItemPriceExTax] [decimal](18, 2) NOT NULL,
+	[ItemPriceIncTax] [decimal](18, 2) NOT NULL,
+	[PaymentType] [varchar](100) NULL,
+	[CCNumber] [varchar](25) NULL,
+	[Discount] [decimal](18, 2) NOT NULL,
+	[ReasonForDiscount] [nvarchar](1000) NULL,
+	[ItemType] [int] NOT NULL,
+	[PosTransactionItemId] [bigint] NOT NULL,
+	[AuditPosType] [int] NOT NULL,
+	[SalesPersonStaffId] [int] NULL,
+ CONSTRAINT [PK_PosTransactionAudit] PRIMARY KEY CLUSTERED 
+(
+	[PosTransactionAuditId] ASC
+)WITH (PAD_INDEX = ON, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 80, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[PosTransactionAudit] ADD  DEFAULT ((0)) FOR [Discount]
+GO
+
+ALTER TABLE [dbo].[PosTransactionAudit] ADD  CONSTRAINT [DF_PosTransactionAudit_ItemType]  DEFAULT ((0)) FOR [ItemType]
+GO
+
+ALTER TABLE [dbo].[PosTransactionAudit] ADD  DEFAULT ((0)) FOR [PosTransactionItemId]
+GO
+
+ALTER TABLE [dbo].[PosTransactionAudit] ADD  DEFAULT ((0)) FOR [AuditPosType]
+GO
+
+--ALTER TABLE [dbo].[PosTransactionAudit]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionAudit_Members] FOREIGN KEY([MemberNumber])
+--REFERENCES [dbo].[Members] ([member_number])
+--GO
+
+--ALTER TABLE [dbo].[PosTransactionAudit] CHECK CONSTRAINT [FK_PosTransactionAudit_Members]
+--GO
+
+ALTER TABLE [dbo].[PosTransactionAudit]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionAudit_POSTransactionId] FOREIGN KEY([PosTransactionId])
+REFERENCES [dbo].[PosTransaction] ([PosTransactionId])
+GO
+
+ALTER TABLE [dbo].[PosTransactionAudit] CHECK CONSTRAINT [FK_PosTransactionAudit_POSTransactionId]
+GO
+
+ALTER TABLE [dbo].[PosTransactionAudit]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionAudit_Staff] FOREIGN KEY([StaffMemberId])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[PosTransactionAudit] CHECK CONSTRAINT [FK_PosTransactionAudit_Staff]
+GO
+
+ALTER TABLE [dbo].[PosTransactionAudit]  WITH CHECK ADD  CONSTRAINT [FK_SalesPersonStaff_PosTransactionAudits_SalesPersonStaffId] FOREIGN KEY([SalesPersonStaffId])
+REFERENCES [dbo].[Staff] ([StaffId])
+GO
+
+ALTER TABLE [dbo].[PosTransactionAudit] CHECK CONSTRAINT [FK_SalesPersonStaff_PosTransactionAudits_SalesPersonStaffId]
+GO
+
+
+--PosTransactionGenericItem
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[PosTransactionGenericItem](
+	[PosTransactionId] [bigint] NOT NULL,
+	[ItemDescription] [nvarchar](500) NOT NULL,
+	[ItemAmount] [decimal](18, 2) NOT NULL,
+	[ItemQuantity] [int] NOT NULL,
+	[MembershipTypeId] [int] NULL,
+	[PosTransactionGenericItemId] [int] IDENTITY(1,1) NOT NULL,
+	[MemberNumber] [varchar](20) NULL,
+	[Discount] [decimal](18, 2) NOT NULL,
+	[DiscountType] [smallint] NOT NULL,
+ CONSTRAINT [PK_PosTransactionGenericItem] PRIMARY KEY CLUSTERED 
+(
+	[PosTransactionGenericItemId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[PosTransactionGenericItem] ADD  DEFAULT ((0)) FOR [Discount]
+GO
+
+ALTER TABLE [dbo].[PosTransactionGenericItem] ADD  DEFAULT ((2)) FOR [DiscountType]
+GO
+
+--ALTER TABLE [dbo].[PosTransactionGenericItem]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionGenericItem_MembershipTypes] FOREIGN KEY([MembershipTypeId])
+--REFERENCES [dbo].[MembershipTypes] ([contract_id])
+--GO
+
+--ALTER TABLE [dbo].[PosTransactionGenericItem] CHECK CONSTRAINT [FK_PosTransactionGenericItem_MembershipTypes]
+--GO
+
+ALTER TABLE [dbo].[PosTransactionGenericItem]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionGenericItem_PosTransaction] FOREIGN KEY([PosTransactionId])
+REFERENCES [dbo].[PosTransaction] ([PosTransactionId])
+GO
+
+ALTER TABLE [dbo].[PosTransactionGenericItem] CHECK CONSTRAINT [FK_PosTransactionGenericItem_PosTransaction]
 GO
 
 

@@ -19,9 +19,17 @@ namespace ClubFitnessInfrastructure
             return await _context.Set<T>().ToListAsync();
         }
 
-        public virtual async Task<T?> GetByIdAsync(int id)
+        public virtual async Task<T?> GetByIdAsync(object id)
         {
-            return await _context.Set<T>().FindAsync(id);
+            if (id is int intId)
+            {
+                return await _context.Set<T>().FindAsync(intId);
+            }
+            else if (id is long longId)
+            {
+                return await _context.Set<T>().FindAsync(longId);
+            }
+            throw new ArgumentException("Invalid type for id parameter");
         }
 
         public virtual async Task AddAsync(T entity)
@@ -36,19 +44,9 @@ namespace ClubFitnessInfrastructure
             await _context.SaveChangesAsync();
         }
 
-        public virtual async Task DeleteAsync(int id)
+        public virtual async Task DeleteAsync(object id, int deletedBy)
         {
-            var entity = await _context.Set<T>().FindAsync(id);
-            if (entity != null)
-            {
-                _context.Set<T>().Remove(entity);
-                await _context.SaveChangesAsync();
-            }
-        }
-
-        public virtual async Task DeleteAsync(int id, int deletedBy)
-        {
-            var entity = await _context.Set<T>().FindAsync(id);
+            var entity = await GetByIdAsync(id);
             if (entity != null)
             {
                 // Check if the entity has an IsDeleted property
