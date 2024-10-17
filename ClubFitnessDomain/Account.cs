@@ -42,6 +42,7 @@ namespace ClubFitnessDomain
         public virtual ICollection<AccountProductCategory> AccountProductCategories { get; set; }
         public virtual ICollection<AccountProduct> AccountProducts { get; set; }
         public virtual ICollection<Staff> Staffs { get; set; }
+        public virtual ICollection<PosTransaction> PosTransactions { get; set; }
 
         // Navigation properties
         public virtual Staff? CreatedByStaffAccount { get; set; }
