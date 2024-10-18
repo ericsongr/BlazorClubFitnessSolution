@@ -2,7 +2,9 @@
 @inject IAccountProductCategoryService AccountProductCategoryService
 @inject IAccountProductSubCategoryService AccountProductSubCategoryService
 @inject IAccountProductService AccountProductService
+
 @inject NavigationManager Navigation
+@inject NotificationService NotificationService
 
 @using ClubFitnessDomain
 @using ClubFitnessServices.Interfaces
@@ -15,7 +17,9 @@
         @if (IsShowAccountProductCategory)
         {
             <div class="col-md-4">
-                <AccountProductCategoryGrid Categories="categories" OnCategorySelected="OnCategorySelected" />
+                <AccountProductCategoryGrid 
+                    Categories="categories" 
+                    OnCategorySelected="OnCategorySelected"/>
             </div>
         }
 
@@ -63,7 +67,6 @@
     private IEnumerable<AccountProductCategory> categories;
     private IEnumerable<AccountProductSubCategory> subCategories;
     private IEnumerable<AccountProduct> products;
-
     private AccountProductCategory selectedCategory;
     private AccountProductSubCategory selectedSubCategory;
 
@@ -118,6 +121,8 @@
 
                 // Notify UI to update the transaction items list
                 transactionItems = transactionItems.ToList();
+
+                NotificationService.Notify(NotificationSeverity.Success, "Added", "New item has been added.");
             }
 
         }
@@ -140,11 +145,18 @@
         if (item.ItemQuantity > 1)
         {
             item.ItemQuantity -= 1;
-            // Notify UI to update the transaction items list
-            transactionItems = transactionItems.ToList();
         }
-    }
+        else
+        {
+            transactionItems.Remove(item);
 
+            NotificationService.Notify(NotificationSeverity.Success, "Removed", "Item has been removed.");
+        }
+        
+        // Notify UI to update the transaction items list
+        transactionItems = transactionItems.ToList();
+    }
+    
     private void BackToHome()
     {
         Navigation.NavigateTo("/");

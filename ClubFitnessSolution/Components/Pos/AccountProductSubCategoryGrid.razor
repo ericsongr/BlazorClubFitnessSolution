@@ -6,9 +6,16 @@
 
     [Parameter]
     public EventCallback<AccountProductSubCategory> OnSubCategorySelected { get; set; }
+
+    private void AddCursorPointer(RowRenderEventArgs<AccountProductSubCategory> args)
+    {
+        args.Attributes.Add("class", "cursor-pointer");
+    }
 }
 
-<RadzenDataGrid TItem="AccountProductSubCategory" Data="@SubCategories" AllowPaging="false" AllowFiltering="false" RowSelect="@(args => OnSubCategorySelected.InvokeAsync(args))">
+<RadzenDataGrid TItem="AccountProductSubCategory" Data="@SubCategories" AllowPaging="false" AllowFiltering="false" 
+                RowSelect="@(args => OnSubCategorySelected.InvokeAsync(args))"
+                RowRender="@(args => AddCursorPointer(args))">
     <Columns>
         <RadzenDataGridColumn TItem="AccountProductSubCategory" Property="DisplayImagePath" Title="Image" Width="60px">
             <Template Context="subCategory">

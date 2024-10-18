@@ -6,9 +6,15 @@
 
     [Parameter]
     public EventCallback<AccountProduct> OnProductSelected { get; set; }
+
+    private void AddCursorPointer(RowRenderEventArgs<AccountProduct> args)
+    {
+        args.Attributes.Add("class", "cursor-pointer");
+    }
 }
 
-<RadzenDataGrid TItem="AccountProduct" Data="@Products" AllowPaging="false" AllowFiltering="false" RowSelect="@(args => OnProductSelected.InvokeAsync(args))">
+<RadzenDataGrid TItem="AccountProduct" Data="@Products" AllowPaging="false" AllowFiltering="false" RowSelect="@(args => OnProductSelected.InvokeAsync(args))"
+                RowRender="@(args => AddCursorPointer(args))">
     <Columns>
         <RadzenDataGridColumn TItem="AccountProduct" Property="DisplayImagePath" Title="" Width="60px">
             <Template Context="product">

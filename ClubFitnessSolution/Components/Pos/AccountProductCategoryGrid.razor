@@ -5,17 +5,27 @@
     public IEnumerable<AccountProductCategory> Categories { get; set; }
 
     [Parameter]
+    public string RowClass { get; set; }
+
+    [Parameter]
     public EventCallback<AccountProductCategory> OnCategorySelected { get; set; }
+
+    private void AddCursorPointer(RowRenderEventArgs<AccountProductCategory> args)
+    {
+        args.Attributes.Add("class", "cursor-pointer");
+    }
 }
 
-<RadzenDataGrid TItem="AccountProductCategory" Data="@Categories" AllowPaging="false" AllowFiltering="false" RowSelect="@(args => OnCategorySelected.InvokeAsync(args))">
+<RadzenDataGrid TItem="AccountProductCategory" Data="@Categories" AllowPaging="false" AllowFiltering="false"
+                RowSelect="@(args => OnCategorySelected.InvokeAsync(args))"
+                RowRender="@(args => AddCursorPointer(args))">
     <Columns>
         <RadzenDataGridColumn TItem="AccountProductCategory" Property="DisplayImagePath" Title="Image" Width="60px">
             <Template Context="category">
                 <img src="@(string.IsNullOrEmpty(category.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/Categories/{category.DisplayImagePath}")"
-                     alt="Category Image" class="img-thumbnail" style="width: 50px; height: 50px;" />
+                     alt="Category Image" class="img-thumbnail" style="width: 50px; height: 50px;"/>
             </Template>
         </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="AccountProductCategory" Property="ProductCategoryName" Title="Category Name" />
+        <RadzenDataGridColumn TItem="AccountProductCategory" Property="ProductCategoryName" Title="Category Name"/>
     </Columns>
 </RadzenDataGrid>

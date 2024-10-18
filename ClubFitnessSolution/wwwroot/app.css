@@ -64,3 +64,7 @@ h1:focus {
 .rz-breadcrumb a {
         color: blue !important;
     }
+
+.cursor-pointer {
+    cursor: pointer; /* Changes the cursor to a hand when hovering over the row */
+}
