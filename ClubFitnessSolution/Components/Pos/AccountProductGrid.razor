@@ -6,22 +6,16 @@
 
     [Parameter]
     public EventCallback<AccountProduct> OnProductSelected { get; set; }
-
-    private void AddCursorPointer(RowRenderEventArgs<AccountProduct> args)
-    {
-        args.Attributes.Add("class", "cursor-pointer");
-    }
+    
 }
 
-<RadzenDataGrid TItem="AccountProduct" Data="@Products" AllowPaging="false" AllowFiltering="false" RowSelect="@(args => OnProductSelected.InvokeAsync(args))"
-                RowRender="@(args => AddCursorPointer(args))">
-    <Columns>
-        <RadzenDataGridColumn TItem="AccountProduct" Property="DisplayImagePath" Title="" Width="60px">
-            <Template Context="product">
-                <img src="@(string.IsNullOrEmpty(product.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/Products/{product.DisplayImagePath}")"
-                     alt="Product Image" class="img-thumbnail" style="width: 100px; height: 50px;" />
-            </Template>
-        </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="AccountProduct" Property="ProductName" Title="ITEM DESCRIPTION" />
-    </Columns>
-</RadzenDataGrid>
+<div class="pos-grid">
+    @foreach (var item in Products)
+    {
+        <div class="pos-tile"
+             @onclick="() => OnProductSelected.InvokeAsync(item)"
+             style="background-image: url('@(string.IsNullOrEmpty(item.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/Products/{item.DisplayImagePath}")');">
+            <div class="pos-item-name">@item.ProductName</div>
+        </div>
+    }
+</div>

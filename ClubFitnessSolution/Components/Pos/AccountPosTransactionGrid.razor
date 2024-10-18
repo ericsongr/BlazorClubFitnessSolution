@@ -1,6 +1,10 @@
 ﻿@using ClubFitnessDomain
 
 @code {
+
+    [Parameter]
+    public decimal Tax { get; set; }
+
     [Parameter]
     public List<PosTransactionItem> TransactionItems { get; set; }
 
@@ -9,30 +13,138 @@
 
     [Parameter]
     public EventCallback<PosTransactionItem> OnDecreaseQuantity { get; set; }
+
+
+    private decimal GetSubTotal() => TransactionItems.Sum(item => item.ItemPriceExTax * item.ItemQuantity);
+    private decimal GetTotalTax() => GetTotal() * Tax;
+    private decimal GetTotal() => TransactionItems.Sum(item => item.ItemPriceIncTax * item.ItemQuantity);
 }
 
-<RadzenDataGrid TItem="PosTransactionItem" Data="@TransactionItems" AllowPaging="false" AllowFiltering="false">
-    <Columns>
-        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ProductImage" Title="" Width="60px">
-            <Template Context="item">
-                <img src="@(string.IsNullOrEmpty(item.ProductImage) ? "/uploads/no-image.png" : $"/uploads/Products/{item.ProductImage}")"
-                     alt="Product Image" class="img-thumbnail" style="width: 100px; height: 50px;" />
-            </Template>
-        </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemDescription" Title="Description" />
-        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceIncTax" Title="Price" TextAlign="TextAlign.Right" />
-        <RadzenDataGridColumn TItem="PosTransactionItem" Title="Quantity" TextAlign="TextAlign.Center">
-            <Template Context="item">
-                <RadzenButton Icon="remove" Click="@(() => OnDecreaseQuantity.InvokeAsync(item))" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" />
-                <span class="px-2">@item.ItemQuantity</span>
-                <RadzenButton Icon="add" Click="@(() => OnIncreaseQuantity.InvokeAsync(item))" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
-            </Template>
-        </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="PosTransactionItem" Title="Total" TextAlign="TextAlign.Center">
-            <Template Context="item">
-                @((item.ItemPriceIncTax * item.ItemQuantity).ToString("C"))
-            </Template>
-        </RadzenDataGridColumn>
-    </Columns>
-</RadzenDataGrid>
+<div class="pos-detail">
+    <RadzenDataGrid TItem="PosTransactionItem" Data="@TransactionItems" AllowPaging="false" AllowFiltering="false">
+        <Columns>
+            <RadzenDataGridColumn TItem="PosTransactionItem" Property="ProductImage" Title="" Width="70px">
+                <Template Context="item">
+                    <img src="@(string.IsNullOrEmpty(item.ProductImage) ? "/uploads/no-image.png" : $"/uploads/Products/{item.ProductImage}")"
+                         alt="Product Image" class="sale-thumbnail" />
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemDescription" Title="Description" />
+            <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceIncTax" Title="Price" TextAlign="TextAlign.Center" Width="110px">
+                <Template Context="item">
+                    @((item.ItemPriceIncTax).ToString("C"))
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="PosTransactionItem" Title="Quantity" TextAlign="TextAlign.Center" Width="140px">
+                <Template Context="item">
+                    <RadzenButton Icon="remove" Click="@(() => OnDecreaseQuantity.InvokeAsync(item))" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" />
+                    <span class="px-2">@item.ItemQuantity.ToString("C")</span>
+                    <RadzenButton Icon="add" Click="@(() => OnIncreaseQuantity.InvokeAsync(item))" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="PosTransactionItem" Title="Discount" TextAlign="TextAlign.Center" Width="135px" />
+            <RadzenDataGridColumn TItem="PosTransactionItem" Title="Total" TextAlign="TextAlign.Center" Width="150px">
+                <Template Context="item">
+                    @((item.ItemPriceIncTax * item.ItemQuantity).ToString("C"))
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</div>
+<div id="summaryGroup" class="inner-content">
+    <table id="summary" class="table table-borderless">
+        <tbody>
+            <tr>
+                <td class="numericCol">
+                    <strong>Subtotal</strong>
+                </td>
+                <td class="numericCol">
+                    <strong id="subTotal">@GetSubTotal().ToString("C")</strong>
+                </td>
+                <td></td>
+                <td class="numericCol">
+                    <strong>Sale total</strong>
+                </td>
+                <td class="numericCol">
+                    <strong id="saleTotal">
+                        @GetTotal().ToString("C")
+                    </strong>
+                </td>
+            </tr>
+            <tr>
+                <td class="numericCol">
+                    <strong>Sale discounts</strong>
+                </td>
+                <td class="numericCol">
+                    <strong id="saleDiscounts">$0.00</strong>
+                </td>
+                <td></td>
+                <td class="numericCol">
+                    <strong>Tendered</strong>
+                </td>
+                <td class="numericCol">
+                    <strong id="amountTendered">$0.00</strong>
+                </td>
+            </tr>
+            <tr>
+                <td class="numericCol">
+                    <strong>TAX</strong>
+                </td>
+                <td class="numericCol">
+                    <strong id="gst">@GetTotalTax().ToString("C")</strong>
+                </td>
+                <td></td>
+                <td class="numericCol">
+                    <strong style="color:maroon">Outstanding</strong>
+                </td>
+                <td class="numericCol">
+                    <strong style="color:maroon">$0.00</strong>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="numericCol">
+                    <strong style="color:maroon">Change</strong>
+                </td>
+                <td class="numericCol">
+                    <strong style="color:maroon">$0.00</strong>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
 
+@* <div class="pos-summary">
+    <div class="bg-info text-right">
+        <span>Subtotal</span>
+        <span>$0</span>
+    </div>
+    <div class="bg-info text-right">
+        <span>Sale total</span>
+        <span>$0</span>
+    </div>
+    <div class="bg-info text-right">
+        <span>Sale discounts</span>
+        <span>$0</span>
+    </div>
+    <div class="bg-info text-right">
+        <span>Tendered</span>
+        <span>$0</span>
+    </div>
+    <div class="bg-info text-right">
+        <span>Tax</span>
+        <span>$0</span>
+    </div>
+    <div class="bg-info text-right">
+        <span style="color:red">Outstanding</span>
+        <span style="color:red">$0</span>
+    </div>
+    <div>
+    </div>
+    <div class="bg-info text-right">
+        <span style="color:red">Change</span>
+        <span style="color:red">$0</span>
+    </div>
+</div> *@

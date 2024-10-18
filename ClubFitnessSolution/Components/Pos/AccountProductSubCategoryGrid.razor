@@ -7,22 +7,17 @@
     [Parameter]
     public EventCallback<AccountProductSubCategory> OnSubCategorySelected { get; set; }
 
-    private void AddCursorPointer(RowRenderEventArgs<AccountProductSubCategory> args)
-    {
-        args.Attributes.Add("class", "cursor-pointer");
-    }
 }
 
-<RadzenDataGrid TItem="AccountProductSubCategory" Data="@SubCategories" AllowPaging="false" AllowFiltering="false" 
-                RowSelect="@(args => OnSubCategorySelected.InvokeAsync(args))"
-                RowRender="@(args => AddCursorPointer(args))">
-    <Columns>
-        <RadzenDataGridColumn TItem="AccountProductSubCategory" Property="DisplayImagePath" Title="Image" Width="60px">
-            <Template Context="subCategory">
-                <img src="@(string.IsNullOrEmpty(subCategory.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/SubCategories/{subCategory.DisplayImagePath}")"
-                     alt="SubCategory Image" class="img-thumbnail" style="width: 100px; height: 50px;" />
-            </Template>
-        </RadzenDataGridColumn>
-        <RadzenDataGridColumn TItem="AccountProductSubCategory" Property="ProductSubCategoryName" Title="Sub-category" />
-    </Columns>
-</RadzenDataGrid>
+
+<div class="d-flex flex-row">
+    @foreach (var item in SubCategories)
+    {
+        <div class="pos-tile"
+             @onclick="() => OnSubCategorySelected.InvokeAsync(item)"
+             style="background-image: url('@(string.IsNullOrEmpty(item.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/SubCategories/{item.DisplayImagePath}")');">
+            <div class="pos-item-name">@item.ProductSubCategoryName</div>
+        </div>
+    }
+</div>
+

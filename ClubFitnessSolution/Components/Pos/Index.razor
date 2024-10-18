@@ -11,57 +11,62 @@
 
 @rendermode RenderMode.InteractiveServer
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        
-        @if (IsShowAccountProductCategory)
-        {
-            <div class="col-md-4">
-                <AccountProductCategoryGrid 
-                    Categories="categories" 
-                    OnCategorySelected="OnCategorySelected"/>
-            </div>
-        }
+        <div class="col-md-5 shadow-lg ps-4 py-3">
+            @if (IsShowAccountProductCategory)
+            {
+                <AccountProductCategoryGrid Categories="categories"
+                                            OnCategorySelected="OnCategorySelected" />
+            }
 
-        @if (IsShowAccountProductSubCategory)
-        {
-            <div class="col-md-4">
-                @if (selectedCategory != null)
+            @if (IsShowAccountProductSubCategory)
+            {
+                if (selectedCategory != null)
                 {
                     <AccountProductSubCategoryGrid SubCategories="subCategories" OnSubCategorySelected="OnSubCategorySelected" />
                 }
-            </div>
-        }
-
-        @if (IsShowAccountProduct)
-        {
-            <div class="col-md-4">
-                @if (selectedSubCategory != null)
+                else
                 {
-                    <AccountProductGrid Products="products" OnProductSelected="OnProductSelected" />
+                    <span>No sub-category found</span>
                 }
-            </div>
-        }
-        
-        <!-- Transaction Item Grid Partial -->
-        <div class="col-md-8">
-            <AccountPosTransactionGrid TransactionItems="transactionItems" OnIncreaseQuantity="IncreaseQuantity" OnDecreaseQuantity="DecreaseQuantity" />
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-6 mt-4">
-            <RadzenButton Text="Back To Home" Click="@(() => BackToHome())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"/>    
-            @if (IsShowAccountProductSubCategory)
-            {
-                <RadzenButton Text="Back To Category" Click="@(() => BackToCategory())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"/>
             }
 
             @if (IsShowAccountProduct)
             {
-                <RadzenButton Text="Back To Sub-Category" Click="@(() => BackToSubCategory())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small"/>
+                if (selectedSubCategory != null)
+                {
+                    <AccountProductGrid Products="products" OnProductSelected="OnProductSelected" />
+                }
+                else
+                {
+                    <span>No item found</span>
+                }
+
             }
         </div>
-</div>
+        <!-- Transaction Item Grid Partial -->
+        <div class="col-md-7">
+            <AccountPosTransactionGrid 
+                Tax="GetTax()"
+                TransactionItems="transactionItems" 
+                OnIncreaseQuantity="IncreaseQuantity" OnDecreaseQuantity="DecreaseQuantity" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 mt-4">
+            <RadzenButton Text="Back To Home" Click="@(() => BackToHome())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+            @if (IsShowAccountProductSubCategory)
+            {
+                <RadzenButton Text="Back To Category" Click="@(() => BackToCategory())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+            }
+
+            @if (IsShowAccountProduct)
+            {
+                <RadzenButton Text="Back To Sub-Category" Click="@(() => BackToSubCategory())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+            }
+        </div>
+    </div>
 </div>
 @code {
     private IEnumerable<AccountProductCategory> categories;
@@ -69,7 +74,7 @@
     private IEnumerable<AccountProduct> products;
     private AccountProductCategory selectedCategory;
     private AccountProductSubCategory selectedSubCategory;
-
+    private decimal Tax = 0.00M; //TODO: replace value from the settings
     private List<PosTransactionItem> transactionItems = new();
 
     bool IsShowAccountProductCategory = true;
@@ -115,6 +120,7 @@
                         ProductId = product.AccountProductId,
                         ItemDescription = product.ProductName ?? "",
                         ItemPriceIncTax = product.SellIncTaxPrice ?? 0,
+                        ItemPriceExTax = product.SellExTaxPrice ?? 0,
                         ItemQuantity = 1,
                         ProductImage = product.DisplayImagePath ?? ""// Assuming Product Image is in DisplayImagePath
                     });
@@ -152,11 +158,18 @@
 
             NotificationService.Notify(NotificationSeverity.Success, "Removed", "Item has been removed.");
         }
-        
+
         // Notify UI to update the transaction items list
         transactionItems = transactionItems.ToList();
     }
-    
+
+    private decimal GetTax()
+    {
+        decimal vat = 12M; //replace with setting value
+
+        return vat / 100;
+    }
+
     private void BackToHome()
     {
         Navigation.NavigateTo("/");
