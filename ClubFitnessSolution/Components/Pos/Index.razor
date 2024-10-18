@@ -2,12 +2,15 @@
 @inject IAccountProductCategoryService AccountProductCategoryService
 @inject IAccountProductSubCategoryService AccountProductSubCategoryService
 @inject IAccountProductService AccountProductService
+@inject IPosTransactionService PosTransactionService
 
 @inject NavigationManager Navigation
 @inject NotificationService NotificationService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
 @using ClubFitnessDomain
 @using ClubFitnessServices.Interfaces
+
 
 @rendermode RenderMode.InteractiveServer
 
@@ -24,7 +27,8 @@
             {
                 if (selectedCategory != null)
                 {
-                    <AccountProductSubCategoryGrid SubCategories="subCategories" OnSubCategorySelected="OnSubCategorySelected" />
+                    <AccountProductSubCategoryGrid SubCategories="subCategories"  OnSubCategorySelected="OnSubCategorySelected"
+                                                   BackToCategory="BackToCategory" />
                 }
                 else
                 {
@@ -36,7 +40,7 @@
             {
                 if (selectedSubCategory != null)
                 {
-                    <AccountProductGrid Products="products" OnProductSelected="OnProductSelected" />
+                    <AccountProductGrid Products="products" OnProductSelected="OnProductSelected" BackToSubCategory="BackToSubCategory" />
                 }
                 else
                 {
@@ -48,22 +52,18 @@
         <!-- Transaction Item Grid Partial -->
         <div class="col-md-7">
             <AccountPosTransactionGrid 
-                Tax="GetTax()"
-                TransactionItems="transactionItems" 
+                PosTransaction="posTransaction"
+                TransactionItems="posTransactionItems" 
                 OnIncreaseQuantity="IncreaseQuantity" OnDecreaseQuantity="DecreaseQuantity" />
         </div>
     </div>
     <div class="row">
         <div class="col-6 mt-4">
             <RadzenButton Text="Back To Home" Click="@(() => BackToHome())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
-            @if (IsShowAccountProductSubCategory)
+            
+            @if (posTransactionItems.Any())
             {
-                <RadzenButton Text="Back To Category" Click="@(() => BackToCategory())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
-            }
-
-            @if (IsShowAccountProduct)
-            {
-                <RadzenButton Text="Back To Sub-Category" Click="@(() => BackToSubCategory())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+                <RadzenButton Text="Complete Sale" Click="@(() => CompleteSale())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
             }
         </div>
     </div>
@@ -75,7 +75,9 @@
     private AccountProductCategory selectedCategory;
     private AccountProductSubCategory selectedSubCategory;
     private decimal Tax = 0.00M; //TODO: replace value from the settings
-    private List<PosTransactionItem> transactionItems = new();
+
+    private PosTransaction posTransaction = new();
+    private List<PosTransactionItem> posTransactionItems = new();
 
     bool IsShowAccountProductCategory = true;
     bool IsShowAccountProductSubCategory = false;
@@ -84,6 +86,19 @@
     protected override async Task OnInitializedAsync()
     {
         categories = await AccountProductCategoryService.GetAllAsync();
+       
+        Tax = GetVat();
+    }
+
+    private decimal GetSubTotal() => posTransactionItems.Sum(item => item.ItemPriceExTax);
+    private decimal GetTotalTax() => posTransactionItems.Sum(item => item.ItemTaxAmount);
+    private decimal GetTotal() => posTransactionItems.Sum(item => item.ItemPriceIncTax);
+
+    private void ComputeTotal()
+    {
+        posTransaction.PosTransactionTotalExTax = GetSubTotal();
+        posTransaction.PosTransactionTotalTax = GetTotalTax();
+        posTransaction.PosTransactionTotalIncTax = GetTotal();
     }
 
     private async Task OnCategorySelected(AccountProductCategory category)
@@ -107,29 +122,43 @@
     {
         try
         {
-            var existingItem = transactionItems.FirstOrDefault(p => p.ProductId == product.AccountProductId);
+            var existingItem = posTransactionItems.FirstOrDefault(p => p.ProductId == product.AccountProductId);
 
             if (existingItem != null)
             {
                 existingItem.ItemQuantity += 1;
+                existingItem.ItemPriceIncTax = existingItem.PriceIncTax * existingItem.ItemQuantity;//total per item
+                existingItem.ItemTaxAmount = (existingItem.PriceIncTax * existingItem.ItemQuantity) * Tax;//total per item
+                existingItem.ItemPriceExTax = existingItem.ItemPriceIncTax - existingItem.ItemTaxAmount;//total per item
+
             }
             else
             {
-                transactionItems.Add(new PosTransactionItem
+                var vat = (product.SellIncTaxPrice ?? 0) * Tax;
+                var itemPriceExTax = (product.SellIncTaxPrice ?? 0) - vat;
+                var itemTaxAmount = (product.SellIncTaxPrice ?? 0) * Tax;
+                posTransactionItems.Add(new PosTransactionItem
                     {
                         ProductId = product.AccountProductId,
                         ItemDescription = product.ProductName ?? "",
-                        ItemPriceIncTax = product.SellIncTaxPrice ?? 0,
-                        ItemPriceExTax = product.SellExTaxPrice ?? 0,
+                        PriceIncTax = product.SellIncTaxPrice ?? 0,
+                        PriceExTax = product.SellExTaxPrice ?? 0,
+                        ItemPriceIncTax = product.SellIncTaxPrice ?? 0,  //total per item
+                        ItemPriceExTax = itemPriceExTax, //total per item
+                        ItemTaxAmount = itemTaxAmount, //total per item
                         ItemQuantity = 1,
                         ProductImage = product.DisplayImagePath ?? ""// Assuming Product Image is in DisplayImagePath
                     });
 
-                // Notify UI to update the transaction items list
-                transactionItems = transactionItems.ToList();
+
 
                 NotificationService.Notify(NotificationSeverity.Success, "Added", "New item has been added.");
             }
+
+            // Notify UI to update the transaction items list
+            posTransactionItems = posTransactionItems.ToList();
+
+            ComputeTotal(); // for PosTransaction
 
         }
         catch (Exception e)
@@ -142,8 +171,12 @@
     private void IncreaseQuantity(PosTransactionItem item)
     {
         item.ItemQuantity += 1;
+        RecomputePerItem(item);
+
         // Notify UI to update the transaction items list
-        transactionItems = transactionItems.ToList();
+        posTransactionItems = posTransactionItems.ToList();
+
+        ComputeTotal(); // for PosTransaction
     }
 
     private void DecreaseQuantity(PosTransactionItem item)
@@ -151,23 +184,50 @@
         if (item.ItemQuantity > 1)
         {
             item.ItemQuantity -= 1;
+            RecomputePerItem(item);
         }
         else
         {
-            transactionItems.Remove(item);
+            posTransactionItems.Remove(item);
 
             NotificationService.Notify(NotificationSeverity.Success, "Removed", "Item has been removed.");
         }
 
         // Notify UI to update the transaction items list
-        transactionItems = transactionItems.ToList();
+        posTransactionItems = posTransactionItems.ToList();
+
+        ComputeTotal(); // for PosTransaction
+
     }
 
-    private decimal GetTax()
+    private void RecomputePerItem(PosTransactionItem item)
+    {
+        item.ItemPriceIncTax = item.PriceIncTax * item.ItemQuantity;//total per item
+        item.ItemTaxAmount = (item.PriceIncTax * item.ItemQuantity) * Tax;//total per item
+        item.ItemPriceExTax = item.ItemPriceIncTax - item.ItemTaxAmount;//total per item
+    }
+
+    private decimal GetVat()
     {
         decimal vat = 12M; //replace with setting value
 
         return vat / 100;
+    }
+
+    private async void CompleteSale()
+    {
+        posTransaction.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
+        posTransaction.PosTransactionItems = posTransactionItems;
+        await PosTransactionService.AddAsync(posTransaction);
+        
+        posTransaction = new();
+        posTransactionItems = new();
+
+        // posTransactionItems = posTransactionItems.ToList();
+
+        NotificationService.Notify(NotificationSeverity.Success, "Success", "Transaction has been completed.");
+
+        StateHasChanged(); // Notify Blazor UI updates
     }
 
     private void BackToHome()

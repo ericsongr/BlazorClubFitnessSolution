@@ -880,7 +880,6 @@ CREATE TABLE [dbo].[PosTransactionItem](
 	[Discount] [decimal](18, 2) NOT NULL,
 	[IsRefunded] [bit] NOT NULL,
 	[PosTransactionRefItemId] [bigint] NULL,
-	[ItemDescription] [nvarchar](500) NULL,
 	[IsVoided] [bit] NOT NULL,
  CONSTRAINT [PK_PosTransactionItem] PRIMARY KEY CLUSTERED 
 (

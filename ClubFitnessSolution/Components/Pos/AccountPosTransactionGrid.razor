@@ -3,7 +3,7 @@
 @code {
 
     [Parameter]
-    public decimal Tax { get; set; }
+    public PosTransaction PosTransaction { get; set; }
 
     [Parameter]
     public List<PosTransactionItem> TransactionItems { get; set; }
@@ -13,11 +13,6 @@
 
     [Parameter]
     public EventCallback<PosTransactionItem> OnDecreaseQuantity { get; set; }
-
-
-    private decimal GetSubTotal() => TransactionItems.Sum(item => item.ItemPriceExTax * item.ItemQuantity);
-    private decimal GetTotalTax() => GetTotal() * Tax;
-    private decimal GetTotal() => TransactionItems.Sum(item => item.ItemPriceIncTax * item.ItemQuantity);
 }
 
 <div class="pos-detail">
@@ -30,22 +25,22 @@
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemDescription" Title="Description" />
-            <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceIncTax" Title="Price" TextAlign="TextAlign.Center" Width="110px">
+            <RadzenDataGridColumn TItem="PosTransactionItem" Property="PriceIncTax" Title="Price" TextAlign="TextAlign.Center" Width="110px">
                 <Template Context="item">
-                    @((item.ItemPriceIncTax).ToString("C"))
+                    @((item.PriceIncTax).ToString("C"))
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="PosTransactionItem" Title="Quantity" TextAlign="TextAlign.Center" Width="140px">
                 <Template Context="item">
                     <RadzenButton Icon="remove" Click="@(() => OnDecreaseQuantity.InvokeAsync(item))" ButtonStyle="ButtonStyle.Danger" Size="ButtonSize.Small" />
-                    <span class="px-2">@item.ItemQuantity.ToString("C")</span>
+                    <span class="px-2">@item.ItemQuantity</span>
                     <RadzenButton Icon="add" Click="@(() => OnIncreaseQuantity.InvokeAsync(item))" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
                 </Template>
             </RadzenDataGridColumn>
             <RadzenDataGridColumn TItem="PosTransactionItem" Title="Discount" TextAlign="TextAlign.Center" Width="135px" />
             <RadzenDataGridColumn TItem="PosTransactionItem" Title="Total" TextAlign="TextAlign.Center" Width="150px">
                 <Template Context="item">
-                    @((item.ItemPriceIncTax * item.ItemQuantity).ToString("C"))
+                    @(item.ItemPriceIncTax.ToString("C"))
                 </Template>
             </RadzenDataGridColumn>
         </Columns>
@@ -59,7 +54,7 @@
                     <strong>Subtotal</strong>
                 </td>
                 <td class="numericCol">
-                    <strong id="subTotal">@GetSubTotal().ToString("C")</strong>
+                    <strong id="subTotal">@PosTransaction.PosTransactionTotalExTax.ToString("C")</strong>
                 </td>
                 <td></td>
                 <td class="numericCol">
@@ -67,7 +62,7 @@
                 </td>
                 <td class="numericCol">
                     <strong id="saleTotal">
-                        @GetTotal().ToString("C")
+                        @PosTransaction.PosTransactionTotalIncTax.ToString("C")
                     </strong>
                 </td>
             </tr>
@@ -91,7 +86,7 @@
                     <strong>TAX</strong>
                 </td>
                 <td class="numericCol">
-                    <strong id="gst">@GetTotalTax().ToString("C")</strong>
+                    <strong id="gst">@PosTransaction.PosTransactionTotalTax.ToString("C")</strong>
                 </td>
                 <td></td>
                 <td class="numericCol">
@@ -115,36 +110,3 @@
         </tbody>
     </table>
 </div>
-
-@* <div class="pos-summary">
-    <div class="bg-info text-right">
-        <span>Subtotal</span>
-        <span>$0</span>
-    </div>
-    <div class="bg-info text-right">
-        <span>Sale total</span>
-        <span>$0</span>
-    </div>
-    <div class="bg-info text-right">
-        <span>Sale discounts</span>
-        <span>$0</span>
-    </div>
-    <div class="bg-info text-right">
-        <span>Tendered</span>
-        <span>$0</span>
-    </div>
-    <div class="bg-info text-right">
-        <span>Tax</span>
-        <span>$0</span>
-    </div>
-    <div class="bg-info text-right">
-        <span style="color:red">Outstanding</span>
-        <span style="color:red">$0</span>
-    </div>
-    <div>
-    </div>
-    <div class="bg-info text-right">
-        <span style="color:red">Change</span>
-        <span style="color:red">$0</span>
-    </div>
-</div> *@
