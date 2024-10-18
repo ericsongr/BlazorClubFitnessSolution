@@ -1,0 +1,95 @@
+﻿@page "/pos-transaction"
+@using ClubFitnessDomain
+@using ClubFitnessServices.Interfaces
+@inject IPosTransactionService PosTransactionService
+@inject IStaffService StaffService
+@inject NavigationManager Navigation
+
+@rendermode RenderMode.InteractiveServer
+
+<h3>Pos Transaction List</h3>
+
+<!-- Date Range Filter -->
+<div class="mb-3">
+    <label>Filter by UTC Date Range:</label>
+    <div class="d-flex">
+        <RadzenDatePicker @bind-Value="startDate" Placeholder="Start Date" Style="margin-right: 10px;" />
+        <RadzenDatePicker @bind-Value="endDate" Placeholder="End Date" />
+        <RadzenButton Text="Apply Filter" Click="ApplyDateFilter" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Primary" />
+        <RadzenButton Text="Clear Filter" Click="ClearFilter" Style="margin-left: 10px;" ButtonStyle="ButtonStyle.Light" />
+    </div>
+</div>
+
+<div class="row">
+    <RadzenDataGrid TItem="PosTransaction" Data="@filteredTransactions" AllowPaging="true" PageSize="10" AllowSorting="true" AllowFiltering="true" RowSelect="OnTransactionSelected">
+        <Columns>
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionUtcDateTime" Title="UTC DateTime" />
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionLocalDateTime" Title="Local DateTime" />
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionTotalIncTax" Title="Total Inc Tax" />
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionTotalExTax" Title="Total Ex Tax" />
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionTotalTax" Title="Total Tax" />
+            <RadzenDataGridColumn TItem="PosTransaction" Title="Created By">
+                <Template Context="transaction">
+                    @transaction.CreatedByStaff?.FirstName @transaction.CreatedByStaff?.LastName
+                </Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn TItem="PosTransaction" Title="Actions">
+                <Template Context="transaction">
+                    <RadzenButton Text="View Items" Click="@(args => NavigateToTransactionItems(transaction.PosTransactionId))" ButtonStyle="ButtonStyle.Info" />
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</div>
+<div class="row">
+    <div class="col-6 mt-4">
+        <RadzenButton Text="Back To Home" Click="@(() => BackToHome())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+    </div>
+</div>
+
+@code {
+    private IEnumerable<PosTransaction> posTransactions;
+    private IEnumerable<PosTransaction> filteredTransactions;
+    private DateTime? startDate;
+    private DateTime? endDate;
+
+    protected override async Task OnInitializedAsync()
+    {
+        posTransactions = await PosTransactionService.GetAllWithStaffAsync();
+        filteredTransactions = posTransactions;
+    }
+
+    private void ApplyDateFilter()
+    {
+        if (startDate.HasValue && endDate.HasValue)
+        {
+            filteredTransactions = posTransactions.Where(p => p.PosTransactionUtcDateTime >= startDate.Value && p.PosTransactionUtcDateTime <= endDate.Value);
+        }
+        else
+        {
+            filteredTransactions = posTransactions;
+        }
+    }
+
+    private void ClearFilter()
+    {
+        startDate = null;
+        endDate = null;
+        filteredTransactions = posTransactions;
+    }
+
+    private void OnTransactionSelected(PosTransaction transaction)
+    {
+        // Implement action if needed when a row is selected
+    }
+
+    private void NavigateToTransactionItems(long transactionId)
+    {
+        Navigation.NavigateTo($"/pos-transaction-item/{transactionId}");
+    }
+
+    private void BackToHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

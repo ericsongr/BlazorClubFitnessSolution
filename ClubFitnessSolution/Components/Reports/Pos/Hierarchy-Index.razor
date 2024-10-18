@@ -1,0 +1,125 @@
+﻿@page "/pos-transactions-2"
+@inject IPosTransactionService PosTransactionService
+@inject IStaffService StaffService
+@inject IPosTransactionItemService PosTransactionItemService
+
+@inject NavigationManager Navigation
+
+@using ClubFitnessDomain
+@using ClubFitnessServices.Interfaces
+
+@rendermode InteractiveServer
+
+<h3>POS Transactions</h3>
+
+<div class="mb-3">
+    <label>Filter by UTC Date Range:</label>
+    <div class="d-flex">
+        <RadzenDatePicker @bind-Value="startDate" Placeholder="Start Date" Style="margin-right: 10px;" />
+        <RadzenDatePicker @bind-Value="endDate" Placeholder="End Date" />
+        <RadzenButton Text="Filter" Click="FilterTransactions" ButtonStyle="ButtonStyle.Primary" class="ms-2" />
+    </div>
+</div>
+<div class="row">
+    <div class="col-6 mt-4">
+        <RadzenButton Text="Back To Home" Click="@(() => BackToHome())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+    </div>
+</div>
+
+
+@if (transactions == null)
+{
+    <p><em>Loading...</em></p>
+}
+else if (!transactions.Any())
+{
+    <p>No POS transactions found!</p>
+}
+else
+{
+    <RadzenDataGrid TItem="PosTransaction" Data="@transactions" AllowPaging="true" PageSize="10" AllowFiltering="false" RowExpand="OnRowExpand">
+        <Columns>
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionUtcDateTime" Title="UTC Date Time" FormatString="{0:yyyy-MM-dd}" />
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionLocalDateTime" Title="Local Date Time" FormatString="{0:yyyy-MM-dd}" />
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionTotalIncTax" Title="Total Inc Tax" TextAlign="TextAlign.Right" />
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionTotalExTax" Title="Total Ex Tax" TextAlign="TextAlign.Right" />
+            <RadzenDataGridColumn TItem="PosTransaction" Property="PosTransactionTotalTax" Title="Total Tax" TextAlign="TextAlign.Right" />
+
+            <RadzenDataGridColumn TItem="PosTransaction" Title="Created By">
+                <Template Context="transaction">
+                    @if (transaction.CreatedByStaff != null)
+                    {
+                        @transaction.CreatedByStaff.FirstName @transaction.CreatedByStaff.LastName
+                    }
+                    else
+                    {
+                        <em>Unknown</em>
+                    }
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+
+        <Template Context="transaction">
+            @if (expandedTransactionItems.TryGetValue(transaction.PosTransactionId, out var items) && items != null)
+            {
+                <RadzenDataGrid TItem="PosTransactionItem" Data="@items" AllowPaging="true" PageSize="10">
+                    <Columns>
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Title="Product">
+                            <Template Context="transactionItem">
+                                @if (transactionItem.AccountProduct != null)
+                                {
+                                    @transactionItem.AccountProduct.ProductName
+                                }
+                                else
+                                {
+                                    <em>Unknown</em>
+                                }
+                            </Template>
+                        </RadzenDataGridColumn>
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemQuantity" Title="Quantity" TextAlign="TextAlign.Right" />
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemTaxAmount" Title="Tax Amount" TextAlign="TextAlign.Right" />
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceExTax" Title="Price Ex Tax" TextAlign="TextAlign.Right" />
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceIncTax" Title="Price Inc Tax" TextAlign="TextAlign.Right" />
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="Discount" Title="Discount" TextAlign="TextAlign.Right" />
+                    </Columns>
+                </RadzenDataGrid>
+            }
+        </Template>
+    </RadzenDataGrid>
+}
+
+@code {
+    private IEnumerable<PosTransaction> transactions;
+    private Dictionary<long, List<PosTransactionItem>> expandedTransactionItems = new();
+    private DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    private DateTime endDate = (new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).AddMonths(1).AddDays(-1);
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadTransactionsAsync();
+    }
+
+    private async Task LoadTransactionsAsync()
+    {
+        transactions = await PosTransactionService.GetAllAsync(startDate, endDate);
+    }
+
+    private async Task OnRowExpand(PosTransaction transaction)
+    {
+        if (!expandedTransactionItems.ContainsKey(transaction.PosTransactionId))
+        {
+            var items = await PosTransactionItemService.GetByTransactionIdAsync(transaction.PosTransactionId);
+            expandedTransactionItems[transaction.PosTransactionId] = items.ToList();
+        }
+    }
+
+    private async Task FilterTransactions()
+    {
+        await LoadTransactionsAsync();
+    }
+
+    private void BackToHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

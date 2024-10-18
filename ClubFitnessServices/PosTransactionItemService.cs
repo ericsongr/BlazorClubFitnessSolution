@@ -18,6 +18,11 @@ namespace ClubFitnessServices
             return await _repository.GetAllAsync();
         }
 
+        public async Task<IEnumerable<PosTransactionItem>> GetByTransactionIdAsync(long id)
+        {
+            return await _repository.GetByTransactionIdAsync(id);
+        }
+
         public async Task<PosTransactionItem> GetByIdAsync(long id)
         {
             return await _repository.GetByIdAsync(id);
