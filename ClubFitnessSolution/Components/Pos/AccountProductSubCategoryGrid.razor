@@ -9,16 +9,65 @@
 
     [Parameter]
     public EventCallback BackToCategory { get; set; }
+
+    private IEnumerable<AccountProductSubCategory> filteredSubCategories;
+
+    private string searchText;
+    private System.Timers.Timer debounceTimer;
+
+    protected override void OnParametersSet()
+    {
+        // Set the filtered sub-categories whenever the SubCategories parameter changes
+        filteredSubCategories = SubCategories;
+    }
+
+    private void OnSearchTextChanged(ChangeEventArgs e)
+    {
+        // Get the search text from the textbox
+        searchText = e.Value?.ToString() ?? string.Empty;
+
+        // Reset the debounce timer
+        debounceTimer?.Stop();
+        debounceTimer = new System.Timers.Timer(300); // 300ms delay
+        debounceTimer.Elapsed += (sender, args) =>
+        {
+            debounceTimer.Stop();
+            InvokeAsync(() => FilterSubCategories());
+        };
+        debounceTimer.Start();
+    }
+
+    private void FilterSubCategories()
+    {
+        // Perform filtering after the debounce delay
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredSubCategories = SubCategories.Where(c => c.ProductSubCategoryName.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+        }
+        else
+        {
+            // If the search text is empty, show all sub-categories
+            filteredSubCategories = SubCategories;
+        }
+
+        // Refresh the UI
+        InvokeAsync(StateHasChanged);
+    }
 }
 
 <div>
-    <i class="bi bi-arrow-left-square float-start cursor-pointer" style="font-size: 1.7rem; color: cornflowerblue;" 
+    <i class="bi bi-arrow-left-square float-start cursor-pointer" style="font-size: 1.7rem; color: cornflowerblue;"
        @onclick="() => BackToCategory.InvokeAsync()"></i>
     <h3 class="text-center">Select Subcategory</h3>
+
+    <!-- Search filter -->
+    <div class="mb-3">
+        <RadzenTextBox Placeholder="Search by sub-category name" @oninput="OnSearchTextChanged" Style="width: 100%;" />
+    </div>
 </div>
-<div class="d-flex flex-row">
-    
-    @foreach (var item in SubCategories)
+<div class="pos-grid">
+
+    @foreach (var item in filteredSubCategories)
     {
         <div class="pos-tile"
              @onclick="() => OnSubCategorySelected.InvokeAsync(item)"

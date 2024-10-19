@@ -1,4 +1,5 @@
 ﻿@using ClubFitnessDomain
+@using Radzen
 
 @code {
     [Parameter]
@@ -9,23 +10,75 @@
 
     [Parameter]
     public EventCallback BackToSubCategory { get; set; }
-    
+
+    private IEnumerable<AccountProduct> filteredProducts;
+    private string searchText;
+    private System.Timers.Timer debounceTimer;
+
+    protected override void OnParametersSet()
+    {
+        // Set the filtered products whenever the Products parameter changes
+        filteredProducts = Products;
+    }
+
+    private void OnSearchTextChanged(ChangeEventArgs e)
+    {
+        searchText = e.Value?.ToString() ?? string.Empty;
+
+        // Reset the debounce timer
+        debounceTimer?.Stop();
+        debounceTimer = new System.Timers.Timer(300); // 300ms delay
+        debounceTimer.Elapsed += (sender, args) =>
+        {
+            debounceTimer.Stop();
+            InvokeAsync(() => FilterProducts());
+        };
+        debounceTimer.Start();
+    }
+
+    private void FilterProducts()
+    {
+        // Perform filtering after the debounce delay
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredProducts = Products.Where(p => p.ProductName.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+        }
+        else
+        {
+            // If the search text is empty, show all products
+            filteredProducts = Products;
+        }
+
+        // Refresh the UI
+        InvokeAsync(StateHasChanged);
+    }
 }
 
 <div>
     <i class="bi bi-arrow-left-square float-start cursor-pointer" style="font-size: 1.7rem; color: cornflowerblue;"
        @onclick="() => BackToSubCategory.InvokeAsync()"></i>
     <h3 class="text-center">Select Product</h3>
+
+    <!-- Search filter -->
+    <div class="mb-3">
+        <RadzenTextBox Placeholder="Search by product name" @oninput="OnSearchTextChanged" Style="width: 100%;" />
+    </div>
 </div>
 
 <div class="pos-grid">
-    
-    @foreach (var item in Products)
+    @if (filteredProducts == null || !filteredProducts.Any())
     {
-        <div class="pos-tile"
-             @onclick="() => OnProductSelected.InvokeAsync(item)"
-             style="background-image: url('@(string.IsNullOrEmpty(item.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/Products/{item.DisplayImagePath}")');">
-            <div class="pos-item-name">@item.ProductName</div>
-        </div>
+        <span>No products found</span>
+    }
+    else
+    {
+        @foreach (var item in filteredProducts)
+        {
+            <div class="pos-tile"
+                 @onclick="() => OnProductSelected.InvokeAsync(item)"
+                 style="background-image: url('@(string.IsNullOrEmpty(item.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/Products/{item.DisplayImagePath}")');">
+                <div class="pos-item-name">@item.ProductName</div>
+            </div>
+        }
     }
 </div>
