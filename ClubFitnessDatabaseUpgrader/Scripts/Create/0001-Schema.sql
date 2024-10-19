@@ -800,6 +800,7 @@ CREATE TABLE [dbo].[PosTransaction](
 	[PosTransactionTotalIncTax] [decimal](18, 2) NOT NULL,
 	[PosTransactionTotalExTax] [decimal](18, 2) NOT NULL,
 	[PosTransactionTotalTax] [decimal](18, 2) NOT NULL,
+	[PosTotalDiscount] [decimal](18, 2) NOT NULL DEFAULT(0),
 	[PrintFlag] [int] NULL,
 	[Till] [nvarchar](max) NULL,
 	[PosTransactionRefId] [bigint] NULL,
@@ -881,6 +882,7 @@ CREATE TABLE [dbo].[PosTransactionItem](
 	[IsRefunded] [bit] NOT NULL,
 	[PosTransactionRefItemId] [bigint] NULL,
 	[IsVoided] [bit] NOT NULL,
+	[DiscountPercentage] [decimal](18, 2) NOT NULL DEFAULT(0)
  CONSTRAINT [PK_PosTransactionItem] PRIMARY KEY CLUSTERED 
 (
 	[PosTransactionItemId] ASC

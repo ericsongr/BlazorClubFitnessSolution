@@ -53,7 +53,8 @@
         <div class="col-md-7">
             <AccountPosTransactionGrid 
                 PosTransaction="posTransaction"
-                TransactionItems="posTransactionItems" 
+                TransactionItems="posTransactionItems"
+                RecomputePerItemWithDiscount="RecomputePerItemWithDiscount"
                 OnIncreaseQuantity="IncreaseQuantity" OnDecreaseQuantity="DecreaseQuantity" />
         </div>
     </div>
@@ -86,19 +87,21 @@
     protected override async Task OnInitializedAsync()
     {
         categories = await AccountProductCategoryService.GetAllAsync();
-       
+
         Tax = GetVat();
     }
 
     private decimal GetSubTotal() => posTransactionItems.Sum(item => item.ItemPriceExTax);
     private decimal GetTotalTax() => posTransactionItems.Sum(item => item.ItemTaxAmount);
     private decimal GetTotal() => posTransactionItems.Sum(item => item.ItemPriceIncTax);
+    private decimal GetPosTotalDiscount() => posTransactionItems.Sum(item => item.Discount);
 
     private void ComputeTotal()
     {
         posTransaction.PosTransactionTotalExTax = GetSubTotal();
         posTransaction.PosTransactionTotalTax = GetTotalTax();
         posTransaction.PosTransactionTotalIncTax = GetTotal();
+        posTransaction.PosTotalDiscount = GetPosTotalDiscount();
     }
 
     private async Task OnCategorySelected(AccountProductCategory category)
@@ -152,7 +155,7 @@
 
 
 
-                NotificationService.Notify(NotificationSeverity.Success, "Added", "New item has been added.");
+                // NotificationService.Notify(NotificationSeverity.Success, "Added", "New item has been added.");
             }
 
             // Notify UI to update the transaction items list
@@ -200,9 +203,21 @@
 
     }
 
+    //invoke from other razor
+    public void RecomputePerItemWithDiscount(PosTransactionItem item)
+    {
+        RecomputePerItem(item);
+        ComputeTotal(); // for PosTransaction
+    }
+
     private void RecomputePerItem(PosTransactionItem item)
     {
-        item.ItemPriceIncTax = item.PriceIncTax * item.ItemQuantity;//total per item
+        if (item.DiscountPercentage > 0)
+        {
+            item.Discount = (item.PriceIncTax * item.ItemQuantity) * (item.DiscountPercentage / 100);
+        }
+
+        item.ItemPriceIncTax = (item.PriceIncTax * item.ItemQuantity) - item.Discount;//total per item
         item.ItemTaxAmount = (item.PriceIncTax * item.ItemQuantity) * Tax;//total per item
         item.ItemPriceExTax = item.ItemPriceIncTax - item.ItemTaxAmount;//total per item
     }
