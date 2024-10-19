@@ -18,7 +18,7 @@
         if (discountType == "By Price")
         {
             PosTransactionItem.Discount = discountValue;
-            PosTransactionItem.DiscountPercentage = (discountValue / PosTransactionItem.ItemPriceIncTax) * 100; 
+            PosTransactionItem.DiscountPercentage = Math.Round((discountValue / PosTransactionItem.ItemPriceIncTax) * 100, 2); 
         }
         else if (discountType == "By Percentage %")
         {
@@ -28,7 +28,7 @@
         else if (discountType == "By Amount $")
         {
             PosTransactionItem.Discount = discountValue;
-            PosTransactionItem.DiscountPercentage = (discountValue / PosTransactionItem.ItemPriceIncTax) * 100;
+            PosTransactionItem.DiscountPercentage = Math.Round((discountValue / PosTransactionItem.ItemPriceIncTax) * 100, 2);
         }
 
         // Close the dialog and send the updated product back
