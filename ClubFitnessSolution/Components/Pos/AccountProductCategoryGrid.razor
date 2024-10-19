@@ -7,20 +7,70 @@
     [Parameter]
     public EventCallback<AccountProductCategory> OnCategorySelected { get; set; }
 
+    private IEnumerable<AccountProductCategory> filteredCategories;
+
+    private string searchText;
+    private System.Timers.Timer debounceTimer;
+
+    protected override void OnParametersSet()
+    {
+    // Set the filtered categories whenever the Categories parameter changes
+        filteredCategories = Categories;
+    }
+
+    private void OnSearchTextChanged(ChangeEventArgs e)
+    {
+    // Get the search text from the textbox
+        searchText = e.Value?.ToString() ?? string.Empty;
+
+    // Reset the debounce timer
+        debounceTimer?.Stop();
+        debounceTimer = new System.Timers.Timer(300); // 300ms delay
+        debounceTimer.Elapsed += (sender, args) =>
+        {
+            debounceTimer.Stop();
+            InvokeAsync(() => FilterCategories());
+        };
+        debounceTimer.Start();
+    }
+
+    private void FilterCategories()
+    {
+        // Filter categories based on the search text
+        if (!string.IsNullOrWhiteSpace(searchText))
+        {
+            filteredCategories = Categories.Where(c => c.ProductCategoryName.Contains(searchText, StringComparison.OrdinalIgnoreCase));
+        }
+        else
+        {
+            // If the search text is empty, show all categories
+            filteredCategories = Categories;
+        }
+
+    // Refresh the UI
+        InvokeAsync(StateHasChanged);
+    }
+
+
 }
 
 <div>
     <h3 class="text-center">Select Category</h3>
+
+    <!-- Search filter -->
+    <div class="mb-3">
+        <RadzenTextBox Placeholder="Search by category name" @oninput="OnSearchTextChanged" Style="width: 100%;" />
+    </div>
 </div>
 
 <div class="pos-grid">
-    @if (Categories == null)
+    @if (filteredCategories == null || !filteredCategories.Any())
     {
         <span>No category found</span>
     }
     else
     {
-        foreach (var item in Categories)
+        foreach (var item in filteredCategories)
         {
             <div class="pos-tile"
                  @onclick="() => OnCategorySelected.InvokeAsync(item)"
