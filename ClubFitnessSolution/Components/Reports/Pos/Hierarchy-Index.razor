@@ -20,11 +20,6 @@
         <RadzenButton Text="Filter" Click="FilterTransactions" ButtonStyle="ButtonStyle.Primary" class="ms-2" />
     </div>
 </div>
-<div class="row">
-    <div class="col-6 mt-4">
-        <RadzenButton Text="Back To Home" Click="@(() => BackToHome())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
-    </div>
-</div>
 
 
 @if (transactions == null)
@@ -64,6 +59,12 @@ else
             {
                 <RadzenDataGrid TItem="PosTransactionItem" Data="@items" AllowPaging="true" PageSize="10">
                     <Columns>
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ProductImage" Title="" Width="70px">
+                            <Template Context="transactionItem">
+                                <img src="@(string.IsNullOrEmpty(transactionItem.AccountProduct.DisplayImagePath) ? "/uploads/no-image.png" : $"/uploads/Products/{transactionItem.AccountProduct.DisplayImagePath}")"
+                                     alt="Product Image" class="sale-thumbnail" />
+                            </Template>
+                        </RadzenDataGridColumn>
                         <RadzenDataGridColumn TItem="PosTransactionItem" Title="Product">
                             <Template Context="transactionItem">
                                 @if (transactionItem.AccountProduct != null)
@@ -76,11 +77,19 @@ else
                                 }
                             </Template>
                         </RadzenDataGridColumn>
-                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemQuantity" Title="Quantity" TextAlign="TextAlign.Right" />
-                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemTaxAmount" Title="Tax Amount" TextAlign="TextAlign.Right" />
-                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceExTax" Title="Price Ex Tax" TextAlign="TextAlign.Right" />
-                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceIncTax" Title="Price Inc Tax" TextAlign="TextAlign.Right" />
-                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="Discount" Title="Discount" TextAlign="TextAlign.Right" />
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemQuantity" Title="Quantity" TextAlign="TextAlign.Right"/>
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemTaxAmount" Title="Tax Amount" TextAlign="TextAlign.Right"/>
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceExTax" Title="Price Ex Tax" TextAlign="TextAlign.Right"/>
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="ItemPriceIncTax" Title="Price Inc Tax" TextAlign="TextAlign.Right"/>
+                        <RadzenDataGridColumn TItem="PosTransactionItem" Property="Discount" Title="Discount" TextAlign="TextAlign.Right">
+                            <HeaderTemplate>
+                                <span class="me-3">Discount</span>
+                            </HeaderTemplate>
+                            <Template Context="transactionItem">
+                                <span class="me-3">@transactionItem.Discount</span>
+                                
+                            </Template>
+                        </RadzenDataGridColumn>
                     </Columns>
                 </RadzenDataGrid>
             }
@@ -88,11 +97,18 @@ else
     </RadzenDataGrid>
 }
 
+<div class="row">
+    <div class="col-6 mt-4">
+        <RadzenButton Text="Back To Home" Click="@(() => BackToHome())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+    </div>
+</div>
+
 @code {
     private IEnumerable<PosTransaction> transactions;
     private Dictionary<long, List<PosTransactionItem>> expandedTransactionItems = new();
-    private DateTime startDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-    private DateTime endDate = (new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1)).AddMonths(1).AddDays(-1);
+    
+    private DateOnly startDate = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1);
+    private DateOnly endDate = (new DateOnly(DateTime.Now.Year, DateTime.Now.Month, 1)).AddMonths(1).AddDays(-1);
 
     protected override async Task OnInitializedAsync()
     {
@@ -101,7 +117,8 @@ else
 
     private async Task LoadTransactionsAsync()
     {
-        transactions = await PosTransactionService.GetAllAsync(startDate, endDate);
+        transactions = await PosTransactionService
+            .GetAllAsync(startDate.ToDateTime(TimeOnly.MinValue), endDate.ToDateTime(TimeOnly.MinValue));
     }
 
     private async Task OnRowExpand(PosTransaction transaction)
