@@ -18,6 +18,8 @@ namespace ClubFitnessInfrastructure
         public DbSet<AccountProduct> AccountProduct { get; set; } 
         public DbSet<Staff> Staff { get; set; } 
         public DbSet<DiscountCoupon> DiscountCoupons { get; set; } 
+        public DbSet<PosTransaction> PosTransaction { get; set; } 
+        public DbSet<PosTransactionItem> PosTransactionItem { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

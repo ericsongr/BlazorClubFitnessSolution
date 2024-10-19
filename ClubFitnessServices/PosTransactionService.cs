@@ -1,6 +1,7 @@
 ﻿using ClubFitnessDomain;
 using ClubFitnessInfrastructure.Interfaces;
 using ClubFitnessServices.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace ClubFitnessServices
 {
@@ -16,6 +17,16 @@ namespace ClubFitnessServices
         public async Task<IEnumerable<PosTransaction>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
+        }
+
+        public async Task<IEnumerable<PosTransaction>> GetAllWithStaffAsync()
+        {
+            return await _repository.GetWithIncludesAsync(null, o => o.CreatedByStaff);
+        }
+
+        public async Task<IEnumerable<PosTransaction>> GetAllAsync(DateTime startDate, DateTime endDate)
+        {
+            return await _repository.GetAllAsync(startDate, endDate);
         }
 
         public async Task<PosTransaction> GetByIdAsync(long id)

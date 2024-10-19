@@ -1,0 +1,250 @@
+﻿@page "/pos"
+@inject IAccountProductCategoryService AccountProductCategoryService
+@inject IAccountProductSubCategoryService AccountProductSubCategoryService
+@inject IAccountProductService AccountProductService
+@inject IPosTransactionService PosTransactionService
+
+@inject NavigationManager Navigation
+@inject NotificationService NotificationService
+@inject UserAuthenticationStateProvider UserAuthenticationStateProvider
+
+@using ClubFitnessDomain
+@using ClubFitnessServices.Interfaces
+
+
+@rendermode RenderMode.InteractiveServer
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-5 shadow-lg ps-4 py-3">
+            @if (IsShowAccountProductCategory)
+            {
+                <AccountProductCategoryGrid Categories="categories"
+                                            OnCategorySelected="OnCategorySelected" />
+            }
+
+            @if (IsShowAccountProductSubCategory)
+            {
+                if (selectedCategory != null)
+                {
+                    <AccountProductSubCategoryGrid SubCategories="subCategories"  OnSubCategorySelected="OnSubCategorySelected"
+                                                   BackToCategory="BackToCategory" />
+                }
+                else
+                {
+                    <span>No sub-category found</span>
+                }
+            }
+
+            @if (IsShowAccountProduct)
+            {
+                if (selectedSubCategory != null)
+                {
+                    <AccountProductGrid Products="products" OnProductSelected="OnProductSelected" BackToSubCategory="BackToSubCategory" />
+                }
+                else
+                {
+                    <span>No item found</span>
+                }
+
+            }
+        </div>
+        <!-- Transaction Item Grid Partial -->
+        <div class="col-md-7">
+            <AccountPosTransactionGrid 
+                PosTransaction="posTransaction"
+                TransactionItems="posTransactionItems" 
+                OnIncreaseQuantity="IncreaseQuantity" OnDecreaseQuantity="DecreaseQuantity" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6 mt-4">
+            <RadzenButton Text="Back To Home" Click="@(() => BackToHome())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+            
+            @if (posTransactionItems.Any())
+            {
+                <RadzenButton Text="Complete Sale" Click="@(() => CompleteSale())" ButtonStyle="ButtonStyle.Success" Size="ButtonSize.Small" />
+            }
+        </div>
+    </div>
+</div>
+@code {
+    private IEnumerable<AccountProductCategory> categories;
+    private IEnumerable<AccountProductSubCategory> subCategories;
+    private IEnumerable<AccountProduct> products;
+    private AccountProductCategory selectedCategory;
+    private AccountProductSubCategory selectedSubCategory;
+    private decimal Tax = 0.00M; //TODO: replace value from the settings
+
+    private PosTransaction posTransaction = new();
+    private List<PosTransactionItem> posTransactionItems = new();
+
+    bool IsShowAccountProductCategory = true;
+    bool IsShowAccountProductSubCategory = false;
+    bool IsShowAccountProduct = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await AccountProductCategoryService.GetAllAsync();
+       
+        Tax = GetVat();
+    }
+
+    private decimal GetSubTotal() => posTransactionItems.Sum(item => item.ItemPriceExTax);
+    private decimal GetTotalTax() => posTransactionItems.Sum(item => item.ItemTaxAmount);
+    private decimal GetTotal() => posTransactionItems.Sum(item => item.ItemPriceIncTax);
+
+    private void ComputeTotal()
+    {
+        posTransaction.PosTransactionTotalExTax = GetSubTotal();
+        posTransaction.PosTransactionTotalTax = GetTotalTax();
+        posTransaction.PosTransactionTotalIncTax = GetTotal();
+    }
+
+    private async Task OnCategorySelected(AccountProductCategory category)
+    {
+        selectedCategory = category;
+        subCategories = await AccountProductSubCategoryService.GetSubCategoriesByCategoryId(category.AccountProductCategoryId);
+        IsShowAccountProductCategory = !subCategories.Any();
+        IsShowAccountProductSubCategory = subCategories.Any();
+
+    }
+
+    private async Task OnSubCategorySelected(AccountProductSubCategory subCategory)
+    {
+        selectedSubCategory = subCategory;
+        products = await AccountProductService.GetProductsBySubCategoryId(subCategory.AccountProductSubCategoryId);
+        IsShowAccountProductSubCategory = !products.Any();
+        IsShowAccountProduct = products.Any();
+    }
+
+    private void OnProductSelected(AccountProduct product)
+    {
+        try
+        {
+            var existingItem = posTransactionItems.FirstOrDefault(p => p.ProductId == product.AccountProductId);
+
+            if (existingItem != null)
+            {
+                existingItem.ItemQuantity += 1;
+                existingItem.ItemPriceIncTax = existingItem.PriceIncTax * existingItem.ItemQuantity;//total per item
+                existingItem.ItemTaxAmount = (existingItem.PriceIncTax * existingItem.ItemQuantity) * Tax;//total per item
+                existingItem.ItemPriceExTax = existingItem.ItemPriceIncTax - existingItem.ItemTaxAmount;//total per item
+
+            }
+            else
+            {
+                var vat = (product.SellIncTaxPrice ?? 0) * Tax;
+                var itemPriceExTax = (product.SellIncTaxPrice ?? 0) - vat;
+                var itemTaxAmount = (product.SellIncTaxPrice ?? 0) * Tax;
+                posTransactionItems.Add(new PosTransactionItem
+                    {
+                        ProductId = product.AccountProductId,
+                        ItemDescription = product.ProductName ?? "",
+                        PriceIncTax = product.SellIncTaxPrice ?? 0,
+                        PriceExTax = product.SellExTaxPrice ?? 0,
+                        ItemPriceIncTax = product.SellIncTaxPrice ?? 0,  //total per item
+                        ItemPriceExTax = itemPriceExTax, //total per item
+                        ItemTaxAmount = itemTaxAmount, //total per item
+                        ItemQuantity = 1,
+                        ProductImage = product.DisplayImagePath ?? ""// Assuming Product Image is in DisplayImagePath
+                    });
+
+
+
+                NotificationService.Notify(NotificationSeverity.Success, "Added", "New item has been added.");
+            }
+
+            // Notify UI to update the transaction items list
+            posTransactionItems = posTransactionItems.ToList();
+
+            ComputeTotal(); // for PosTransaction
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private void IncreaseQuantity(PosTransactionItem item)
+    {
+        item.ItemQuantity += 1;
+        RecomputePerItem(item);
+
+        // Notify UI to update the transaction items list
+        posTransactionItems = posTransactionItems.ToList();
+
+        ComputeTotal(); // for PosTransaction
+    }
+
+    private void DecreaseQuantity(PosTransactionItem item)
+    {
+        if (item.ItemQuantity > 1)
+        {
+            item.ItemQuantity -= 1;
+            RecomputePerItem(item);
+        }
+        else
+        {
+            posTransactionItems.Remove(item);
+
+            NotificationService.Notify(NotificationSeverity.Success, "Removed", "Item has been removed.");
+        }
+
+        // Notify UI to update the transaction items list
+        posTransactionItems = posTransactionItems.ToList();
+
+        ComputeTotal(); // for PosTransaction
+
+    }
+
+    private void RecomputePerItem(PosTransactionItem item)
+    {
+        item.ItemPriceIncTax = item.PriceIncTax * item.ItemQuantity;//total per item
+        item.ItemTaxAmount = (item.PriceIncTax * item.ItemQuantity) * Tax;//total per item
+        item.ItemPriceExTax = item.ItemPriceIncTax - item.ItemTaxAmount;//total per item
+    }
+
+    private decimal GetVat()
+    {
+        decimal vat = 12M; //replace with setting value
+
+        return vat / 100;
+    }
+
+    private async void CompleteSale()
+    {
+        posTransaction.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
+        posTransaction.PosTransactionItems = posTransactionItems;
+        await PosTransactionService.AddAsync(posTransaction);
+        
+        posTransaction = new();
+        posTransactionItems = new();
+
+        // posTransactionItems = posTransactionItems.ToList();
+
+        NotificationService.Notify(NotificationSeverity.Success, "Success", "Transaction has been completed.");
+
+        StateHasChanged(); // Notify Blazor UI updates
+    }
+
+    private void BackToHome()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    private void BackToCategory()
+    {
+        IsShowAccountProductCategory = true;
+        IsShowAccountProductSubCategory = false;
+    }
+
+    private void BackToSubCategory()
+    {
+        IsShowAccountProductSubCategory = true;
+        IsShowAccountProduct = false;
+    }
+
+}

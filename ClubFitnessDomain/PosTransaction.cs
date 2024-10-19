@@ -3,13 +3,12 @@
     public class PosTransaction : IUserAction
     {
         public long PosTransactionId { get; set; }
-        public DateTime PosTransactionUtcDateTime { get; set; }
-        public DateTime PosTransactionLocalDateTime { get; set; }
+        public DateTime PosTransactionUtcDateTime { get; set; } = DateTime.UtcNow;
+        public DateTime PosTransactionLocalDateTime { get; set; } = DateTime.Now;
         public string? MemberNumber { get; set; }
         public decimal PosTransactionTotalIncTax { get; set; }
         public decimal PosTransactionTotalExTax { get; set; }
         public decimal PosTransactionTotalTax { get; set; }
-        public int StaffMemberId { get; set; }
         public int? PrintFlag { get; set; }
         public string? Till { get; set; }
         public long? PosTransactionRefId { get; set; }
@@ -18,7 +17,7 @@
         public decimal OutstandingBalance { get; set; }
         public int? AccountId { get; set; }
         
-        public DateTime CreatedDateTimeUtc { get; set; }
+        public DateTime CreatedDateTimeUtc { get; set; } = DateTime.UtcNow;
         public int CreatedBy { get; set; }
         
         public DateTime? UpdatedDateTimeUtc { get; set; }
