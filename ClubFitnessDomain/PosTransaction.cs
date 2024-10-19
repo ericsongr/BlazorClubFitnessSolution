@@ -9,6 +9,7 @@
         public decimal PosTransactionTotalIncTax { get; set; }
         public decimal PosTransactionTotalExTax { get; set; }
         public decimal PosTransactionTotalTax { get; set; }
+        public decimal PosTotalDiscount { get; set; }
         public int? PrintFlag { get; set; }
         public string? Till { get; set; }
         public long? PosTransactionRefId { get; set; }

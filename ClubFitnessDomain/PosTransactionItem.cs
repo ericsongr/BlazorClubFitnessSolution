@@ -21,6 +21,8 @@ namespace ClubFitnessDomain
         public decimal ItemTaxAmount { get; set; }
         public decimal ItemPriceExTax { get; set; }
         public decimal ItemPriceIncTax { get; set; }
+
+        public decimal DiscountPercentage { get; set; }
         public decimal Discount { get; set; }
         public bool IsRefunded { get; set; }
         public long? PosTransactionRefItemId { get; set; }
