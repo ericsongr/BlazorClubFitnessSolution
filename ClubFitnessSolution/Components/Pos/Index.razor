@@ -9,6 +9,7 @@
 @inject UserAuthenticationStateProvider UserAuthenticationStateProvider
 
 @using ClubFitnessDomain
+@using ClubFitnessDomain.Enums
 @using ClubFitnessServices.Interfaces
 
 
@@ -212,14 +213,35 @@
 
     private void RecomputePerItem(PosTransactionItem item)
     {
-        if (item.DiscountPercentage > 0)
+        if (item.DiscountByLookupItemId == (int)DiscountedByEnum.Price)
         {
-            item.Discount = (item.PriceIncTax * item.ItemQuantity) * (item.DiscountPercentage / 100);
-        }
+            var amountLessAfterDiscount = (item.PriceIncTaxOriginalPriceBeforeDiscountedByPrice * item.ItemQuantity) - (item.PriceIncTax * item.ItemQuantity);
+            var totalForOriginalPrice = item.PriceIncTaxOriginalPriceBeforeDiscountedByPrice * item.ItemQuantity;
 
-        item.ItemPriceIncTax = (item.PriceIncTax * item.ItemQuantity) - item.Discount;//total per item
-        item.ItemTaxAmount = (item.PriceIncTax * item.ItemQuantity) * Tax;//total per item
-        item.ItemPriceExTax = item.ItemPriceIncTax - item.ItemTaxAmount;//total per item
+            item.Discount = amountLessAfterDiscount;
+            item.DiscountPercentage = Math.Round((amountLessAfterDiscount / totalForOriginalPrice) * 100, 2);
+
+            item.ItemPriceIncTax = (item.PriceIncTax * item.ItemQuantity);
+            item.ItemTaxAmount = (item.PriceIncTax * item.ItemQuantity) * Tax;
+            item.ItemPriceExTax = item.ItemPriceIncTax - item.ItemTaxAmount;//total per item
+        }
+        else if (item.DiscountByLookupItemId == (int)DiscountedByEnum.Percentage || item.DiscountByLookupItemId == (int)DiscountedByEnum.Amount)
+        {
+            if (item.DiscountPercentage > 0)
+            {
+                item.Discount = (item.PriceIncTax * item.ItemQuantity) * (item.DiscountPercentage / 100);
+            }
+
+            item.ItemPriceIncTax = (item.PriceIncTax * item.ItemQuantity) - item.Discount;//total per item
+            item.ItemTaxAmount = (item.PriceIncTax * item.ItemQuantity) * Tax;//total per item
+            item.ItemPriceExTax = item.ItemPriceIncTax - item.ItemTaxAmount;//total per item
+        }
+        else
+        {
+            item.ItemPriceIncTax = (item.PriceIncTax * item.ItemQuantity) - item.Discount;//total per item
+            item.ItemTaxAmount = (item.PriceIncTax * item.ItemQuantity) * Tax;//total per item
+            item.ItemPriceExTax = item.ItemPriceIncTax - item.ItemTaxAmount;//total per item
+        }
     }
 
     private decimal GetVat()

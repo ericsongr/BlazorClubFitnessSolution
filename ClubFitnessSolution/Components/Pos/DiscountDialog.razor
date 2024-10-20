@@ -1,35 +1,71 @@
 ﻿@page "/discount-dialog"
 @using Radzen
 @using ClubFitnessDomain
+@using ClubFitnessDomain.Enums
+@using ClubFitnessServices.Interfaces
 @inject DialogService DialogService
+
+@inject ILookupTypeItemsService LookupTypeItemsService
+@inject IAccountProductService AccountProductService
 
 @code {
     [Parameter] public PosTransactionItem PosTransactionItem { get; set; }
 
-    private string discountType = "By Price";
+    private int discountByLookupItemId = (int)DiscountedByEnum.Price;
     private decimal? discount;
     private decimal discountValue;
     private string discountReason;
 
-    private void ApplyDiscount()
+    private IEnumerable<LookupTypeItem> discountTypes;
+
+    protected override async Task OnInitializedAsync()
     {
-        discountValue = (discount ?? 0);
-        // Implement the discount logic here, e.g., updating the Product object
-        if (discountType == "By Price")
+        discountTypes = await LookupTypeItemsService.GetLookupItems((int)LookupEnum.DiscountedBy);
+       
+    }
+
+    private async void ApplyDiscount()
+    {
+        if (PosTransactionItem.IsDiscountApplied) // execute only when already applied discount before and come back to applying new discount
         {
-            PosTransactionItem.Discount = discountValue;
-            PosTransactionItem.DiscountPercentage = Math.Round((discountValue / PosTransactionItem.ItemPriceIncTax) * 100, 2); 
+            var product = await AccountProductService.GetByIdAsync(PosTransactionItem.ProductId);
+            PosTransactionItem.PriceIncTax = (product.SellIncTaxPrice ?? 0);
+            PosTransactionItem.IsDiscountApplied = false;
         }
-        else if (discountType == "By Percentage %")
+
+        discountValue = (discount ?? 0);
+
+        if (discountByLookupItemId == (int)DiscountedByEnum.Price)
+        {
+            if (discountValue > PosTransactionItem.PriceIncTax)
+            {
+                //TODO: error message here
+            }
+
+            var discountedPrice = discountValue;
+            var originalPrice = PosTransactionItem.PriceIncTax;
+            var amountLessAfterDiscount = PosTransactionItem.PriceIncTax - discountedPrice;
+
+            PosTransactionItem.PriceIncTax = discountedPrice;
+            PosTransactionItem.PriceIncTaxOriginalPriceBeforeDiscountedByPrice = originalPrice;
+            PosTransactionItem.ItemPriceIncTax = PosTransactionItem.PriceIncTax;
+            PosTransactionItem.Discount = originalPrice - discountedPrice;
+            PosTransactionItem.DiscountPercentage = Math.Round((amountLessAfterDiscount / PosTransactionItem.PriceIncTaxOriginalPriceBeforeDiscountedByPrice) * 100, 2);
+
+        }
+        else if (discountByLookupItemId == (int)DiscountedByEnum.Percentage)
         {
             PosTransactionItem.DiscountPercentage = discountValue;
             PosTransactionItem.Discount = (PosTransactionItem.ItemPriceIncTax * discountValue) / 100;
         }
-        else if (discountType == "By Amount $")
+        else if (discountByLookupItemId == (int)DiscountedByEnum.Amount)
         {
             PosTransactionItem.Discount = discountValue;
             PosTransactionItem.DiscountPercentage = Math.Round((discountValue / PosTransactionItem.ItemPriceIncTax) * 100, 2);
         }
+
+        PosTransactionItem.IsDiscountApplied = true;
+        PosTransactionItem.DiscountByLookupItemId = discountByLookupItemId;
 
         // Close the dialog and send the updated product back
         DialogService.Close(PosTransactionItem);
@@ -52,8 +88,8 @@
         <RadzenTextArea Rows="3" @bind-Value="discountReason" Placeholder="Reason for discount" Style="width: 100%;" />
     </div>
     
-    <RadzenRadioButtonList Data="@(new List<string> { "By Price", "By Percentage %", "By Amount $" })" 
-                           @bind-Value="discountType" TValue="string" Orientation="Orientation.Vertical" />
+    <RadzenRadioButtonList Data="@discountTypes" TextProperty="Description" ValueProperty="Id"
+                           @bind-Value="discountByLookupItemId" TValue="int" Orientation="Orientation.Vertical" />
 
 
     <div class="form-group mt-3 d-flex justify-content-end">
