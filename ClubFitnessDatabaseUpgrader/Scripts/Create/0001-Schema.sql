@@ -570,6 +570,9 @@ GO
 ALTER TABLE [dbo].[DiscountCoupons] CHECK CONSTRAINT [FK_DiscountCoupon_DeletedBy_Staff_StaffId]
 GO
 
+ALTER TABLE [dbo].[DiscountCoupons]
+ADD CONSTRAINT [UQ_DiscountCoupons_CouponCode] UNIQUE ([CouponCode]);
+GO
 
 SET ANSI_NULLS ON
 GO
@@ -882,7 +885,9 @@ CREATE TABLE [dbo].[PosTransactionItem](
 	[IsRefunded] [bit] NOT NULL,
 	[PosTransactionRefItemId] [bigint] NULL,
 	[IsVoided] [bit] NOT NULL,
-	[DiscountPercentage] [decimal](18, 2) NOT NULL DEFAULT(0)
+	[DiscountPercentage] [decimal](18, 2) NOT NULL DEFAULT(0),
+	[DiscountByLookupItemId] INT NULL,
+	[CouponCode] [nvarchar](100) NULL
  CONSTRAINT [PK_PosTransactionItem] PRIMARY KEY CLUSTERED 
 (
 	[PosTransactionItemId] ASC
@@ -913,6 +918,9 @@ GO
 
 ALTER TABLE [dbo].[PosTransactionItem] CHECK CONSTRAINT [FK_PosTransactionItem_PosTransaction]
 GO
+
+
+
 
 --PosTransactionPayment
 SET ANSI_NULLS ON
@@ -1067,3 +1075,65 @@ ALTER TABLE [dbo].[PosTransactionGenericItem] CHECK CONSTRAINT [FK_PosTransactio
 GO
 
 
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[LookupTypes](
+	[TypeId] [int] IDENTITY(1,1) NOT NULL,
+	[Type] [nvarchar](50) NULL,
+ CONSTRAINT [PK_Lookup_Types] PRIMARY KEY CLUSTERED 
+(
+	[TypeId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[LookupTypeItems](
+	[Id] [int] IDENTITY(1,1) NOT NULL,
+	[TypeId] [int] NULL,
+	[Description] [nvarchar](100) NULL,
+	[IsActive] [bit] NOT NULL DEFAULT ((1)),
+	[IsSystem] [bit] NOT NULL DEFAULT ((0)),
+	[IsShowOnline] [bit] NOT NULL DEFAULT ((1)),
+ CONSTRAINT [PK_Lookup_Type_Items] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, FILLFACTOR = 90, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[LookupTypeItems]  WITH CHECK ADD  CONSTRAINT [FK_LookupTypeItems_TypeId_LookupTypes_TypeId] FOREIGN KEY([TypeId])
+REFERENCES [dbo].[LookupTypes] ([TypeId])
+GO
+
+ALTER TABLE [dbo].[LookupTypeItems] CHECK CONSTRAINT [FK_LookupTypeItems_TypeId_LookupTypes_TypeId]
+GO
+
+
+ALTER TABLE [dbo].[PosTransactionItem]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionItem_DiscountByLookupItemId_AccountProduct_LookupTypeItem_Id] FOREIGN KEY([DiscountByLookupItemId])
+REFERENCES [dbo].[LookupTypeItems] ([Id])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem] CHECK CONSTRAINT [FK_PosTransactionItem_DiscountByLookupItemId_AccountProduct_LookupTypeItem_Id]
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem]  WITH CHECK ADD  CONSTRAINT [FK_PosTransactionItem_CouponCode_AccountProduct_DiscountCoupon_CouponCode] FOREIGN KEY([CouponCode])
+REFERENCES [dbo].[DiscountCoupons] ([CouponCode])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[PosTransactionItem] CHECK CONSTRAINT [FK_PosTransactionItem_CouponCode_AccountProduct_DiscountCoupon_CouponCode]
+GO

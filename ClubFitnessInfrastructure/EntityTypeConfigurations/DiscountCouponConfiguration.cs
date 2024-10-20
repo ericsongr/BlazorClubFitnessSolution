@@ -42,6 +42,11 @@ namespace ClubFitnessInfrastructure.EntityTypeConfigurations
                 .HasConstraintName("FK_DiscountCoupon_DeletedBy_Staff_StaffId")
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.HasIndex(dc => dc.CouponCode)
+                .IsUnique()
+                .HasDatabaseName("IX_DiscountCoupons_CouponCode"); // Optional: Naming the index
+
+
             builder.HasQueryFilter(o => !o.IsDeleted);
         }
     }

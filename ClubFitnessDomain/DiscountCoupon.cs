@@ -32,5 +32,7 @@
         public virtual Staff? CreatedByStaff { get; set; }
         public virtual Staff? UpdatedByStaff { get; set; }
         public virtual Staff? DeletedByStaff { get; set; }
+
+        public ICollection<PosTransactionItem> PosTransactionItems { get; set; }
     }
 }

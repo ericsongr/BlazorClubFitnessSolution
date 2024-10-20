@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using ClubFitnessDomain.Enums;
 
 namespace ClubFitnessDomain
 {
@@ -14,7 +15,11 @@ namespace ClubFitnessDomain
         public int ItemQuantity { get; set; }
 
         [NotMapped]
+        public decimal PriceIncTaxOriginalPriceBeforeDiscountedByPrice { get; set; }
+        
+        [NotMapped]
         public decimal PriceIncTax { get; set; }
+        
         [NotMapped]
         public decimal PriceExTax { get; set; }
 
@@ -26,9 +31,19 @@ namespace ClubFitnessDomain
         public decimal Discount { get; set; }
         public bool IsRefunded { get; set; }
         public long? PosTransactionRefItemId { get; set; }
+        
         [NotMapped] 
         public string? ItemDescription { get; set; }
         public bool IsVoided { get; set; }
+
+        public int? DiscountByLookupItemId { get; set; }
+        public string? CouponCode { get; set; }
+
+        [NotMapped]
+        public bool IsDiscountApplied { get; set; }[NotMapped] 
+
+        public virtual LookupTypeItem LookupTypeItem { get; set; }
+        public virtual DiscountCoupon? DiscountCoupon { get; set; }
 
         // Navigation properties
         public virtual PosTransaction PosTransaction { get; set; }

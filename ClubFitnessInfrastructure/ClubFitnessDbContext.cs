@@ -20,6 +20,8 @@ namespace ClubFitnessInfrastructure
         public DbSet<DiscountCoupon> DiscountCoupons { get; set; } 
         public DbSet<PosTransaction> PosTransaction { get; set; } 
         public DbSet<PosTransactionItem> PosTransactionItem { get; set; } 
+        public DbSet<LookupType> LookupTypes { get; set; } 
+        public DbSet<LookupTypeItem> LookupTypeItems { get; set; } 
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
