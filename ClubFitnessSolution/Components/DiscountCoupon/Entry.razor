@@ -1,14 +1,18 @@
 ﻿@page "/discount-coupon/add"
+@page "/discount-coupon/edit/{id:int?}"
 
 @using ClubFitnessDomain
 @using ClubFitnessServices.Interfaces
 @using Microsoft.AspNetCore.Components
 @using Blazored.FluentValidation
+@using ClubFitnessDomain.Enums
 @using ClubFitnessSolution.Services
 @using Radzen
 
 @inject IDiscountCouponService DiscountCouponService
 @inject IAccountService AccountService
+@inject ILookupTypeItemsService LookupTypeItemsService
+
 @inject NotificationService NotificationService
 @inject NavigationManager Navigation
 
@@ -23,7 +27,7 @@
     <RadzenBreadCrumbItem Text="Add Discount Coupon" />
 </RadzenBreadCrumb>
 
-<EditForm Model="@DiscountCoupon" OnValidSubmit="AddDiscountCoupon">
+<EditForm Model="@DiscountCoupon" OnValidSubmit="Save">
     <FluentValidationValidator />
 
     <div class="row">
@@ -43,15 +47,22 @@
             <InputNumber id="discount" @bind-Value="DiscountCoupon.Discount" class="form-control" />
             <ValidationMessage For="@(() => DiscountCoupon.Discount)" />
         </div>
-        <div class="col-md-4 mb-3">
+        @*  <div class="col-md-4 mb-3">
             <label for="discountType">Discount Type:</label>
             <InputNumber id="discountType" @bind-Value="DiscountCoupon.DiscountType" class="form-control" />
             <ValidationMessage For="@(() => DiscountCoupon.DiscountType)" />
-        </div>
+        </div> *@
         <div class="col-md-4 mb-3">
+            <label>Discount Type:</label>
+            <RadzenDropDown @bind-Value="DiscountCoupon.DiscountType" Data="@discountTypes"
+                            TextProperty="Description" ValueProperty="Id" AllowClear="true"
+                            Placeholder="Select Discount Type" class="form-control" />
+            <ValidationMessage For="@(() => DiscountCoupon.DiscountType)" />
+        </div>
+       @*  <div class="col-md-4 mb-3">
             <label for="minimumAmount">Minimum Amount:</label>
             <InputNumber id="minimumAmount" @bind-Value="DiscountCoupon.MinimumAmount" class="form-control" />
-        </div>
+        </div> *@
         <div class="col-md-4 mb-3 mt-4">
             <label for="isActive">Is Active:</label>
             <RadzenSwitch @bind-Value="DiscountCoupon.IsActive" />
@@ -68,7 +79,7 @@
                             Placeholder="Select Account" class="form-control" />
             <ValidationMessage For="@(() => DiscountCoupon.AccountId)" />
         </div>
-        <div class="col-md-4 mb-3">
+        @* <div class="col-md-4 mb-3">
             <label for="chargeType">Charge Type:</label>
             <InputText id="chargeType" @bind-Value="DiscountCoupon.ChargeType" class="form-control" />
         </div>
@@ -76,11 +87,12 @@
             <label for="discountFor">Discount For:</label>
             <InputNumber id="discountFor" @bind-Value="DiscountCoupon.DiscountFor" class="form-control" />
             <ValidationMessage For="@(() => DiscountCoupon.DiscountFor)" />
-        </div>
+        </div> 
         <div class="col-md-4 mb-3 mt-4">
             <label for="isCombineFees">Is Combine Fees:</label>
             <RadzenSwitch @bind-Value="DiscountCoupon.IsCombineFees" />
         </div>
+        *@
     </div>
 
     <RadzenButton ButtonType="ButtonType.Submit" class="btn btn-primary" ButtonStyle="ButtonStyle.Success">Save</RadzenButton>
@@ -88,27 +100,54 @@
 </EditForm>
 
 @code {
+    [Parameter] public int? Id { get; set; }
+    public bool IsAdd => Id == null ? true : false;
     private DiscountCoupon DiscountCoupon = new DiscountCoupon();
     private IEnumerable<Account> accounts;
+    private IEnumerable<LookupTypeItem> discountTypes;
 
     protected override async Task OnInitializedAsync()
     {
         accounts = await AccountService.GetAllAsync();
+        discountTypes = await LookupTypeItemsService.GetLookupItems((int)LookupEnum.DiscountedBy);
+        discountTypes = discountTypes.Where(o => o.Id != (int)DiscountedByEnum.Price); //remove price
+
+        if (!IsAdd)
+        {
+            DiscountCoupon = await DiscountCouponService.GetByIdAsync(Id ?? 0);
+        }
     }
 
-    private async Task AddDiscountCoupon()
+    private async Task Save()
     {
         try
         {
-            DiscountCoupon.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
-            await DiscountCouponService.AddAsync(DiscountCoupon);
-            NotificationService.Notify(NotificationSeverity.Success, "Success", "Discount Coupon added successfully.");
+            if (IsAdd)
+            {
+                DiscountCoupon.CreatedBy = await UserAuthenticationStateProvider.GetStaffId();
+                await DiscountCouponService.AddAsync(DiscountCoupon);
+                NotificationService.Notify(NotificationSeverity.Success, "Success", "Discount Coupon added successfully.");
+                Notify("Discount Coupon added successfully.");
+            }
+            else
+            {
+                DiscountCoupon.UpdatedBy = await UserAuthenticationStateProvider.GetStaffId();
+                DiscountCoupon.UpdatedDateTimeUtc = DateTime.UtcNow;
+                await DiscountCouponService.UpdateAsync(DiscountCoupon);
+                Notify("Discount Coupon updated successfully.");
+            }
+
             Navigation.NavigateTo("/discount-coupon");
         }
         catch (Exception ex)
         {
             Console.WriteLine(ex.Message);
         }
+    }
+
+    private void Notify(string message)
+    {
+        NotificationService.Notify(NotificationSeverity.Success, "Success", message);
     }
 
     private void Back()

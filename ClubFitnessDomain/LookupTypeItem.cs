@@ -11,6 +11,7 @@
 
         // Navigation property
         public LookupType LookupType { get; set; }
-        public virtual ICollection<PosTransactionItem> PosTransactionItems { get; set; }
+        public ICollection<PosTransactionItem> PosTransactionItems { get; set; }
+        public ICollection<DiscountCoupon> DiscountCoupons { get; set; }
     }
 }

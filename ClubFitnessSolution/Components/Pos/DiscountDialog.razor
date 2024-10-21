@@ -4,9 +4,11 @@
 @using ClubFitnessDomain.Enums
 @using ClubFitnessServices.Interfaces
 @inject DialogService DialogService
+@inject NotificationService NotificationService
 
 @inject ILookupTypeItemsService LookupTypeItemsService
 @inject IAccountProductService AccountProductService
+@inject IDiscountCouponService DiscountCouponService
 
 @code {
     [Parameter] public PosTransactionItem PosTransactionItem { get; set; }
@@ -15,17 +17,50 @@
     private decimal? discount;
     private decimal discountValue;
     private string discountReason;
+    private string couponCode;
 
     private IEnumerable<LookupTypeItem> discountTypes;
+    private IEnumerable<LookupTypeItem> discountTypeOnlyFromCoupon;
+
+    private IEnumerable<DiscountCoupon> discountCoupons;
+    private bool IsCouponCodeSelected = false;
 
     protected override async Task OnInitializedAsync()
     {
         discountTypes = await LookupTypeItemsService.GetLookupItems((int)LookupEnum.DiscountedBy);
-       
+
+        discountCoupons = await DiscountCouponService.GetAllAsync();
+    }
+
+    private void Notify(string message)
+    {
+         // Show error notification in red
+        NotificationService.Notify(new NotificationMessage
+        {
+            Severity = NotificationSeverity.Error,
+            Summary = "Invalid Discount",
+            Detail = message,
+            Duration = 4000 // Duration in milliseconds
+        });
     }
 
     private async void ApplyDiscount()
     {
+        discountValue = (discount ?? 0);
+
+        if (discountValue == 0)
+        {
+            Notify("Enter discount value.");
+            return;
+        }
+
+
+        if (string.IsNullOrEmpty(discountReason))
+        {
+            Notify("Reason for discount is required.");
+            return;
+        }
+
         if (PosTransactionItem.IsDiscountApplied) // execute only when already applied discount before and come back to applying new discount
         {
             var product = await AccountProductService.GetByIdAsync(PosTransactionItem.ProductId);
@@ -33,13 +68,15 @@
             PosTransactionItem.IsDiscountApplied = false;
         }
 
-        discountValue = (discount ?? 0);
-
+       
+        
         if (discountByLookupItemId == (int)DiscountedByEnum.Price)
         {
+
             if (discountValue > PosTransactionItem.PriceIncTax)
             {
-                //TODO: error message here
+                Notify("The discount value cannot be greater than the price.");
+                return; 
             }
 
             var discountedPrice = discountValue;
@@ -55,11 +92,24 @@
         }
         else if (discountByLookupItemId == (int)DiscountedByEnum.Percentage)
         {
+            if (discountValue > 100) //100% means
+            {
+                Notify("The discount value cannot be greater than 100%.");
+                return; 
+            }
+
             PosTransactionItem.DiscountPercentage = discountValue;
             PosTransactionItem.Discount = (PosTransactionItem.ItemPriceIncTax * discountValue) / 100;
         }
         else if (discountByLookupItemId == (int)DiscountedByEnum.Amount)
         {
+            if (discountValue > PosTransactionItem.ItemPriceIncTax) //100% means
+            {
+                Notify("The discount value cannot be greater than the total amount.");
+
+                return; 
+            }
+
             PosTransactionItem.Discount = discountValue;
             PosTransactionItem.DiscountPercentage = Math.Round((discountValue / PosTransactionItem.ItemPriceIncTax) * 100, 2);
         }
@@ -69,7 +119,32 @@
 
         // Close the dialog and send the updated product back
         DialogService.Close(PosTransactionItem);
-        
+
+    }
+
+    private async Task GetDiscountCoupon()
+    {
+        await Task.Run(() =>
+        {
+            var discountCoupon = discountCoupons.FirstOrDefault(o => o.CouponCode == couponCode);
+            if (discountCoupon != null)
+            {
+                PosTransactionItem.CouponCode = discountCoupon.CouponCode;
+                discount = discountCoupon.Discount;
+                discountByLookupItemId = discountCoupon.DiscountType;
+                discountTypeOnlyFromCoupon = discountTypes.Where(p => p.Id == discountByLookupItemId);
+
+                IsCouponCodeSelected = true;    
+            }
+            else
+            {
+                PosTransactionItem.CouponCode = string.Empty;
+                discount = 0;
+                discountByLookupItemId = 0;
+
+                IsCouponCodeSelected = false;
+            }
+        });
     }
 
     private void Cancel()
@@ -79,17 +154,37 @@
 }
 
 <div class="p-3">
-    
     <div class="form-group my-2">
-        <RadzenNumeric TValue="decimal?" @bind-Value="discount" Style="width: 100%;" Placeholder="Discount value" />
+        <label>Coupon:</label>
+        <RadzenDropDown Data="@discountCoupons" @bind-Value="couponCode" TValue="string"
+                        TextProperty="Name" ValueProperty="CouponCode" AllowClear="true"
+                        AllowFiltering="true"
+                        Placeholder="Select Coupon" class="form-control"
+                        Change="GetDiscountCoupon" />
     </div>
+    
+    @if (IsCouponCodeSelected)
+    {
+        <div class="form-group my-4">
+            <RadzenNumeric TValue="decimal?" @bind-Value="discount" Style="width: 100%;" Placeholder="Discount value" ReadOnly />
+        </div>
+        
+        <RadzenRadioButtonList Data="@discountTypeOnlyFromCoupon" TextProperty="Description" ValueProperty="Id"
+                               @bind-Value="discountByLookupItemId" TValue="int" Orientation="Orientation.Vertical" />
+    } else
+    {
+        <div class="form-group my-4">
+            <RadzenNumeric TValue="decimal?" @bind-Value="discount" Style="width: 100%;" Placeholder="Discount value" />
+        </div>
+        
+        <RadzenRadioButtonList Data="@discountTypes" TextProperty="Description" ValueProperty="Id"
+                               @bind-Value="discountByLookupItemId" TValue="int" Orientation="Orientation.Vertical" />
+    }
 
     <div class="form-group my-2">
         <RadzenTextArea Rows="3" @bind-Value="discountReason" Placeholder="Reason for discount" Style="width: 100%;" />
     </div>
-    
-    <RadzenRadioButtonList Data="@discountTypes" TextProperty="Description" ValueProperty="Id"
-                           @bind-Value="discountByLookupItemId" TValue="int" Orientation="Orientation.Vertical" />
+
 
 
     <div class="form-group mt-3 d-flex justify-content-end">

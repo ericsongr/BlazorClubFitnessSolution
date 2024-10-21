@@ -33,7 +33,7 @@
     {
         await DialogService.OpenAsync<DiscountDialog>("Discount Details",
             new Dictionary<string, object> { { "PosTransactionItem", item } },
-            new DialogOptions { Style = "width: 400px; height: 470px;" });
+            new DialogOptions { Style = "width: 400px; height: 570px;" });
 
         await RecomputePerItemWithDiscount.InvokeAsync(item);
         await InvokeAsync(StateHasChanged);

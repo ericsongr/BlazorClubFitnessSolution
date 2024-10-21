@@ -517,7 +517,7 @@ CREATE TABLE [dbo].[DiscountCoupons](
 	[Name] [nvarchar](100) NULL,
 	[CouponCode] [nvarchar](100) NULL,
 	[Discount] [decimal](18, 2) NOT NULL,
-	[DiscountType] [smallint] NOT NULL,
+	[DiscountType] [int] NOT NULL,
 	[MinimumAmount] [decimal](18, 0) NULL,
 	[IsActive] [bit] NOT NULL,
 	[ExpiryDate] [datetime] NULL,
@@ -887,7 +887,8 @@ CREATE TABLE [dbo].[PosTransactionItem](
 	[IsVoided] [bit] NOT NULL,
 	[DiscountPercentage] [decimal](18, 2) NOT NULL DEFAULT(0),
 	[DiscountByLookupItemId] INT NULL,
-	[CouponCode] [nvarchar](100) NULL
+	[CouponCode] [nvarchar](100) NULL,
+	[ReasonForDiscount] VARCHAR(100)
  CONSTRAINT [PK_PosTransactionItem] PRIMARY KEY CLUSTERED 
 (
 	[PosTransactionItemId] ASC
@@ -1136,4 +1137,12 @@ ON DELETE CASCADE
 GO
 
 ALTER TABLE [dbo].[PosTransactionItem] CHECK CONSTRAINT [FK_PosTransactionItem_CouponCode_AccountProduct_DiscountCoupon_CouponCode]
+GO
+
+
+ALTER TABLE [dbo].[DiscountCoupons]  WITH CHECK ADD  CONSTRAINT [FK_DiscountCoupons_DiscountType_LookupTypeItem_Id] FOREIGN KEY([DiscountType])
+REFERENCES [dbo].[LookupTypeItems] ([Id])
+GO
+
+ALTER TABLE [dbo].[DiscountCoupons] CHECK CONSTRAINT [FK_DiscountCoupons_DiscountType_LookupTypeItem_Id]
 GO
