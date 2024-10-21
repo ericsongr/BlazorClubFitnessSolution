@@ -15,8 +15,11 @@ namespace ClubFitnessServices
 
         public async Task<IEnumerable<DiscountCoupon>> GetAllAsync()
         {
-            return await _repository.GetAllAsync();
+            return await _repository.GetWithIncludesAsync(p => p.IsActive && p.ExpiryDate.HasValue && 
+                                                               p.ExpiryDate.Value.Date >= DateTime.Now.Date, 
+                                                        p => p.LookupTypeItem);
         }
+        
 
         public async Task<DiscountCoupon> GetByIdAsync(int id)
         {

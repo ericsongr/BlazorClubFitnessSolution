@@ -6,7 +6,10 @@
         public string? Name { get; set; }
         public string? CouponCode { get; set; }
         public decimal Discount { get; set; }
-        public short DiscountType { get; set; }
+        
+        public int DiscountType { get; set; }
+        public virtual LookupTypeItem LookupTypeItem { get; set; }
+
         public decimal? MinimumAmount { get; set; }
         public bool IsActive { get; set; }
         

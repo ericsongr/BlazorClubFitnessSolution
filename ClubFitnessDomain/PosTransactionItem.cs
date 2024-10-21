@@ -34,13 +34,14 @@ namespace ClubFitnessDomain
         
         [NotMapped] 
         public string? ItemDescription { get; set; }
+        public string? ReasonForDiscount { get; set; }
         public bool IsVoided { get; set; }
 
         public int? DiscountByLookupItemId { get; set; }
         public string? CouponCode { get; set; }
 
         [NotMapped]
-        public bool IsDiscountApplied { get; set; }[NotMapped] 
+        public bool IsDiscountApplied { get; set; } 
 
         public virtual LookupTypeItem LookupTypeItem { get; set; }
         public virtual DiscountCoupon? DiscountCoupon { get; set; }

@@ -56,7 +56,11 @@ else
                     <Columns>
                         <RadzenDataGridColumn TItem="DiscountCoupon" Property="CouponCode" Filterable="true" Title="Coupon Code"/>
                         <RadzenDataGridColumn TItem="DiscountCoupon" Property="Name" Filterable="true" Title="Name"/>
-                        <RadzenDataGridColumn TItem="DiscountCoupon" Property="DiscountFor" Filterable="true" Title="Discount For"/>
+                        <RadzenDataGridColumn TItem="DiscountCoupon" Filterable="true" Title="Discount Type">
+                            <Template Context="data">
+                                <span>@data.LookupTypeItem?.Description</span>
+                            </Template>
+                        </RadzenDataGridColumn>
                         <RadzenDataGridColumn TItem="DiscountCoupon" Title="Is Active" Filterable="false">
                             <Template Context="data">
                                 @if (data.IsActive)
